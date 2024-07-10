@@ -1,10 +1,17 @@
 #include <iostream>
+#include <ncurses.h>
+#include "render.h"
 
 using namespace std;
 
 int main()
 {
-  cout << "Chess++\n";
+  string in = "";
+  while (1)
+  {
+    draw(in);
+    cin >> in; 
+  }
 
   return 0;
 }
