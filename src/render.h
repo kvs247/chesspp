@@ -1,3 +1,5 @@
+#include "cursor.h"
+
 using namespace std;
 
-void draw(const string &s);
+void draw(const Point);

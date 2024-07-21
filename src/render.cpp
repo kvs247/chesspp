@@ -1,9 +1,11 @@
 #include <iostream>
 #include <ncurses.h>
+#include <stdlib.h>
+#include "cursor.h"
 
 using namespace std;
 
-void draw(const string &s)
+void draw(const Point cursor)
 {
   // Initialize ncurses
   initscr();
@@ -42,10 +44,9 @@ void draw(const string &s)
     }
   }
 
-  for (size_t i = 0; i < s.size(); i++)
-  {
-    render[(cols + 1) * 5 + i + 5] = s[i];
-  }
+  int cursor_x = cursor.x * cols;
+  int cursor_y = cursor.y * rows;
+  render[(cols + 1) * cursor_y + cursor_x] = '#';
 
   cout << render;
 }

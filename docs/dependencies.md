@@ -1,3 +1,4 @@
 # Dependencies
 
 - ncurses
+- Xlib
