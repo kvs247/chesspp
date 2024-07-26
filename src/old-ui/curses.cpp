@@ -18,7 +18,7 @@ int n_choices = sizeof(choices) / sizeof(char *);
 
 void print_menu(WINDOW *menu_win, int highlight);
 
-int main()
+int draw2()
 {
   WINDOW *menu_win;
   MEVENT event;

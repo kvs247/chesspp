@@ -1,18 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "draw.h"
 
-char pieces[64] = {
-    'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',
-    'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
-    'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'};
-
-int main()
+void draw(char pieces[64])
 {
   std::ofstream logFile;
   logFile.open("log.txt");
@@ -21,10 +12,8 @@ int main()
     std::cout << "Error opening log file";
   }
 
-  unsigned col_mult = 8; // must be even
-  unsigned row_mult = 4; // must be even
-  unsigned x_max = 8 * col_mult;
-  unsigned y_max = 8 * row_mult;
+  int col_mult = 8; // must be even
+  int row_mult = 4; // must be even
 
   char c;
   size_t piece_index = 0;

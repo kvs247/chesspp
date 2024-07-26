@@ -14,7 +14,7 @@ const unsigned SQUARE_WIDTH = 8;
 const unsigned TOP_PAD = 8;
 const unsigned LEFT_PAD = 16;
 
-void draw(const Point cursor)
+void draw2(const Point cursor)
 {
   // Initialize ncurses
   initscr();

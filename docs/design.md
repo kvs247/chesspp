@@ -7,3 +7,5 @@
 - Logic
   - Use class structures
   - Testing
+- Logging
+  - Setup ability to log debug to log file separate from stdout/stderr

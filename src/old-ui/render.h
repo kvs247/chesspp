@@ -2,4 +2,4 @@
 
 using namespace std;
 
-void draw(const Point);
+void draw2(const Point);
