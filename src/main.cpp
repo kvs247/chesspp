@@ -12,7 +12,6 @@ int main()
 
   Point cursorPoint;
 
-  string in = "";
   while (true)
   {
     clearScreen();
