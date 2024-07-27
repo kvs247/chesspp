@@ -3,4 +3,6 @@
 
 void draw(char[64]);
 
+void clear_screen();
+
 #endif

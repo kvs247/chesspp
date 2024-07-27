@@ -4,8 +4,8 @@ CXXFLAGS = -std=c++11 -Wall -Wextra
 
 TARGET = build/chess
 
-$(TARGET): src/main.cpp src/draw.cpp
-	$(CXX) $(CXXFLAGS) src/main.cpp src/draw.cpp -o $(TARGET) $(LDFLAGS)
+$(TARGET): src/main.cpp src/draw.cpp src/chess.cpp src/utils.cpp
+	$(CXX) $(CXXFLAGS) src/main.cpp src/draw.cpp src/chess.cpp src/utils.cpp -o $(TARGET) $(LDFLAGS)
 
 clean:
 	rm -f /build

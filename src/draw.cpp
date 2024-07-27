@@ -48,3 +48,8 @@ void draw(char pieces[64])
 
   logFile.close();
 }
+
+void clear_screen()
+{
+  std::cout << "\033[2J\033[H";
+}
