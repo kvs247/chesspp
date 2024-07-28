@@ -1,6 +1,6 @@
 #include <iostream>
 #include "draw.h"
-#include "chess.h"
+#include "game.h"
 #include "utils.h"
 #include "logger.h"
 
@@ -18,14 +18,13 @@ int main()
 {
   Logger &logger = Logger::getInstance();
 
-  Chess chess;
-  logger.log(chess.get_fen_str() + "\n");
+  Game game;
+  logger.log(game.get_fen_str() + "\n");
 
-  logger.log("yo\n");
   std::string from_square, to_square;
   while (true)
   {
-    // clear_screen();
+    clear_screen();
     draw(pieces);
 
     std::cin >> from_square >> to_square;

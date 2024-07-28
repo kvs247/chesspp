@@ -1,14 +1,14 @@
-#ifndef CHESS_H
-#define CHESS_H
+#ifndef GAME_H
+#define GAME_H
 
 #include <string>
 #include <array>
 
-class Chess
+class Game
 {
 public:
-  Chess(std::array<char, 64>&, char, std::string, int, int, int);
-  Chess();
+  Game(std::array<char, 64>&, char, std::string, int, int, int);
+  Game();
 
   std::string get_fen_str();
 

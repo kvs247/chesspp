@@ -1,4 +1,4 @@
-#include "chess.h"
+#include "game.h"
 #include "utils.h"
 
 #include <string>
@@ -17,13 +17,13 @@ std::array<char, 64> starting_piece_placement = {
 
 std::string starting_castling_availability = "KQkq";
 
-Chess::Chess(std::array<char, 64> &pp, char ac, std::string ca, int ep, int hc, int fc)
+Game::Game(std::array<char, 64> &pp, char ac, std::string ca, int ep, int hc, int fc)
     : piece_placement(pp), active_color(ac), castling_availability(ca),
       en_passant_index(ep), halfmove_clock(hc), fullmove_clock(fc) {}
 
-Chess::Chess() : Chess(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
+Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
 
-std::string Chess::get_fen_str()
+std::string Game::get_fen_str()
 {
   // piece position
   std::string fen;
