@@ -1,4 +1,3 @@
 # Dependencies
 
-- ncurses
-- Xlib
+- googletest
