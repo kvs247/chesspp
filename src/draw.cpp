@@ -5,13 +5,6 @@
 
 void draw(char pieces[64])
 {
-  std::ofstream logFile;
-  logFile.open("log.txt");
-  if (!logFile.is_open())
-  {
-    std::cout << "Error opening log file";
-  }
-
   int col_mult = 8; // must be even
   int row_mult = 4; // must be even
 
@@ -24,7 +17,7 @@ void draw(char pieces[64])
       bool draw_row = row % row_mult == 0;
       bool draw_col = col % col_mult == 0;
       bool draw_piece = col % (col_mult / 2) == 0 && row % (row_mult / 2) == 0;
-      
+
       if (draw_row && draw_col)
         c = '+';
       // horizontal lines
@@ -45,8 +38,6 @@ void draw(char pieces[64])
     }
     std::cout << '\n';
   }
-
-  logFile.close();
 }
 
 void clear_screen()

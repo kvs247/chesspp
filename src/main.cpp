@@ -1,8 +1,8 @@
 #include <iostream>
-#include <unistd.h>
 #include "draw.h"
 #include "chess.h"
 #include "utils.h"
+#include "logger.h"
 
 char pieces[64] = {
     'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',
@@ -16,9 +16,12 @@ char pieces[64] = {
 
 int main()
 {
-  Chess chess;
-  std::cout << chess.get_fen_str() << '\n';
+  Logger &logger = Logger::getInstance();
 
+  Chess chess;
+  logger.log(chess.get_fen_str() + "\n");
+
+  logger.log("yo\n");
   std::string from_square, to_square;
   while (true)
   {
@@ -32,7 +35,8 @@ int main()
 
     pieces[to_index] = pieces[from_index];
     pieces[from_index] = '\0';
-  }
+  } 
+
 
   return 0;
 }
