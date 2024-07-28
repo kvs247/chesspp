@@ -4,11 +4,25 @@
 #include <array>
 #include <stdexcept>
 
-int square_to_index(const std::string square)
+int square_to_index(const std::string& square)
 {
-  int file = std::tolower(square[0]) - 'a';
-  int rank = (square[1] - '0');
-  return 8 * (8 - rank) + file;
+  if (square.size() != 2)
+  {
+    throw std::invalid_argument("Argument is not 2 characters long.");
+  }
+
+  char file_c = std::tolower(square[0]);
+  char rank_c = square[1];
+
+  if (file_c < 'a' || file_c > 'h' || rank_c < '1' || rank_c > '8')
+  {
+    throw std::invalid_argument("Argument is not a valid chess square.");
+  }
+
+  int file_i = file_c - 'a';
+  int rank_i = rank_c - '0';
+  
+  return 8 * (8 - rank_i) + file_i;
 }
 
 std::string index_to_square(int index)

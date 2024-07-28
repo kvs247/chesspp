@@ -4,7 +4,7 @@
 #include <string>
 #include <array>
 
-int square_to_index(const std::string square);
+int square_to_index(const std::string& square);
 
 std::string index_to_square(int index);
 
