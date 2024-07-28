@@ -1,19 +1,10 @@
 #include "game.h"
 #include "utils.h"
+#include "constants.h"
 
 #include <string>
 #include <array>
 #include <fstream>
-
-std::array<char, 64> starting_piece_placement = {
-    'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',
-    'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
-    'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'};
 
 std::string starting_castling_availability = "KQkq";
 

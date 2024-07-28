@@ -3,16 +3,10 @@
 #include "game.h"
 #include "utils.h"
 #include "logger.h"
+#include "constants.h"
 
-char pieces[64] = {
-    'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',
-    'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
-    'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'};
+#include <array>
+std::array<char, 64> test_piece_placement = starting_piece_placement;
 
 int main()
 {
@@ -25,15 +19,15 @@ int main()
   while (true)
   {
     clear_screen();
-    draw(pieces);
+    draw(test_piece_placement);
 
     std::cin >> from_square >> to_square;
     int from_index = square_to_index(from_square);
     int to_index = square_to_index(to_square);
     std::cout << from_index << " " << to_index << '\n';
 
-    pieces[to_index] = pieces[from_index];
-    pieces[from_index] = '\0';
+    test_piece_placement[to_index] = test_piece_placement[from_index];
+    test_piece_placement[from_index] = '\0';
   } 
 
 

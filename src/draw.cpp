@@ -3,7 +3,7 @@
 #include <vector>
 #include "draw.h"
 
-void draw(char pieces[64])
+void draw(std::array<char, 64> pieces)
 {
   int col_mult = 8; // must be even
   int row_mult = 4; // must be even

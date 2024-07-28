@@ -4,7 +4,7 @@
 #include <array>
 #include <stdexcept>
 
-int square_to_index(const std::string& square)
+int square_to_index(const std::string &square)
 {
   if (square.size() != 2)
   {
@@ -21,7 +21,7 @@ int square_to_index(const std::string& square)
 
   int file_i = file_c - 'a';
   int rank_i = rank_c - '0';
-  
+
   return 8 * (8 - rank_i) + file_i;
 }
 
@@ -45,19 +45,21 @@ std::array<char, 64> piece_placement_string_to_array(const std::string &s)
 {
   std::array<char, 64> res;
 
-  int res_i = 0;
+  size_t res_i = 0;
   for (auto &c : s)
   {
     if (c == '/')
       continue;
-    
+
     if (isdigit(c))
-      for (int i = 0; i != c; ++i)
-        res[++res_i] = '\0';
-    
+    {
+      for (int i = 0; i != (c - '0'); ++i)
+        res[res_i++] = '\0';
+    }
     else
-      res[res_i] = c;
-    ++res_i;
+      res[res_i++] = c;
+
+    // add error handling
   }
 
   return res;
