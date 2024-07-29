@@ -64,3 +64,40 @@ std::array<char, 64> piece_placement_string_to_array(const std::string &s)
 
   return res;
 }
+
+std::string piece_placement_array_to_string(const std::array<char, 64> &a)
+{
+  // add error handling
+  
+  std::string res;
+  unsigned gap = 0;
+  auto handle_gap = [&]()
+  {
+    if (gap > 0)
+    {
+      res += std::to_string(gap);
+      gap = 0;
+    }
+  };
+
+  char c;
+  for (int i = 0; i != 64; i++)
+  {
+    if (i % 8 == 0 && i != 0)
+    {
+      handle_gap();
+      res += '/';
+    }
+    c = a[i];
+    if (c)
+    {
+      handle_gap();
+      res += c;
+    }
+    else
+      ++gap;
+  }
+  handle_gap();
+
+  return res;
+}

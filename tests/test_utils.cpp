@@ -48,6 +48,13 @@ TEST(PiecePlacementStringToArrayTest, ValidString)
   EXPECT_EQ(actual, expected);
 }
 
+TEST(PiecePlacementArrayToStringTest, ValidString)
+{
+  std::string expected = starting_piece_placement_string;
+  std::string actual = piece_placement_array_to_string(starting_piece_placement);
+  EXPECT_EQ(actual, expected);
+}
+
 int main(int argc, char *argv[])
 {
   ::testing::InitGoogleTest(&argc, argv);

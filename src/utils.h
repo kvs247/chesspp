@@ -4,10 +4,12 @@
 #include <string>
 #include <array>
 
-int square_to_index(const std::string& square);
+int square_to_index(const std::string &square);
 
 std::string index_to_square(int index);
 
 std::array<char, 64> piece_placement_string_to_array(const std::string &);
+
+std::string piece_placement_array_to_string(const std::array<char, 64> &);
 
 #endif
