@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
+#include <array>
 #include "../src/utils.h"
+#include "../src/constants.h"
 
 TEST(SquareToIndexTest, ValidSquare)
 {
@@ -37,6 +39,13 @@ TEST(IndexToSquareTest, InvalidIndex)
 {
   ASSERT_THROW(index_to_square(-1), std::out_of_range);
   ASSERT_THROW(index_to_square(64), std::out_of_range);
+}
+
+TEST(PiecePlacementStringToArrayTest, ValidString)
+{
+  std::array<char, 64> expected = starting_piece_placement;
+  std::array<char, 64> actual = piece_placement_string_to_array(starting_piece_placement_string);
+  EXPECT_EQ(actual, expected);
 }
 
 int main(int argc, char *argv[])

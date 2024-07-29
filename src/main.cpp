@@ -19,15 +19,20 @@ int main()
   while (true)
   {
     clear_screen();
-    draw(test_piece_placement);
+    draw(game.get_piece_placement());
 
-    std::cin >> from_square >> to_square;
+    std::cout << "from square: ";
+    std::cin >> from_square;
+    std::cout << "\n";
+
+    std::cout << "to square: ";
+    std::cin >> to_square;
+    std::cout << "\n";
+
     int from_index = square_to_index(from_square);
     int to_index = square_to_index(to_square);
-    std::cout << from_index << " " << to_index << '\n';
 
-    test_piece_placement[to_index] = test_piece_placement[from_index];
-    test_piece_placement[from_index] = '\0';
+    game.move(from_index, to_index);
   } 
 
 

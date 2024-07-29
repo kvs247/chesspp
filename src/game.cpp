@@ -73,3 +73,17 @@ std::string Game::get_fen_str()
 
   return fen;
 }
+
+std::array<char, 64> Game::get_piece_placement()
+{
+  return piece_placement;
+}
+
+bool Game::move(int from_index, int to_index)
+{
+  // do chess logic here
+  piece_placement[to_index] = piece_placement[from_index];
+  piece_placement[from_index] = '\0';
+
+  return true;
+}

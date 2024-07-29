@@ -11,6 +11,9 @@ public:
   Game();
 
   std::string get_fen_str();
+  std::array<char, 64> get_piece_placement();
+
+  bool move(int, int);
 
 private:
   std::array<char, 64> piece_placement;
