@@ -1,8 +1,12 @@
+#include "logger.h"
 #include "utils.h"
 #include <string>
+#include <set>
 #include <cctype>
 #include <array>
 #include <stdexcept>
+
+Logger &logger = Logger::getInstance();
 
 int square_to_index(const std::string &square)
 {
@@ -41,13 +45,25 @@ std::string index_to_square(int index)
   return std::string(1, file_c) + std::string(1, rank_c);
 }
 
+bool is_chess_piece(char c)
+{
+  static const std::set<char> chess_pieces{'p', 'r', 'n', 'b', 'k', 'q', 'P', 'R', 'N', 'B', 'K', 'Q'};
+  return chess_pieces.find(c) != chess_pieces.end();
+}
+
 std::array<char, 64> piece_placement_string_to_array(const std::string &s)
 {
   std::array<char, 64> res;
-
   size_t res_i = 0;
+
   for (auto &c : s)
   {
+    if (res_i == 64)
+    {
+      throw std::invalid_argument("Array elements exceeds 64.");
+      break;
+    }
+
     if (c == '/')
       continue;
 
@@ -57,9 +73,19 @@ std::array<char, 64> piece_placement_string_to_array(const std::string &s)
         res[res_i++] = '\0';
     }
     else
-      res[res_i++] = c;
+    {
+      if (!is_chess_piece(c))
+      {
+        throw std::invalid_argument("Encountered invalid chess piece.");
+      }
 
-    // add error handling
+      res[res_i++] = c;
+    }
+  }
+
+  if (res_i != 64)
+  {
+    throw std::invalid_argument("Incorrect number of array elements.");
   }
 
   return res;
@@ -67,10 +93,9 @@ std::array<char, 64> piece_placement_string_to_array(const std::string &s)
 
 std::string piece_placement_array_to_string(const std::array<char, 64> &a)
 {
-  // add error handling
-  
   std::string res;
   unsigned gap = 0;
+
   auto handle_gap = [&]()
   {
     if (gap > 0)
@@ -88,9 +113,14 @@ std::string piece_placement_array_to_string(const std::array<char, 64> &a)
       handle_gap();
       res += '/';
     }
+
     c = a[i];
     if (c)
     {
+      if (!is_chess_piece(c))
+      {
+        throw std::invalid_argument("Encountered invalid chess piece.");
+      }
       handle_gap();
       res += c;
     }

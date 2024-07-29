@@ -8,7 +8,7 @@
 
 std::string starting_castling_availability = "KQkq";
 
-Game::Game(std::array<char, 64> &pp, char ac, std::string ca, int ep, int hc, int fc)
+Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int hc, int fc)
     : piece_placement(pp), active_color(ac), castling_availability(ca),
       en_passant_index(ep), halfmove_clock(hc), fullmove_clock(fc) {}
 

@@ -4,8 +4,8 @@
 #include <string>
 #include <array>
 
-extern std::string starting_piece_placement_string;
+extern const std::string starting_piece_placement_string;
 
-extern std::array<char, 64> starting_piece_placement;
+extern const std::array<char, 64> starting_piece_placement;
 
 #endif

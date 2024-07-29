@@ -5,9 +5,6 @@
 #include "logger.h"
 #include "constants.h"
 
-#include <array>
-std::array<char, 64> test_piece_placement = starting_piece_placement;
-
 int main()
 {
   Logger &logger = Logger::getInstance();
@@ -16,6 +13,7 @@ int main()
   logger.log(game.get_fen_str() + "\n");
 
   std::string from_square, to_square;
+  int from_index, to_index;
   while (true)
   {
     clear_screen();
@@ -29,8 +27,8 @@ int main()
     std::cin >> to_square;
     std::cout << "\n";
 
-    int from_index = square_to_index(from_square);
-    int to_index = square_to_index(to_square);
+    from_index = square_to_index(from_square);
+    to_index = square_to_index(to_square);
 
     game.move(from_index, to_index);
   } 

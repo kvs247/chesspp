@@ -48,11 +48,33 @@ TEST(PiecePlacementStringToArrayTest, ValidString)
   EXPECT_EQ(actual, expected);
 }
 
-TEST(PiecePlacementArrayToStringTest, ValidString)
+TEST(PiecePlacementStringToArrayTest, InvalidString)
+{
+  std::string test_string = starting_piece_placement_string + "K";
+  ASSERT_THROW(
+      piece_placement_string_to_array(test_string),
+      std::invalid_argument);
+  ASSERT_THROW(
+      piece_placement_string_to_array("rnbkqbnr"),
+      std::invalid_argument);
+
+  ASSERT_THROW(
+      piece_placement_string_to_array("rnbqkbnr/appppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"),
+      std::invalid_argument);
+}
+
+TEST(PiecePlacementArrayToStringTest, ValidArray)
 {
   std::string expected = starting_piece_placement_string;
   std::string actual = piece_placement_array_to_string(starting_piece_placement);
   EXPECT_EQ(actual, expected);
+}
+
+TEST(PiecePlacementArrayToStringTest, InvalidArray)
+{
+  std::array<char, 64> test_array = starting_piece_placement;
+  test_array[31] = 'a';
+  ASSERT_THROW(piece_placement_array_to_string(test_array), std::invalid_argument);
 }
 
 int main(int argc, char *argv[])

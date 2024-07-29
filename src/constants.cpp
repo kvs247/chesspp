@@ -3,9 +3,9 @@
 #include <string>
 #include <array>
 
-std::string starting_piece_placement_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+const std::string starting_piece_placement_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
-std::array<char, 64> starting_piece_placement = {
+const std::array<char, 64> starting_piece_placement = {
     'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',
     'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
     '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',

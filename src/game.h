@@ -7,7 +7,7 @@
 class Game
 {
 public:
-  Game(std::array<char, 64>&, char, std::string, int, int, int);
+  Game(const std::array<char, 64>&, char, std::string, int, int, int);
   Game();
 
   std::string get_fen_str();
