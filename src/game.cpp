@@ -5,6 +5,7 @@
 #include <string>
 #include <array>
 #include <fstream>
+#include <sstream>
 
 std::string starting_castling_availability = "KQkq";
 
@@ -16,29 +17,17 @@ Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availabilit
 
 std::string Game::get_fen_str()
 {
-  std::string fen;
-  fen += piece_placement_array_to_string(piece_placement);
-  fen += ' ';
+  std::ostringstream fen;
+  std::string en_passant = (en_passant_index < 0) ? "-" : index_to_square(en_passant_index);
 
-  fen += active_color;
-  fen += ' ';
+  fen << piece_placement_array_to_string(piece_placement) << " "
+      << active_color << " "
+      << castling_availability << " "
+      << en_passant << " "
+      << std::to_string(halfmove_clock) << " "
+      << std::to_string(fullmove_clock);
 
-  fen += castling_availability;
-  fen += ' ';
-
-  if (en_passant_index < 0)
-    fen += '-';
-  else
-    fen += index_to_square(en_passant_index);
-  fen += ' ';
-
-  fen += std::to_string(halfmove_clock);
-  fen += ' ';
-
-  fen += std::to_string(fullmove_clock);
-  fen += ' ';
-
-  return fen;
+  return fen.str();
 }
 
 std::array<char, 64> Game::get_piece_placement()

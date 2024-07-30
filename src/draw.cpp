@@ -3,6 +3,10 @@
 #include <vector>
 #include "draw.h"
 
+using std::cout;
+
+int BORDER_WIDTH = 3; // at least 2
+
 void draw(std::array<char, 64> pieces)
 {
   int col_mult = 8; // must be even
@@ -12,6 +16,13 @@ void draw(std::array<char, 64> pieces)
   size_t piece_index = 0;
   for (int row = 0; row <= 8 * row_mult; ++row)
   {
+    // ranks
+    cout << ' ';
+    if ((row + row_mult / 2) % row_mult == 0)
+      cout << 8 - row / row_mult << std::string(BORDER_WIDTH - 2, ' ');
+    else
+      cout << std::string(BORDER_WIDTH - 1, ' ');
+
     for (int col = 0; col <= 8 * col_mult; ++col)
     {
       bool draw_row = row % row_mult == 0;
@@ -34,13 +45,29 @@ void draw(std::array<char, 64> pieces)
       }
       else
         c = ' ';
-      std::cout << c;
+      cout << c;
     }
-    std::cout << '\n';
+    cout << '\n';
   }
+
+  // files
+  cout << std::string(BORDER_WIDTH / 2 - 1, '\n');
+  cout << std::string(BORDER_WIDTH, ' ');
+  for (int i = 0; i <= 8 * col_mult + 2; i++)
+  {
+    if ((i + col_mult / 2) % col_mult == 0)
+    {
+      char c = i / col_mult + 'A';
+      cout << c;
+    }
+    else
+      cout << ' ';
+  }
+  cout << '\n';
+  cout << '\n';
 }
 
 void clear_screen()
 {
-  std::cout << "\033[2J\033[H";
+  cout << "\033[2J\033[H";
 }

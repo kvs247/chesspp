@@ -10,7 +10,6 @@ int main()
   Logger &logger = Logger::getInstance();
 
   Game game;
-  logger.log(game.get_fen_str() + "\n");
 
   std::string from_square, to_square;
   int from_index, to_index;
@@ -18,6 +17,7 @@ int main()
   {
     clear_screen();
     draw(game.get_piece_placement());
+    logger.log(game.get_fen_str());
 
     std::cout << "from square: ";
     std::cin >> from_square;
