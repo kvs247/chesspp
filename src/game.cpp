@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "constants.h"
 
+#include <iostream>
 #include <string>
 #include <array>
 #include <fstream>
@@ -42,4 +43,19 @@ bool Game::move(int from_index, int to_index)
   piece_placement[from_index] = '\0';
 
   return true;
+}
+
+void Game::read_move(int &from_index, int &to_index)
+{
+  std::string from_square, to_square;
+
+  std::cout << "from square: ";
+  std::cin >> from_square;
+  std::cout << "\n";
+  from_index = square_to_index(from_square);
+
+  std::cout << "to square: ";
+  std::cin >> to_square;
+  std::cout << "\n";
+  to_index = square_to_index(to_square);
 }

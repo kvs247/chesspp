@@ -7,7 +7,7 @@ using std::cout;
 
 int BORDER_WIDTH = 3; // at least 2
 
-void draw(std::array<char, 64> pieces)
+void draw(std::array<char, 64> pieces, const std::string &message)
 {
   int col_mult = 8; // must be even
   int row_mult = 4; // must be even
@@ -63,8 +63,10 @@ void draw(std::array<char, 64> pieces)
     else
       cout << ' ';
   }
-  cout << '\n';
-  cout << '\n';
+
+  cout << "\n\n";
+  if (message.size() > 0)
+    cout << std::string(BORDER_WIDTH, ' ') << "~" << message << "\n\n";
 }
 
 void clear_screen()

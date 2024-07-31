@@ -6,8 +6,6 @@
 #include <array>
 #include <stdexcept>
 
-Logger &logger = Logger::getInstance();
-
 int square_to_index(const std::string &square)
 {
   if (square.size() != 2)

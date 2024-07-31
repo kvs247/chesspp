@@ -5,6 +5,8 @@
 Logger *Logger::instance = nullptr;
 std::mutex Logger::instance_mutex;
 
+Logger &logger = Logger::getInstance();
+
 Logger &Logger::getInstance()
 {
   std::lock_guard<std::mutex> lock(instance_mutex);
