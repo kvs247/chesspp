@@ -15,7 +15,6 @@ int main()
 
   std::string from_square, to_square;
   std::string message = "";
-  int from_index, to_index;
 
   while (true)
   {
@@ -27,8 +26,14 @@ int main()
 
     try
     {
-      game.read_move(from_index, to_index);
-      message = "";
+      if (game.move())
+      {
+        message = "";
+      }
+      else
+      {
+        message = "Illegal move.";
+      }
     }
     catch (std::invalid_argument &e)
     {
@@ -36,8 +41,6 @@ int main()
       logger.log("ERROR invalid argument encountered: " + std::string(e.what()));
       continue;
     }
-
-    game.move(from_index, to_index);
   }
 
   return 0;

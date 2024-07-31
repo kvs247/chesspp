@@ -13,7 +13,7 @@ public:
   std::string get_fen_str();
   std::array<char, 64> get_piece_placement();
 
-  bool move(int, int);
+  bool move();
 
   void read_move(int &, int &);
 
