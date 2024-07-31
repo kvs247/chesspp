@@ -65,8 +65,15 @@ void draw(std::array<char, 64> pieces, const std::string &message)
   }
 
   cout << "\n\n";
-  if (message.size() > 0)
-    cout << std::string(BORDER_WIDTH, ' ') << "~" << message << "\n\n";
+  size_t message_size = message.size();
+  if (message_size > 0)
+  {
+    int board_width = 8 * col_mult / 2;
+    int msg_offset = message_size / 2 + message_size % 2;
+    int num_space = BORDER_WIDTH + board_width - msg_offset;
+    cout << std::string(num_space, ' ') << "~" << message
+         << ((message_size % 2 == 0) ? " " : "~") << "\n\n";
+  }
 }
 
 void clear_screen()
