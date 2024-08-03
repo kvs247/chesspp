@@ -1,7 +1,9 @@
 #ifndef PIECE_H
 #define PIECE_H
 
+#include <array>
 #include <iostream>
+#include <vector>
 
 class Game;
 
@@ -10,7 +12,7 @@ class Piece
 public:
   Piece(Game &);
 
-  virtual bool is_legal_move(int, int) = 0; // pure virtual
+  virtual std::vector<int> legal_square_indexes(int) = 0; // pure virtual
 
 protected:
   Game &game;
@@ -19,7 +21,7 @@ protected:
 struct Knight : public Piece
 {
   Knight(Game &);
-  bool is_legal_move(int, int) override;
+  std::vector<int> legal_square_indexes(int) override;
 };
 
 #endif

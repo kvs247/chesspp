@@ -1,10 +1,11 @@
 #include "logger.h"
 #include "utils.h"
-#include <string>
-#include <set>
-#include <cctype>
+
 #include <array>
+#include <cctype>
+#include <set>
 #include <stdexcept>
+#include <string>
 
 int algebraic_to_index(const std::string &algebraic_square)
 {
@@ -130,7 +131,7 @@ std::string piece_placement_array_to_string(const std::array<char, 64> &a)
   return res;
 }
 
-Square index_to_file_rank(int index)
+FileRank index_to_file_rank(int index)
 {
   if (index < 0 || 63 < index)
     throw std::out_of_range("Index is out of valid range [0-63].");
@@ -139,4 +140,17 @@ Square index_to_file_rank(int index)
   int rank = 8 - index / 8;
 
   return {file, rank};
+};
+
+int file_rank_to_index(FileRank square)
+{
+  auto file = square.file;
+  auto rank = square.rank;
+  if (file < 1 || 8 < file || rank < 1 || 8 < rank)
+  {
+    throw std::out_of_range("File and/or rank out of valid range [1-8].");
+  }
+
+  int res = --file + 8 * (8 - rank);
+  return res;
 };

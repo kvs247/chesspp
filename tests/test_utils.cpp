@@ -1,7 +1,8 @@
-#include <gtest/gtest.h>
-#include <array>
-#include "../src/utils.h"
 #include "../src/constants.h"
+#include "../src/utils.h"
+
+#include <array>
+#include <gtest/gtest.h>
 
 TEST(AlgebraicToIndexTest, ValidInput)
 {
@@ -79,7 +80,7 @@ TEST(PiecePlacementArrayToStringTest, InvalidInput)
 
 TEST(IndexToFileRank, ValidInput)
 {
-  Square expected;
+  FileRank expected;
 
   expected = {1, 8};
   ASSERT_EQ(index_to_file_rank(0), expected);
@@ -97,6 +98,23 @@ TEST(IndexToFileRank, InvalidInput)
 {
   ASSERT_THROW(index_to_file_rank(-1), std::out_of_range);
   ASSERT_THROW(index_to_file_rank(64), std::out_of_range);
+}
+
+TEST(FileRankToIndex, ValidInput)
+{
+  ASSERT_EQ(file_rank_to_index({1, 1}), 56);
+  ASSERT_EQ(file_rank_to_index({1, 8}), 0);
+  ASSERT_EQ(file_rank_to_index({8, 1}), 63);
+  ASSERT_EQ(file_rank_to_index({8, 8}), 7);
+  ASSERT_EQ(file_rank_to_index({3, 6}), 18);
+}
+
+TEST(FileRankToIndex, InvalidInput)
+{
+  ASSERT_THROW(file_rank_to_index({0, 1}), std::out_of_range);
+  ASSERT_THROW(file_rank_to_index({1, 0}), std::out_of_range);
+  ASSERT_THROW(file_rank_to_index({9, 1}), std::out_of_range);
+  ASSERT_THROW(file_rank_to_index({1, 9}), std::out_of_range);
 }
 
 int main(int argc, char *argv[])

@@ -1,13 +1,14 @@
+#include "constants.h"
 #include "game.h"
 #include "utils.h"
-#include "constants.h"
 
-#include <iostream>
-#include <string>
+#include <algorithm>
 #include <array>
-#include <fstream>
-#include <sstream>
 #include <cctype>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 std::string starting_castling_availability = "KQkq";
 
@@ -48,13 +49,15 @@ bool Game::move()
   int from_index, to_index;
   read_move(from_index, to_index);
 
+  std::vector<int> indexes = {};
   char piece = piece_placement[from_index];
   switch (std::tolower(piece))
   {
   case '\0':
     return false;
   case 'n':
-    if (!knight.is_legal_move(from_index, to_index))
+    indexes = knight.legal_square_indexes(from_index);
+    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
       return false;
     break;
   }
