@@ -1,5 +1,6 @@
 #include "constants.h"
 #include "game.h"
+#include "logger.h"
 #include "utils.h"
 
 #include <algorithm>
@@ -9,8 +10,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
-std::string starting_castling_availability = "KQkq";
 
 Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int hc, int fc)
     : piece_placement(pp),
@@ -22,6 +21,44 @@ Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int 
       knight(*this) {}
 
 Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
+
+Game::Game(std::string &fen) : Game()
+{
+  size_t pos = 0;
+  std::string token;
+  for (int token_count = 1; token_count != 7; ++token_count)
+  {
+    pos = fen.find(' ');
+    token = fen.substr(0, pos);
+    fen.erase(0, pos + 1);
+
+    logger.log(token);
+
+    switch (token_count)
+    {
+    case 1:
+      piece_placement = piece_placement_string_to_array(token);
+      break;
+    case 2:
+      active_color = token[0];
+      break;
+    case 3:
+      castling_availability = token;
+      break;
+    case 4:
+      en_passant_index = std::stoi(token == "-" ? "-1" : token);
+      break;
+    case 5:
+      halfmove_clock = std::stoi(token);
+      break;
+    case 6:
+      fullmove_clock = std::stoi(token);
+      break;
+    default:
+      break;
+    }
+  }
+}
 
 std::string Game::get_fen_str()
 {

@@ -2,15 +2,18 @@
 #define GAME_H
 
 #include "piece.h"
-#include <string>
+
 #include <array>
+#include <string>
 
 class Game
 {
   friend class Piece;
+
 public:
   Game(const std::array<char, 64> &, char, std::string, int, int, int);
   Game();
+  Game(std::string &);
 
   std::string get_fen_str();
   std::array<char, 64> get_piece_placement();

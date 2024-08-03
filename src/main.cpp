@@ -1,18 +1,17 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "constants.h"
 #include "draw.h"
 #include "game.h"
-#include "utils.h"
 #include "logger.h"
-#include "constants.h"
+#include "utils.h"
 
 #define LOG_FEN false
 
 int main()
 {
   Game game;
-
   std::string message = "";
 
   while (true)

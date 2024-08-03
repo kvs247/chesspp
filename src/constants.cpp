@@ -1,7 +1,7 @@
 #include "constants.h"
 
-#include <string>
 #include <array>
+#include <string>
 
 const std::string starting_piece_placement_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
@@ -14,3 +14,5 @@ const std::array<char, 64> starting_piece_placement = {
     '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
     'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
     'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'};
+
+const std::string starting_castling_availability = "KQkq";
