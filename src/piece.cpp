@@ -28,11 +28,9 @@ std::vector<int> Knight::legal_square_indexes(int index)
       {-2, -1},
   }};
 
-  FileRank square = index_to_file_rank(index);
-  auto file = square.file;
-  auto rank = square.rank;
-
+  auto [file, rank] = index_to_file_rank(index);
   int to_index, to_file, to_rank;
+
   for (auto &offset : offsets)
   {
     to_file = file + offset.first;

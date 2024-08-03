@@ -144,8 +144,7 @@ FileRank index_to_file_rank(int index)
 
 int file_rank_to_index(FileRank square)
 {
-  auto file = square.file;
-  auto rank = square.rank;
+  auto [file, rank] = square;
   if (file < 1 || 8 < file || rank < 1 || 8 < rank)
   {
     throw std::out_of_range("File and/or rank out of valid range [1-8].");
