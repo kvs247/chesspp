@@ -1,12 +1,14 @@
 #include "game.h"
 #include "utils.h"
 #include "constants.h"
+#include "move.h"
 
 #include <iostream>
 #include <string>
 #include <array>
 #include <fstream>
 #include <sstream>
+#include <cctype>
 
 std::string starting_castling_availability = "KQkq";
 
@@ -19,7 +21,8 @@ Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availabilit
 std::string Game::get_fen_str()
 {
   std::ostringstream fen;
-  std::string en_passant = (en_passant_index < 0) ? "-" : index_to_square(en_passant_index);
+  std::string en_passant =
+      (en_passant_index < 0) ? "-" : index_to_algebraic(en_passant_index);
 
   fen << piece_placement_array_to_string(piece_placement) << " "
       << active_color << " "
@@ -41,9 +44,14 @@ bool Game::move()
   int from_index, to_index;
   read_move(from_index, to_index);
 
-  // do chess logic here
-  if (piece_placement[from_index] == '\0')
+  char piece = piece_placement[from_index];
+  switch (std::tolower(piece))
+  {
+  case '\0':
     return false;
+  case 'n':
+    return knight(from_index, to_index);
+  }
 
   piece_placement[to_index] = piece_placement[from_index];
   piece_placement[from_index] = '\0';
@@ -53,15 +61,15 @@ bool Game::move()
 
 void Game::read_move(int &from_index, int &to_index)
 {
-  std::string from_square, to_square;
+  std::string from_algebraic, to_algebraic;
 
   std::cout << "from square: ";
-  std::cin >> from_square;
+  std::cin >> from_algebraic;
   std::cout << "\n";
-  from_index = square_to_index(from_square);
+  from_index = algebraic_to_index(from_algebraic);
 
   std::cout << "to square: ";
-  std::cin >> to_square;
+  std::cin >> to_algebraic;
   std::cout << "\n";
-  to_index = square_to_index(to_square);
+  to_index = algebraic_to_index(to_algebraic);
 }

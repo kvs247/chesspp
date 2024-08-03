@@ -3,52 +3,52 @@
 #include "../src/utils.h"
 #include "../src/constants.h"
 
-TEST(SquareToIndexTest, ValidSquare)
+TEST(AlgebraicToIndexTest, ValidInput)
 {
-  ASSERT_EQ(square_to_index("a8"), 0);
-  ASSERT_EQ(square_to_index("h8"), 7);
-  ASSERT_EQ(square_to_index("a1"), 56);
-  ASSERT_EQ(square_to_index("h1"), 63);
-  ASSERT_EQ(square_to_index("d5"), 27);
+  ASSERT_EQ(algebraic_to_index("a8"), 0);
+  ASSERT_EQ(algebraic_to_index("h8"), 7);
+  ASSERT_EQ(algebraic_to_index("a1"), 56);
+  ASSERT_EQ(algebraic_to_index("h1"), 63);
+  ASSERT_EQ(algebraic_to_index("d5"), 27);
 }
 
-TEST(SquareToIndexTest, InvalidSquare)
+TEST(AlgebraicToIndexTest, InvalidInput)
 {
-  ASSERT_THROW(square_to_index(""), std::invalid_argument);
-  ASSERT_THROW(square_to_index("a"), std::invalid_argument);
-  ASSERT_THROW(square_to_index("a77"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index(""), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("a"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("a77"), std::invalid_argument);
 
-  ASSERT_THROW(square_to_index("`1"), std::invalid_argument);
-  ASSERT_THROW(square_to_index("i2"), std::invalid_argument);
-  ASSERT_THROW(square_to_index("@3"), std::invalid_argument);
-  ASSERT_THROW(square_to_index("I4"), std::invalid_argument);
-  ASSERT_THROW(square_to_index("A0"), std::invalid_argument);
-  ASSERT_THROW(square_to_index("H9"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("`1"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("i2"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("@3"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("I4"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("A0"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("H9"), std::invalid_argument);
 }
 
-TEST(IndexToSquareTest, ValidIndex)
+TEST(IndexToAlgebraicTest, ValidInput)
 {
-  ASSERT_EQ(index_to_square(0), "a8");
-  ASSERT_EQ(index_to_square(7), "h8");
-  ASSERT_EQ(index_to_square(56), "a1");
-  ASSERT_EQ(index_to_square(63), "h1");
-  ASSERT_EQ(index_to_square(27), "d5");
+  ASSERT_EQ(index_to_algebraic(0), "a8");
+  ASSERT_EQ(index_to_algebraic(7), "h8");
+  ASSERT_EQ(index_to_algebraic(56), "a1");
+  ASSERT_EQ(index_to_algebraic(63), "h1");
+  ASSERT_EQ(index_to_algebraic(27), "d5");
 }
 
-TEST(IndexToSquareTest, InvalidIndex)
+TEST(IndexToAlgebraicTest, InvalidInput)
 {
-  ASSERT_THROW(index_to_square(-1), std::out_of_range);
-  ASSERT_THROW(index_to_square(64), std::out_of_range);
+  ASSERT_THROW(index_to_algebraic(-1), std::out_of_range);
+  ASSERT_THROW(index_to_algebraic(64), std::out_of_range);
 }
 
-TEST(PiecePlacementStringToArrayTest, ValidString)
+TEST(PiecePlacementStringToArrayTest, ValidInput)
 {
   std::array<char, 64> expected = starting_piece_placement;
   std::array<char, 64> actual = piece_placement_string_to_array(starting_piece_placement_string);
-  EXPECT_EQ(actual, expected);
+  ASSERT_EQ(actual, expected);
 }
 
-TEST(PiecePlacementStringToArrayTest, InvalidString)
+TEST(PiecePlacementStringToArrayTest, InvalidInput)
 {
   std::string test_string = starting_piece_placement_string + "K";
   ASSERT_THROW(
@@ -63,18 +63,40 @@ TEST(PiecePlacementStringToArrayTest, InvalidString)
       std::invalid_argument);
 }
 
-TEST(PiecePlacementArrayToStringTest, ValidArray)
+TEST(PiecePlacementArrayToStringTest, ValidInput)
 {
   std::string expected = starting_piece_placement_string;
   std::string actual = piece_placement_array_to_string(starting_piece_placement);
-  EXPECT_EQ(actual, expected);
+  ASSERT_EQ(actual, expected);
 }
 
-TEST(PiecePlacementArrayToStringTest, InvalidArray)
+TEST(PiecePlacementArrayToStringTest, InvalidInput)
 {
   std::array<char, 64> test_array = starting_piece_placement;
   test_array[31] = 'a';
   ASSERT_THROW(piece_placement_array_to_string(test_array), std::invalid_argument);
+}
+
+TEST(IndexToFileRank, ValidInput)
+{
+  Square expected;
+
+  expected = {1, 8};
+  ASSERT_EQ(index_to_file_rank(0), expected);
+  expected = {8, 8};
+  ASSERT_EQ(index_to_file_rank(7), expected);
+  expected = {1, 1};
+  ASSERT_EQ(index_to_file_rank(56), expected);
+  expected = {8, 1};
+  ASSERT_EQ(index_to_file_rank(63), expected);
+  expected = {3, 6};
+  ASSERT_EQ(index_to_file_rank(18), expected);
+}
+
+TEST(IndexToFileRank, InvalidInput)
+{
+  ASSERT_THROW(index_to_file_rank(-1), std::out_of_range);
+  ASSERT_THROW(index_to_file_rank(64), std::out_of_range);
 }
 
 int main(int argc, char *argv[])

@@ -13,7 +13,6 @@ int main()
 {
   Game game;
 
-  std::string from_square, to_square;
   std::string message = "";
 
   while (true)

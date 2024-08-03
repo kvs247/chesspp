@@ -6,15 +6,15 @@
 #include <array>
 #include <stdexcept>
 
-int square_to_index(const std::string &square)
+int algebraic_to_index(const std::string &algebraic_square)
 {
-  if (square.size() != 2)
+  if (algebraic_square.size() != 2)
   {
     throw std::invalid_argument("Argument is not 2 characters long.");
   }
 
-  char file_c = std::tolower(square[0]);
-  char rank_c = square[1];
+  char file_c = std::tolower(algebraic_square[0]);
+  char rank_c = algebraic_square[1];
 
   if (file_c < 'a' || file_c > 'h' || rank_c < '1' || rank_c > '8')
   {
@@ -27,7 +27,7 @@ int square_to_index(const std::string &square)
   return 8 * (8 - rank_i) + file_i;
 }
 
-std::string index_to_square(int index)
+std::string index_to_algebraic(int index)
 {
   if (index < 0 || 63 < index)
   {
@@ -129,3 +129,14 @@ std::string piece_placement_array_to_string(const std::array<char, 64> &a)
 
   return res;
 }
+
+Square index_to_file_rank(int index)
+{
+  if (index < 0 || 63 < index)
+    throw std::out_of_range("Index is out of valid range [0-63].");
+
+  int file = index % 8 + 1;
+  int rank = 8 - index / 8;
+
+  return {file, rank};
+};
