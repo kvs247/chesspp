@@ -1,11 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "piece.h"
 #include <string>
 #include <array>
 
 class Game
 {
+  friend class Piece;
 public:
   Game(const std::array<char, 64> &, char, std::string, int, int, int);
   Game();
@@ -24,6 +26,8 @@ private:
   int en_passant_index;
   int halfmove_clock;
   int fullmove_clock;
+
+  Knight knight;
 };
 
 #endif

@@ -6,8 +6,8 @@ LDFLAGS = -lgtest
 TARGET = build/chess
 TEST_TARGET = build/tests
 
-SRC = src/main.cpp src/draw.cpp src/game.cpp src/utils.cpp src/move.cpp src/constants.cpp src/logger.cpp
-TEST_SRC = tests/test_utils.cpp src/utils.cpp src/move.cpp src/constants.cpp src/logger.cpp
+SRC = src/main.cpp src/draw.cpp src/game.cpp src/utils.cpp src/piece.cpp src/constants.cpp src/logger.cpp
+TEST_SRC = tests/test_utils.cpp src/utils.cpp src/piece.cpp src/constants.cpp src/logger.cpp
 
 # main target
 $(TARGET): $(SRC)

@@ -1,7 +1,6 @@
 #include "game.h"
 #include "utils.h"
 #include "constants.h"
-#include "move.h"
 
 #include <iostream>
 #include <string>
@@ -13,8 +12,13 @@
 std::string starting_castling_availability = "KQkq";
 
 Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int hc, int fc)
-    : piece_placement(pp), active_color(ac), castling_availability(ca),
-      en_passant_index(ep), halfmove_clock(hc), fullmove_clock(fc) {}
+    : piece_placement(pp),
+      active_color(ac),
+      castling_availability(ca),
+      en_passant_index(ep),
+      halfmove_clock(hc),
+      fullmove_clock(fc),
+      knight(*this) {}
 
 Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
 
@@ -50,7 +54,9 @@ bool Game::move()
   case '\0':
     return false;
   case 'n':
-    return knight(from_index, to_index);
+    if (!knight.is_legal_move(from_index, to_index))
+      return false;
+    break;
   }
 
   piece_placement[to_index] = piece_placement[from_index];
