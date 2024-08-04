@@ -116,9 +116,3 @@ TEST(FileRankToIndex, InvalidInput)
   ASSERT_THROW(file_rank_to_index({9, 1}), std::out_of_range);
   ASSERT_THROW(file_rank_to_index({1, 9}), std::out_of_range);
 }
-
-int main(int argc, char *argv[])
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
