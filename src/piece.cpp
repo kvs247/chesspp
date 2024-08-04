@@ -48,6 +48,55 @@ std::vector<int> Piece::linear_square_indexes(int index, const std::vector<std::
   return res;
 }
 
+Pawn::Pawn(Game &g) : Piece(g) {}
+
+std::vector<int> Pawn::legal_square_indexes(int index)
+{
+  std::vector<int> res;
+
+  char piece = game.piece_placement[index];
+  char target_piece = '\0';
+  char color = piece_color(piece);
+  auto [file, rank] = index_to_file_rank(index);
+  int target_index;
+
+  int sign = color == 'w' ? 1 : -1;
+  int black_start_rank = 7;
+  int white_start_rank = 2;
+
+  // 1 rank
+  target_index = file_rank_to_index({file, rank + sign});
+  if (!game.piece_placement[target_index])
+  {
+    res.push_back(target_index);
+    // 2 ranks
+    if (rank == white_start_rank || rank == black_start_rank)
+    {
+      target_index = file_rank_to_index({file, rank + 2 * sign});
+      if (!game.piece_placement[target_index])
+        res.push_back(target_index);
+    }
+  }
+
+  // capture
+  std::array<int, 2> offsets = {1, -1};
+  for (auto &offset : offsets)
+  {
+    int target_file = file + offset;
+    if (target_file < 1 || 8 < target_file)
+      break;
+    target_index = file_rank_to_index({file + offset, rank + sign});
+    target_piece = game.piece_placement[target_index];
+    if (target_piece && piece_color(target_piece) != color)
+      res.push_back(target_index);
+    // en passant
+    if (game.en_passant_index == target_index)
+      res.push_back(target_index);
+  }
+
+  return res;
+}
+
 Knight::Knight(Game &g) : Piece(g) {}
 
 std::vector<int> Knight::legal_square_indexes(int index)

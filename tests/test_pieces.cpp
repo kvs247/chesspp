@@ -5,6 +5,100 @@
 #include <string>
 #include <vector>
 
+TEST(PawnTest, Forward)
+{
+  std::string fen = "rnbqkb1r/ppppp1pp/5p1n/8/8/2N1P3/PPPP1PPP/R1BQKBNR w KQkq - 0 1";
+  Game game(fen);
+  Pawn pawn(game);
+
+  int index;
+  std::vector<int> expected;
+  std::vector<int> actual;
+
+  index = 50;
+  expected = {};
+  actual = pawn.legal_square_indexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+
+  index = 51;
+  expected = {43, 35};
+  actual = pawn.legal_square_indexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+
+  index = 44;
+  expected = {36};
+  actual = pawn.legal_square_indexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+
+  index = 15;
+  expected = {};
+  actual = pawn.legal_square_indexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+
+  index = 14;
+  expected = {22, 30};
+  actual = pawn.legal_square_indexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+
+  index = 21;
+  expected = {29};
+  actual = pawn.legal_square_indexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(PawnTest, Capture)
+{
+  std::string fen = "8/8/8/8/8/3p4/4P3/8 w - - 0 1";
+  Game game(fen);
+  Pawn pawn(game);
+
+  int index;
+  std::vector<int> expected;
+  std::vector<int> actual;
+
+  index = 52;
+  expected = {43, 44, 36};
+  actual = pawn.legal_square_indexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+
+  index = 43;
+  expected = {51, 52};
+  actual = pawn.legal_square_indexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(PawnTest, EnPassant)
+{
+  std::string fen = "rnbqkbnr/ppp1pppp/8/3pP3/8/7N/PPPP1PPP/RNBQKB1R w KQkq d6 0 4";
+  Game game(fen);
+  Pawn pawn(game);
+
+  int index = 28;
+  std::vector<int> expected = {20, 19};
+  std::vector<int> actual = pawn.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
 TEST(KnightTest, Center)
 {
   std::string fen = "8/8/8/4N3/8/8/8/8 w - - 0 1";

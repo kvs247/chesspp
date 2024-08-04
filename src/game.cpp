@@ -18,6 +18,7 @@ Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int 
       en_passant_index(ep),
       halfmove_clock(hc),
       fullmove_clock(fc),
+      pawn(*this),
       knight(*this),
       bishop(*this),
       rook(*this),
@@ -49,7 +50,10 @@ Game::Game(std::string &fen) : Game()
       castling_availability = token;
       break;
     case 4:
-      en_passant_index = std::stoi(token == "-" ? "-1" : token);
+      if (token == "-")
+        en_passant_index = -1;
+      else
+        en_passant_index = algebraic_to_index(token);
       break;
     case 5:
       halfmove_clock = std::stoi(token);
@@ -107,6 +111,11 @@ bool Game::move()
 
   switch (std::tolower(from_piece))
   {
+  case 'p':
+    indexes = pawn.legal_square_indexes(from_index);
+    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
+      return false;
+    break;
   case 'n':
     indexes = knight.legal_square_indexes(from_index);
     if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end()) // do this find after the switch when all piece logic is in

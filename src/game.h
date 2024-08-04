@@ -9,6 +9,7 @@
 class Game
 {
   friend class Piece;
+  friend class Pawn;
   friend class Bishop;
   friend class Rook;
   friend class Queen;
@@ -33,6 +34,7 @@ private:
   int halfmove_clock;
   int fullmove_clock;
 
+  Pawn pawn;
   Knight knight;
   Bishop bishop;
   Rook rook;
