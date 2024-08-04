@@ -23,8 +23,8 @@ public:
   std::array<char, 64> get_piece_placement();
 
   bool move();
-
-  void read_move(int &, int &);
+  void read_move(int &, int &) const;
+  void handle_en_passant(char, char, int, int); // could this be private?
 
 private:
   std::array<char, 64> piece_placement;

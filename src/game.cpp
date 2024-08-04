@@ -143,10 +143,12 @@ bool Game::move()
   piece_placement[to_index] = piece_placement[from_index];
   piece_placement[from_index] = '\0';
 
+  handle_en_passant(from_piece, from_color, from_index, to_index);
+
   return true;
 }
 
-void Game::read_move(int &from_index, int &to_index)
+void Game::read_move(int &from_index, int &to_index) const
 {
   std::string from_algebraic, to_algebraic;
 
@@ -159,4 +161,16 @@ void Game::read_move(int &from_index, int &to_index)
   std::cin >> to_algebraic;
   std::cout << "\n";
   to_index = algebraic_to_index(to_algebraic);
+}
+
+void Game::handle_en_passant(char from_piece, char from_color, int from_index, int to_index)
+{
+  bool is_pawn = std::tolower(from_piece) == 'p';
+  if (to_index == en_passant_index)
+    piece_placement[to_index + (from_color == 'w' ? +8 : -8)] = '\0';
+
+  if (is_pawn && abs(from_index - to_index) == 16)
+    en_passant_index = from_index + (from_color == 'w' ? -8 : +8);
+  else
+    en_passant_index = -1;
 }
