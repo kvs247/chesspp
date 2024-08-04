@@ -9,6 +9,7 @@
 class Game
 {
   friend class Piece;
+  friend class Bishop;
 
 public:
   Game(const std::array<char, 64> &, char, std::string, int, int, int);
@@ -31,6 +32,7 @@ private:
   int fullmove_clock;
 
   Knight knight;
+  Bishop bishop;
 };
 
 #endif

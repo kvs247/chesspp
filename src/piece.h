@@ -24,4 +24,10 @@ struct Knight : public Piece
   std::vector<int> legal_square_indexes(int) override;
 };
 
+struct Bishop : public Piece
+{
+  Bishop(Game &);
+  std::vector<int> legal_square_indexes(int) override;
+};
+
 #endif

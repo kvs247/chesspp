@@ -53,3 +53,68 @@ TEST(KnightTest, Edge)
 
   ASSERT_EQ(actual, expected);
 }
+
+// Bishop
+TEST(BishopTest, Center)
+{
+  std::string fen = "8/8/8/3B4/8/8/8/8 w - - 0 1";
+  Game game(fen);
+  Bishop bishop(game);
+
+  int index = 27;
+  std::vector<int> expected = {0, 9, 18, 20, 13, 6, 34, 41, 48, 36, 45, 54, 63};
+  std::vector<int> actual = bishop.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(BishopTest, CenterBlocked)
+{
+  std::string fen = "8/5p2/2P5/3B4/4p3/1P6/8/8 w - - 0 1";
+  Game game(fen);
+  Bishop bishop(game);
+
+  int index = 27;
+  std::vector<int> expected = {20, 13, 34, 36};
+  std::vector<int> actual = bishop.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(BishopTest, Corner)
+{
+  std::string fen = "8/8/8/8/8/8/8/B7 w - - 0 1";
+  Game game(fen);
+  Bishop bishop(game);
+
+  int index = 56;
+  std::vector<int> expected = {49, 42, 35, 28, 21, 14, 7};
+  std::vector<int> actual = bishop.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(BishopTest, Edge)
+{
+  std::string fen = "8/B7/8/8/8/8/8/8 w - - 0 1";
+  Game game(fen);
+  Bishop bishop(game);
+
+  int index = 8;
+  std::vector<int> expected = {1, 17, 26, 35, 44, 53, 62};
+  std::vector<int> actual = bishop.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}

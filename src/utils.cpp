@@ -7,6 +7,19 @@
 #include <stdexcept>
 #include <string>
 
+bool is_chess_piece(const char c)
+{
+  static const std::set<char> chess_pieces{'p', 'r', 'n', 'b', 'k', 'q', 'P', 'R', 'N', 'B', 'K', 'Q'};
+  return chess_pieces.find(c) != chess_pieces.end();
+}
+
+char piece_color(const char c)
+{
+  if (!is_chess_piece(c))
+    throw std::invalid_argument("Argument is not a chess piece.");
+  return ((std::tolower(c) == c) ? 'b' : 'w');
+}
+
 int algebraic_to_index(const std::string &algebraic_square)
 {
   if (algebraic_square.size() != 2)
@@ -42,12 +55,6 @@ std::string index_to_algebraic(int index)
   char rank_c = (8 - rank_i) + '0';
 
   return std::string(1, file_c) + std::string(1, rank_c);
-}
-
-bool is_chess_piece(char c)
-{
-  static const std::set<char> chess_pieces{'p', 'r', 'n', 'b', 'k', 'q', 'P', 'R', 'N', 'B', 'K', 'Q'};
-  return chess_pieces.find(c) != chess_pieces.end();
 }
 
 std::array<char, 64> piece_placement_string_to_array(const std::string &s)

@@ -4,6 +4,20 @@
 #include <array>
 #include <gtest/gtest.h>
 
+TEST(PieceColorTest, ValidInput)
+{
+  ASSERT_EQ(piece_color('q'), 'b');
+  ASSERT_EQ(piece_color('k'), 'b');
+  ASSERT_EQ(piece_color('Q'), 'w');
+  ASSERT_EQ(piece_color('K'), 'w');
+}
+
+TEST(PieceColorTest, InvalidInput)
+{
+  ASSERT_THROW(piece_color('a'), std::invalid_argument);
+  ASSERT_THROW(piece_color('$'), std::invalid_argument);
+}
+
 TEST(AlgebraicToIndexTest, ValidInput)
 {
   ASSERT_EQ(algebraic_to_index("a8"), 0);

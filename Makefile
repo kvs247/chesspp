@@ -22,4 +22,5 @@ test: $(TEST_TARGET)
 	./$(TEST_TARGET)
 
 clean:
-	rm -f /build
+	rm -f ./build/chess
+	rm -f ./build/tests

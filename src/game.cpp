@@ -18,7 +18,8 @@ Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int 
       en_passant_index(ep),
       halfmove_clock(hc),
       fullmove_clock(fc),
-      knight(*this) {}
+      knight(*this),
+      bishop(*this) {}
 
 Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
 
@@ -86,14 +87,31 @@ bool Game::move()
   int from_index, to_index;
   read_move(from_index, to_index);
 
-  std::vector<int> indexes = {};
-  char piece = piece_placement[from_index];
-  switch (std::tolower(piece))
-  {
-  case '\0':
+  char from_piece = piece_placement[from_index];
+  char to_piece = piece_placement[to_index];
+
+  if (from_piece == '\0')
     return false;
+  char from_color = piece_color(from_piece);
+
+  char to_color = '\0';
+  if (to_piece)
+    to_color = piece_color(to_piece);
+
+  if (from_color == to_color)
+    return false;
+
+  std::vector<int> indexes = {};
+
+  switch (std::tolower(from_piece))
+  {
   case 'n':
     indexes = knight.legal_square_indexes(from_index);
+    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
+      return false;
+    break;
+  case 'b':
+    indexes = bishop.legal_square_indexes(from_index);
     if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
       return false;
     break;

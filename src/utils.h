@@ -15,6 +15,10 @@ struct FileRank
   }
 };
 
+bool is_chess_piece(const char);
+
+char piece_color(const char);
+
 int algebraic_to_index(const std::string &);
 
 std::string index_to_algebraic(int);
