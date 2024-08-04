@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-// Knight
 TEST(KnightTest, Center)
 {
   std::string fen = "8/8/8/4N3/8/8/8/8 w - - 0 1";
@@ -54,7 +53,6 @@ TEST(KnightTest, Edge)
   ASSERT_EQ(actual, expected);
 }
 
-// Bishop
 TEST(BishopTest, Center)
 {
   std::string fen = "8/8/8/3B4/8/8/8/8 w - - 0 1";
@@ -119,7 +117,6 @@ TEST(BishopTest, Edge)
   ASSERT_EQ(actual, expected);
 }
 
-// Rook
 TEST(RookTest, Center)
 {
   std::string fen = "8/8/8/3R4/8/8/8/8 w - - 0 1";
@@ -177,6 +174,80 @@ TEST(RookTest, Edge)
   int index = 31;
   std::vector<int> expected = {7, 15, 23, 24, 25, 26, 27, 28, 29, 30, 39, 47, 55, 63};
   std::vector<int> actual = rook.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(QueenTest, Center)
+{
+  std::string fen = "8/8/8/3Q4/8/8/8/8 w - - 0 1";
+  Game game(fen);
+  Queen queen(game);
+
+  int index = 27;
+  std::vector<int> expected = {
+      0, 9, 18, 36, 45, 54, 63,
+      6, 13, 20, 34, 41, 48,
+      3, 11, 19, 35, 43, 51, 59,
+      24, 25, 26, 28, 29, 30, 31};
+  std::vector<int> actual = queen.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(QueenTest, CenterBlocked)
+{
+  std::string fen = "8/3P1p2/2p5/P2QP3/8/8/p2P2p1/8 w - - 0 1";
+  Game game(fen);
+  Queen queen(game);
+
+  int index = 27;
+  std::vector<int> expected = {18, 19, 20, 13, 25, 26, 34, 41, 48, 35, 43, 36, 45, 54};
+  std::vector<int> actual = queen.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(QueenTest, Corner)
+{
+  std::string fen = "8/8/8/8/8/8/8/7Q w - - 0 1";
+  Game game(fen);
+  Queen queen(game);
+
+  int index = 63;
+  std::vector<int> expected = {
+      0, 9, 18, 27, 36, 45, 54,
+      56, 57, 58, 59, 60, 61, 62,
+      7, 15, 23, 31, 39, 47, 55};
+  std::vector<int> actual = queen.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(QueenTest, Edge)
+{
+  std::string fen = "2Q5/8/8/8/8/8/8/8 w - - 0 1";
+  Game game(fen);
+  Queen queen(game);
+
+  int index = 2;
+  std::vector<int> expected = {
+      0, 1, 3, 4, 5, 6, 7, 9, 16,
+      10, 18, 26, 34, 42, 50, 58,
+      11, 20, 29, 38, 47};
+  std::vector<int> actual = queen.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());

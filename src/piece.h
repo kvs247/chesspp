@@ -38,4 +38,10 @@ struct Rook : public Piece
   std::vector<int> legal_square_indexes(int) override;
 };
 
+struct Queen : public Piece
+{
+  Queen(Game &);
+  std::vector<int> legal_square_indexes(int) override;
+};
+
 #endif

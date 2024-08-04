@@ -92,11 +92,20 @@ std::vector<int> Bishop::legal_square_indexes(int index)
   return linear_square_indexes(index, offsets);
 }
 
-Rook::Rook(Game &g) : Piece(g) {};
+Rook::Rook(Game &g) : Piece(g) {}
 
 std::vector<int> Rook::legal_square_indexes(int index)
 {
   const std::vector<std::pair<int, int>> offsets = {{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}};
+
+  return linear_square_indexes(index, offsets);
+}
+
+Queen::Queen(Game &g) : Piece(g) {}
+
+std::vector<int> Queen::legal_square_indexes(int index)
+{
+  const std::vector<std::pair<int, int>> offsets = {{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}};
 
   return linear_square_indexes(index, offsets);
 }
