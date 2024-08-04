@@ -10,6 +10,7 @@ class Game
 {
   friend class Piece;
   friend class Bishop;
+  friend class Rook;
 
 public:
   Game(const std::array<char, 64> &, char, std::string, int, int, int);
@@ -33,6 +34,7 @@ private:
 
   Knight knight;
   Bishop bishop;
+  Rook rook;
 };
 
 #endif

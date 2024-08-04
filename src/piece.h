@@ -16,6 +16,8 @@ public:
 
 protected:
   Game &game;
+
+  std::vector<int> linear_square_indexes(int, const std::vector<std::pair<int, int>> &);
 };
 
 struct Knight : public Piece
@@ -27,6 +29,12 @@ struct Knight : public Piece
 struct Bishop : public Piece
 {
   Bishop(Game &);
+  std::vector<int> legal_square_indexes(int) override;
+};
+
+struct Rook : public Piece
+{
+  Rook(Game &);
   std::vector<int> legal_square_indexes(int) override;
 };
 

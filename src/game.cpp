@@ -19,7 +19,8 @@ Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int 
       halfmove_clock(hc),
       fullmove_clock(fc),
       knight(*this),
-      bishop(*this) {}
+      bishop(*this),
+      rook(*this) {}
 
 Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
 
@@ -107,13 +108,20 @@ bool Game::move()
   {
   case 'n':
     indexes = knight.legal_square_indexes(from_index);
-    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
+    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end()) // do this find after the switch when all piece logic is in
       return false;
     break;
   case 'b':
     indexes = bishop.legal_square_indexes(from_index);
     if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
       return false;
+    break;
+  case 'r':
+    indexes = rook.legal_square_indexes(from_index);
+    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
+      return false;
+    break;
+  default:
     break;
   }
 
