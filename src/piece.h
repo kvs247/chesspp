@@ -18,6 +18,8 @@ protected:
   Game &game;
 
   std::vector<int> linear_square_indexes(int, const std::vector<std::pair<int, int>> &);
+
+  std::vector<int> square_indexes(int, const std::vector<std::pair<int, int>> &);
 };
 
 struct Pawn : public Piece
@@ -47,6 +49,12 @@ struct Rook : public Piece
 struct Queen : public Piece
 {
   Queen(Game &);
+  std::vector<int> legal_square_indexes(int) override;
+};
+
+struct King : public Piece
+{
+  King(Game &);
   std::vector<int> legal_square_indexes(int) override;
 };
 

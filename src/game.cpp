@@ -22,7 +22,8 @@ Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int 
       knight(*this),
       bishop(*this),
       rook(*this),
-      queen(*this) {}
+      queen(*this),
+      king(*this) {}
 
 Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
 
@@ -113,32 +114,28 @@ bool Game::move()
   {
   case 'p':
     indexes = pawn.legal_square_indexes(from_index);
-    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
-      return false;
     break;
   case 'n':
     indexes = knight.legal_square_indexes(from_index);
-    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end()) // do this find after the switch when all piece logic is in
-      return false;
     break;
   case 'b':
     indexes = bishop.legal_square_indexes(from_index);
-    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
-      return false;
     break;
   case 'r':
     indexes = rook.legal_square_indexes(from_index);
-    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
-      return false;
     break;
   case 'q':
     indexes = queen.legal_square_indexes(from_index);
-    if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
-      return false;
+    break;
+  case 'k':
+    indexes = king.legal_square_indexes(from_index);
     break;
   default:
     break;
   }
+
+  if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
+    return false;
 
   piece_placement[to_index] = piece_placement[from_index];
   piece_placement[from_index] = '\0';

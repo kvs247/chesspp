@@ -348,3 +348,51 @@ TEST(QueenTest, Edge)
 
   ASSERT_EQ(actual, expected);
 }
+
+TEST(KingTest, Center)
+{
+  std::string fen = "2Q5/8/8/8/8/8/8/8 w - - 0 1";
+  Game game(fen);
+  King king(game);
+
+  int index = 27;
+  std::vector<int> expected = {18, 19, 20, 28, 36, 35, 34, 26};
+  std::vector<int> actual = king.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(KingTest, Corner)
+{
+  std::string fen = "8/8/8/8/8/8/8/K7 w - - 0 1";
+  Game game(fen);
+  King king(game);
+
+  int index = 56;
+  std::vector<int> expected = {48, 49, 57};
+  std::vector<int> actual = king.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(KingTest, Edge)
+{
+  std::string fen = "8/8/K7/8/8/8/8/8 w - - 0 1";
+  Game game(fen);
+  King king(game);
+
+  int index = 16;
+  std::vector<int> expected = {8, 9, 17, 25, 24};
+  std::vector<int> actual = king.legal_square_indexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
