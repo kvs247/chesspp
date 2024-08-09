@@ -1,13 +1,15 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
 #include "draw.h"
+#include "types.h"
+
+#include <fstream>
+#include <iostream>
+#include <vector>
 
 using std::cout;
 
 int BORDER_WIDTH = 3; // at least 2
 
-void draw(std::array<char, 64> pieces, const std::string &message)
+void draw(PiecePlacement pieces, const std::string &message)
 {
   int col_mult = 8; // must be even
   int row_mult = 4; // must be even

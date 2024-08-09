@@ -1,6 +1,8 @@
 #include "../src/constants.h"
 #include "../src/utils.h"
 
+#include "../src/types.h"
+
 #include <array>
 #include <gtest/gtest.h>
 
@@ -58,8 +60,8 @@ TEST(IndexToAlgebraicTest, InvalidInput)
 
 TEST(PiecePlacementStringToArrayTest, ValidInput)
 {
-  std::array<char, 64> expected = starting_piece_placement;
-  std::array<char, 64> actual = piece_placement_string_to_array(starting_piece_placement_string);
+  PiecePlacement expected = starting_piece_placement;
+  PiecePlacement actual = piece_placement_string_to_array(starting_piece_placement_string);
   ASSERT_EQ(actual, expected);
 }
 
@@ -87,7 +89,7 @@ TEST(PiecePlacementArrayToStringTest, ValidInput)
 
 TEST(PiecePlacementArrayToStringTest, InvalidInput)
 {
-  std::array<char, 64> test_array = starting_piece_placement;
+  PiecePlacement test_array = starting_piece_placement;
   test_array[31] = 'a';
   ASSERT_THROW(piece_placement_array_to_string(test_array), std::invalid_argument);
 }

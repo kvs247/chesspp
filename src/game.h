@@ -1,7 +1,7 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 #include "piece.h"
+#include "types.h"
 
 #include <array>
 #include <string>
@@ -16,19 +16,19 @@ class Game
   friend class King;
 
 public:
-  Game(const std::array<char, 64> &, char, std::string, int, int, int);
+  Game(const PiecePlacement &, char, std::string, int, int, int);
   Game();
   Game(std::string &);
 
   std::string get_fen_str();
-  std::array<char, 64> get_piece_placement();
+  PiecePlacement get_piece_placement();
 
   bool move();
   void read_move(int &, int &) const;
   void handle_en_passant(char, char, int, int); // could this be private?
 
 private:
-  std::array<char, 64> piece_placement;
+  PiecePlacement piece_placement;
   char active_color;
   std::string castling_availability;
   int en_passant_index;
@@ -42,5 +42,3 @@ private:
   Queen queen;
   King king;
 };
-
-#endif

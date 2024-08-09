@@ -1,5 +1,4 @@
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
 
 #include <fstream>
 #include <iostream>
@@ -64,5 +63,3 @@ private:
 };
 
 #define logger Logger::getInstance()
-
-#endif

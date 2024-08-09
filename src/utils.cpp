@@ -1,4 +1,5 @@
 #include "logger.h"
+#include "types.h"
 #include "utils.h"
 
 #include <array>
@@ -57,9 +58,9 @@ std::string index_to_algebraic(int index)
   return std::string(1, file_c) + std::string(1, rank_c);
 }
 
-std::array<char, 64> piece_placement_string_to_array(const std::string &s)
+PiecePlacement piece_placement_string_to_array(const std::string &s)
 {
-  std::array<char, 64> res;
+  PiecePlacement res;
   size_t res_i = 0;
 
   for (auto &c : s)
@@ -97,7 +98,7 @@ std::array<char, 64> piece_placement_string_to_array(const std::string &s)
   return res;
 }
 
-std::string piece_placement_array_to_string(const std::array<char, 64> &a)
+std::string piece_placement_array_to_string(const PiecePlacement &a)
 {
   std::string res;
   unsigned gap = 0;

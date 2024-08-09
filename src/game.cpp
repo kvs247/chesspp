@@ -1,6 +1,7 @@
 #include "constants.h"
 #include "game.h"
 #include "logger.h"
+#include "types.h"
 #include "utils.h"
 
 #include <algorithm>
@@ -11,7 +12,7 @@
 #include <sstream>
 #include <string>
 
-Game::Game(const std::array<char, 64> &pp, char ac, std::string ca, int ep, int hc, int fc)
+Game::Game(const PiecePlacement &pp, char ac, std::string ca, int ep, int hc, int fc)
     : piece_placement(pp),
       active_color(ac),
       castling_availability(ca),
@@ -84,7 +85,7 @@ std::string Game::get_fen_str()
   return fen.str();
 }
 
-std::array<char, 64> Game::get_piece_placement()
+PiecePlacement Game::get_piece_placement()
 {
   return piece_placement;
 }

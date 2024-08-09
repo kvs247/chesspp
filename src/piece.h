@@ -1,5 +1,4 @@
-#ifndef PIECE_H
-#define PIECE_H
+#pragma once
 
 #include <array>
 #include <iostream>
@@ -57,5 +56,3 @@ struct King : public Piece
   King(Game &);
   std::vector<int> legal_square_indexes(int) override;
 };
-
-#endif

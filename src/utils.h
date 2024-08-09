@@ -1,5 +1,6 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
+
+#include "types.h"
 
 #include <array>
 #include <string>
@@ -23,12 +24,10 @@ int algebraic_to_index(const std::string &);
 
 std::string index_to_algebraic(int);
 
-std::array<char, 64> piece_placement_string_to_array(const std::string &);
+PiecePlacement piece_placement_string_to_array(const std::string &);
 
-std::string piece_placement_array_to_string(const std::array<char, 64> &);
+std::string piece_placement_array_to_string(const PiecePlacement &);
 
 FileRank index_to_file_rank(int);
 
 int file_rank_to_index(FileRank);
-
-#endif

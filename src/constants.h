@@ -1,13 +1,12 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#pragma once
+
+#include "types.h"
 
 #include <array>
 #include <string>
 
 extern const std::string starting_piece_placement_string;
 
-extern const std::array<char, 64> starting_piece_placement;
+extern const PiecePlacement starting_piece_placement;
 
 extern const std::string starting_castling_availability;
-
-#endif
