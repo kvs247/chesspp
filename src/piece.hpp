@@ -13,12 +13,15 @@ public:
 
   virtual std::vector<int> legal_square_indexes(int) = 0; // pure virtual
 
+  static std::vector<int> linear_square_indexes(
+      int,
+      const std::vector<std::pair<int, int>> &,
+      PiecePlacement &);
+
+  static std::vector<int> square_indexes(int, const std::vector<std::pair<int, int>> &);
+
 protected:
   Game &game;
-
-  std::vector<int> linear_square_indexes(int, const std::vector<std::pair<int, int>> &);
-
-  std::vector<int> square_indexes(int, const std::vector<std::pair<int, int>> &);
 };
 
 struct Pawn : public Piece

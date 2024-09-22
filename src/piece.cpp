@@ -10,11 +10,14 @@
 
 Piece::Piece(Game &g) : game(g) {}
 
-std::vector<int> Piece::linear_square_indexes(int index, const std::vector<std::pair<int, int>> &offsets)
+std::vector<int> Piece::linear_square_indexes(
+    int index,
+    const std::vector<std::pair<int, int>> &offsets,
+    PiecePlacement &piece_placement)
 {
   std::vector<int> res = {};
 
-  char piece = game.piece_placement[index];
+  char piece = piece_placement[index];
   char color = piece_color(piece);
   auto [file, rank] = index_to_file_rank(index);
   int target_index, target_file, target_rank;
@@ -33,10 +36,10 @@ std::vector<int> Piece::linear_square_indexes(int index, const std::vector<std::
 
       target_index = file_rank_to_index({target_file, target_rank});
 
-      char target_piece = game.piece_placement[target_index];
+      char target_piece = piece_placement[target_index];
       if (is_chess_piece(target_piece))
       {
-        if (piece_color(game.piece_placement[target_index]) != color)
+        if (piece_color(piece_placement[target_index]) != color)
           res.push_back(target_index);
         break;
       }
@@ -142,7 +145,7 @@ Bishop::Bishop(Game &g) : Piece(g) {}
 std::vector<int> Bishop::legal_square_indexes(int index)
 {
   const std::vector<std::pair<int, int>> offsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-  return linear_square_indexes(index, offsets);
+  return linear_square_indexes(index, offsets, game.piece_placement);
 }
 
 Rook::Rook(Game &g) : Piece(g) {}
@@ -150,7 +153,7 @@ Rook::Rook(Game &g) : Piece(g) {}
 std::vector<int> Rook::legal_square_indexes(int index)
 {
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-  return linear_square_indexes(index, offsets);
+  return linear_square_indexes(index, offsets, game.piece_placement);
 }
 
 Queen::Queen(Game &g) : Piece(g) {}
@@ -158,7 +161,7 @@ Queen::Queen(Game &g) : Piece(g) {}
 std::vector<int> Queen::legal_square_indexes(int index)
 {
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-  return linear_square_indexes(index, offsets);
+  return linear_square_indexes(index, offsets, game.piece_placement);
 }
 
 King::King(Game &g) : Piece(g) {}

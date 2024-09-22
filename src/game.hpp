@@ -34,6 +34,7 @@ public:
   bool move();
   void read_move(int &, int &) const;
   void handle_en_passant(char, char, int, int); // could this be private?
+  static bool is_king_in_check(char, PiecePlacement &);
 
 private:
   PiecePlacement piece_placement;
@@ -77,7 +78,7 @@ inline Game::Game(std::string &fen) : Game()
     token = fen.substr(0, pos);
     fen.erase(0, pos + 1);
 
-    logger.log(token);
+    // logger.log(token);
 
     switch (token_count)
     {
@@ -138,18 +139,24 @@ inline bool Game::move()
   char to_piece = piece_placement[to_index];
 
   if (from_piece == '\0')
+  {
     return false;
-  char from_color = piece_color(from_piece);
+  }
 
+  char from_color = piece_color(from_piece);
   char to_color = '\0';
+
   if (to_piece)
+  {
     to_color = piece_color(to_piece);
+  }
 
   if (from_color == to_color)
+  {
     return false;
+  }
 
   std::vector<int> indexes = {};
-
   switch (std::tolower(from_piece))
   {
   case 'p':
@@ -175,10 +182,20 @@ inline bool Game::move()
   }
 
   if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
-    return false;
+  {
 
-  piece_placement[to_index] = piece_placement[from_index];
-  piece_placement[from_index] = '\0';
+    return false;
+  }
+
+  PiecePlacement new_piece_placement = piece_placement;
+  new_piece_placement[to_index] = piece_placement[from_index];
+  new_piece_placement[from_index] = '\0';
+  if (is_king_in_check(from_color, new_piece_placement))
+  {
+    return false;
+  };
+
+  piece_placement = new_piece_placement;
 
   handle_en_passant(from_piece, from_color, from_index, to_index);
 
@@ -210,4 +227,106 @@ inline void Game::handle_en_passant(char from_piece, char from_color, int from_i
     en_passant_index = from_index + (from_color == 'w' ? -8 : +8);
   else
     en_passant_index = -1;
+}
+
+inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
+{
+  char king_piece = color == 'w' ? 'K' : 'k';
+  auto king_iter = std::find(piece_placement.begin(), piece_placement.end(), king_piece);
+  int king_index = std::distance(piece_placement.begin(), king_iter);
+
+  auto piece_in_indexes = [color, piece_placement](char piece, std::vector<int> &indexes)
+  {
+    for (auto &idx : indexes)
+    {
+      char idx_piece = piece_placement[idx];
+      if (!idx_piece || piece_color(idx_piece) == color)
+      {
+        continue;
+      }
+
+      if (std::tolower(idx_piece) == std::tolower(piece))
+      {
+        return true;
+      }
+
+      if (std::tolower(piece) == 'b' || std::tolower(piece) == 'r')
+      {
+        if (std::towlower(idx_piece) == 'q')
+        {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  // pawn
+  const std::vector<std::pair<int, int>> pawn_offsets =
+      (color == 'w')
+          ? std::vector<std::pair<int, int>>{
+                {1, 1},
+                {-1, 1},
+            }
+          : std::vector<std::pair<int, int>>{
+                {1, -1},
+                {-1, -1},
+            };
+  std::vector<int> pawn_indexes = Piece::square_indexes(king_index, pawn_offsets);
+  if (piece_in_indexes('p', pawn_indexes))
+  {
+    return true;
+  }
+
+  // knight
+  const std::vector<std::pair<int, int>> knight_offsets = {
+      {1, 2},
+      {1, -2},
+      {-1, 2},
+      {-1, -2},
+      {2, 1},
+      {2, -1},
+      {-2, 1},
+      {-2, -1},
+  };
+  auto knight_indexes = Piece::square_indexes(king_index, knight_offsets);
+  if (piece_in_indexes('n', knight_indexes))
+  {
+    return true;
+  }
+
+  // bishop/queen
+  const std::vector<std::pair<int, int>> diag_offsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+  auto diag_indexes = Piece::linear_square_indexes(king_index, diag_offsets, piece_placement);
+  if (piece_in_indexes('b', diag_indexes))
+  {
+    return true;
+  }
+
+  // rook/queen
+  const std::vector<std::pair<int, int>> horizvert_offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+  auto horizvert_indexes = Piece::linear_square_indexes(king_index, horizvert_offsets, piece_placement);
+  if (piece_in_indexes('r', horizvert_indexes))
+  {
+    return true;
+  }
+
+  // king
+  const std::vector<std::pair<int, int>> king_offsets = {
+      {1, 0},
+      {-1, 0},
+      {0, 1},
+      {0, -1},
+      {1, 1},
+      {1, -1},
+      {-1, 1},
+      {-1, -1},
+  };
+  auto king_indexes = Piece::square_indexes(king_index, king_offsets);
+  if (piece_in_indexes('k', king_indexes))
+  {
+    return true;
+  }
+
+  return false;
 }

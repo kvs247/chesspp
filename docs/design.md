@@ -1,11 +1,22 @@
 # Features
 
-- Terminal board/pieces display
-  - Draw pieces
-  - Detect cursor position
-    - Linux and Windows implementation
-- Logic
-  - Use class structures
-  - Testing
-- Logging
-  - Setup ability to log debug to log file separate from stdout/stderr
+- [ ] Terminal board/pieces display
+  - [x] Draw board & pieces
+  - [ ] Detect cursor position
+    - [ ] Linux and Windows implementation
+- [ ] Logic
+  - [ ] Piece potential squares
+    - [x] Pawn
+    - [x] Knight
+    - [x] Bishop
+    - [x] Rook
+    - [x] King
+    - [x] Queen
+  - [ ] Game logic
+    - [x] Check
+    - [ ] Checkmate
+    - [ ] Stalemate
+    - [ ] ...other win conditions
+    - [ ] Pawn promotion
+- [ ] Logging
+  - [ ] Setup ability to log debug to log file separate from stdout/stderr
