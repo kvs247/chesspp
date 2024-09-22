@@ -1,5 +1,6 @@
-#include "draw.h"
-#include "types.h"
+#pragma once
+
+#include "types.hpp"
 
 #include <fstream>
 #include <iostream>

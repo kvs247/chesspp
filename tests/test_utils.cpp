@@ -1,7 +1,7 @@
-#include "../src/constants.h"
-#include "../src/utils.h"
+#include "../src/constants.hpp"
+#include "../src/utils.hpp"
 
-#include "../src/types.h"
+#include "../src/types.hpp"
 
 #include <array>
 #include <gtest/gtest.h>

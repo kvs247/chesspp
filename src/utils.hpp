@@ -1,6 +1,7 @@
-#include "logger.h"
-#include "types.h"
-#include "utils.h"
+#pragma once
+
+#include "logger.hpp"
+#include "types.hpp"
 
 #include <array>
 #include <cctype>
@@ -8,20 +9,31 @@
 #include <stdexcept>
 #include <string>
 
-bool is_chess_piece(const char c)
+struct FileRank
+{
+  int file;
+  int rank;
+
+  bool operator==(const FileRank &sqr) const
+  {
+    return file == sqr.file && rank == sqr.rank;
+  }
+};
+
+inline bool is_chess_piece(const char c)
 {
   static const std::set<char> chess_pieces{'p', 'r', 'n', 'b', 'k', 'q', 'P', 'R', 'N', 'B', 'K', 'Q'};
   return chess_pieces.find(c) != chess_pieces.end();
 }
 
-char piece_color(const char c)
+inline char piece_color(const char c)
 {
   if (!is_chess_piece(c))
     throw std::invalid_argument("Argument is not a chess piece.");
   return ((std::tolower(c) == c) ? 'b' : 'w');
 }
 
-int algebraic_to_index(const std::string &algebraic_square)
+inline int algebraic_to_index(const std::string &algebraic_square)
 {
   if (algebraic_square.size() != 2)
   {
@@ -42,7 +54,7 @@ int algebraic_to_index(const std::string &algebraic_square)
   return 8 * (8 - rank_i) + file_i;
 }
 
-std::string index_to_algebraic(int index)
+inline std::string index_to_algebraic(int index)
 {
   if (index < 0 || 63 < index)
   {
@@ -58,7 +70,7 @@ std::string index_to_algebraic(int index)
   return std::string(1, file_c) + std::string(1, rank_c);
 }
 
-PiecePlacement piece_placement_string_to_array(const std::string &s)
+inline PiecePlacement piece_placement_string_to_array(const std::string &s)
 {
   PiecePlacement res;
   size_t res_i = 0;
@@ -98,7 +110,7 @@ PiecePlacement piece_placement_string_to_array(const std::string &s)
   return res;
 }
 
-std::string piece_placement_array_to_string(const PiecePlacement &a)
+inline std::string piece_placement_array_to_string(const PiecePlacement &a)
 {
   std::string res;
   unsigned gap = 0;
@@ -139,7 +151,7 @@ std::string piece_placement_array_to_string(const PiecePlacement &a)
   return res;
 }
 
-FileRank index_to_file_rank(int index)
+inline FileRank index_to_file_rank(int index)
 {
   if (index < 0 || 63 < index)
     throw std::out_of_range("Index is out of valid range [0-63].");
@@ -150,7 +162,7 @@ FileRank index_to_file_rank(int index)
   return {file, rank};
 };
 
-int file_rank_to_index(FileRank square)
+inline int file_rank_to_index(FileRank square)
 {
   auto [file, rank] = square;
   if (file < 1 || 8 < file || rank < 1 || 8 < rank)

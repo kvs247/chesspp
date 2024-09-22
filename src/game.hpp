@@ -1,8 +1,10 @@
-#include "constants.h"
-#include "game.h"
-#include "logger.h"
-#include "types.h"
-#include "utils.h"
+#pragma once
+
+#include "constants.hpp"
+#include "logger.hpp"
+#include "types.hpp"
+#include "utils.hpp"
+#include "piece.hpp"
 
 #include <algorithm>
 #include <array>
@@ -12,7 +14,44 @@
 #include <sstream>
 #include <string>
 
-Game::Game(const PiecePlacement &pp, char ac, std::string ca, int ep, int hc, int fc)
+class Game
+{
+  friend class Piece;
+  friend class Pawn;
+  friend class Bishop;
+  friend class Rook;
+  friend class Queen;
+  friend class King;
+
+public:
+  Game(const PiecePlacement &, char, std::string, int, int, int);
+  Game();
+  Game(std::string &);
+
+  std::string get_fen_str();
+  PiecePlacement get_piece_placement();
+
+  bool move();
+  void read_move(int &, int &) const;
+  void handle_en_passant(char, char, int, int); // could this be private?
+
+private:
+  PiecePlacement piece_placement;
+  char active_color;
+  std::string castling_availability;
+  int en_passant_index;
+  int halfmove_clock;
+  int fullmove_clock;
+
+  Pawn pawn;
+  Knight knight;
+  Bishop bishop;
+  Rook rook;
+  Queen queen;
+  King king;
+};
+
+inline Game::Game(const PiecePlacement &pp, char ac, std::string ca, int ep, int hc, int fc)
     : piece_placement(pp),
       active_color(ac),
       castling_availability(ca),
@@ -26,9 +65,9 @@ Game::Game(const PiecePlacement &pp, char ac, std::string ca, int ep, int hc, in
       queen(*this),
       king(*this) {}
 
-Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
+inline Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
 
-Game::Game(std::string &fen) : Game()
+inline Game::Game(std::string &fen) : Game()
 {
   size_t pos = 0;
   std::string token;
@@ -69,7 +108,7 @@ Game::Game(std::string &fen) : Game()
   }
 }
 
-std::string Game::get_fen_str()
+inline std::string Game::get_fen_str()
 {
   std::ostringstream fen;
   std::string en_passant =
@@ -85,12 +124,12 @@ std::string Game::get_fen_str()
   return fen.str();
 }
 
-PiecePlacement Game::get_piece_placement()
+inline PiecePlacement Game::get_piece_placement()
 {
   return piece_placement;
 }
 
-bool Game::move()
+inline bool Game::move()
 {
   int from_index, to_index;
   read_move(from_index, to_index);
@@ -146,7 +185,7 @@ bool Game::move()
   return true;
 }
 
-void Game::read_move(int &from_index, int &to_index) const
+inline void Game::read_move(int &from_index, int &to_index) const
 {
   std::string from_algebraic, to_algebraic;
 
@@ -161,7 +200,7 @@ void Game::read_move(int &from_index, int &to_index) const
   to_index = algebraic_to_index(to_algebraic);
 }
 
-void Game::handle_en_passant(char from_piece, char from_color, int from_index, int to_index)
+inline void Game::handle_en_passant(char from_piece, char from_color, int from_index, int to_index)
 {
   bool is_pawn = std::tolower(from_piece) == 'p';
   if (to_index == en_passant_index)

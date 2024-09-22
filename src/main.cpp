@@ -1,11 +1,11 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "constants.h"
-#include "draw.h"
-#include "game.h"
-#include "logger.h"
-#include "utils.h"
+#include "constants.hpp"
+#include "draw.hpp"
+#include "game.hpp"
+#include "logger.hpp"
+#include "utils.hpp"
 
 #define LOG_FEN false
 

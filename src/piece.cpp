@@ -1,7 +1,7 @@
-#include "game.h"
-#include "logger.h"
-#include "piece.h"
-#include "utils.h"
+#include "game.hpp"
+#include "logger.hpp"
+#include "piece.hpp"
+#include "utils.hpp"
 
 #include <array>
 #include <iostream>

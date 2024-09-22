@@ -1,5 +1,5 @@
-#include "../src/game.h"
-#include "../src/piece.h"
+#include "../src/game.hpp"
+#include "../src/piece.hpp"
 
 #include <gtest/gtest.h>
 #include <string>
