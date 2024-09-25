@@ -33,7 +33,7 @@ public:
 
   bool move();
   void read_move(int &, int &) const;
-  void handle_en_passant(char, char, int, int); // could this be private?
+  void handle_en_passant(ChessPiece, char, int, int); // could this be private?
   static bool is_king_in_check(char, PiecePlacement &);
 
 private:
@@ -135,10 +135,10 @@ inline bool Game::move()
   int from_index, to_index;
   read_move(from_index, to_index);
 
-  char from_piece = piece_placement[from_index];
-  char to_piece = piece_placement[to_index];
+  auto from_piece = piece_placement[from_index];
+  auto to_piece = piece_placement[to_index];
 
-  if (from_piece == '\0')
+  if (from_piece == ChessPiece::Empty)
   {
     return false;
   }
@@ -146,7 +146,7 @@ inline bool Game::move()
   char from_color = piece_color(from_piece);
   char to_color = '\0';
 
-  if (to_piece)
+  if (to_piece != ChessPiece::Empty)
   {
     to_color = piece_color(to_piece);
   }
@@ -157,24 +157,30 @@ inline bool Game::move()
   }
 
   std::vector<int> indexes = {};
-  switch (std::tolower(from_piece))
+  switch (from_piece)
   {
-  case 'p':
+  case ChessPiece::BlackPawn:
+  case ChessPiece::WhitePawn:
     indexes = pawn.legal_square_indexes(from_index);
     break;
-  case 'n':
+  case ChessPiece::BlackKnight:
+  case ChessPiece::WhiteKnight:
     indexes = knight.legal_square_indexes(from_index);
     break;
-  case 'b':
+  case ChessPiece::BlackBishop:
+  case ChessPiece::WhiteBishop:
     indexes = bishop.legal_square_indexes(from_index);
     break;
-  case 'r':
+  case ChessPiece::BlackRook:
+  case ChessPiece::WhiteRook:
     indexes = rook.legal_square_indexes(from_index);
     break;
-  case 'q':
+  case ChessPiece::BlackQueen:
+  case ChessPiece::WhiteQueen:
     indexes = queen.legal_square_indexes(from_index);
     break;
-  case 'k':
+  case ChessPiece::BlackKing:
+  case ChessPiece::WhiteKing:
     indexes = king.legal_square_indexes(from_index);
     break;
   default:
@@ -189,7 +195,7 @@ inline bool Game::move()
 
   PiecePlacement new_piece_placement = piece_placement;
   new_piece_placement[to_index] = piece_placement[from_index];
-  new_piece_placement[from_index] = '\0';
+  new_piece_placement[from_index] = ChessPiece::Empty;
   if (is_king_in_check(from_color, new_piece_placement))
   {
     return false;
@@ -217,11 +223,11 @@ inline void Game::read_move(int &from_index, int &to_index) const
   to_index = algebraic_to_index(to_algebraic);
 }
 
-inline void Game::handle_en_passant(char from_piece, char from_color, int from_index, int to_index)
+inline void Game::handle_en_passant(ChessPiece from_piece, char from_color, int from_index, int to_index)
 {
-  bool is_pawn = std::tolower(from_piece) == 'p';
+  bool is_pawn = (from_piece == ChessPiece::BlackPawn || from_piece == ChessPiece::WhitePawn);
   if (to_index == en_passant_index)
-    piece_placement[to_index + (from_color == 'w' ? +8 : -8)] = '\0';
+    piece_placement[to_index + (from_color == 'w' ? +8 : -8)] = ChessPiece::Empty;
 
   if (is_pawn && abs(from_index - to_index) == 16)
     en_passant_index = from_index + (from_color == 'w' ? -8 : +8);
@@ -231,28 +237,33 @@ inline void Game::handle_en_passant(char from_piece, char from_color, int from_i
 
 inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
 {
-  char king_piece = color == 'w' ? 'K' : 'k';
+  ChessPiece king_piece = color == 'w' ? ChessPiece::WhiteKing : ChessPiece::BlackKing;
   auto king_iter = std::find(piece_placement.begin(), piece_placement.end(), king_piece);
   int king_index = std::distance(piece_placement.begin(), king_iter);
 
-  auto piece_in_indexes = [color, piece_placement](char piece, std::vector<int> &indexes)
+  auto is_piece_in_indexes_lambda = [color, piece_placement](ChessPiece search_piece, std::vector<int> &indexes)
   {
     for (auto &idx : indexes)
     {
-      char idx_piece = piece_placement[idx];
-      if (!idx_piece || piece_color(idx_piece) == color)
+      auto current_piece = piece_placement[idx];
+      if (current_piece == ChessPiece::Empty || piece_color(current_piece) == color)
       {
         continue;
       }
 
-      if (std::tolower(idx_piece) == std::tolower(piece))
+      char idx_piece_char = chessPiece_to_char(current_piece);
+      char piece_char = chessPiece_to_char(search_piece);
+
+      if (std::tolower(idx_piece_char) == std::tolower(piece_char))
       {
         return true;
       }
 
-      if (std::tolower(piece) == 'b' || std::tolower(piece) == 'r')
+      if (
+          search_piece == ChessPiece::BlackBishop || search_piece == ChessPiece::WhiteBishop ||
+          search_piece == ChessPiece::BlackRook || search_piece == ChessPiece::WhiteRook)
       {
-        if (std::towlower(idx_piece) == 'q')
+        if (current_piece == ChessPiece::BlackQueen || current_piece == ChessPiece::WhiteQueen)
         {
           return true;
         }
@@ -273,7 +284,7 @@ inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
                 {-1, -1},
             };
   std::vector<int> pawn_indexes = Piece::square_indexes(king_index, pawn_offsets);
-  if (piece_in_indexes('p', pawn_indexes))
+  if (is_piece_in_indexes_lambda(ChessPiece::BlackPawn, pawn_indexes))
   {
     return true;
   }
@@ -290,7 +301,7 @@ inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
       {-2, -1},
   };
   auto knight_indexes = Piece::square_indexes(king_index, knight_offsets);
-  if (piece_in_indexes('n', knight_indexes))
+  if (is_piece_in_indexes_lambda(ChessPiece::BlackKnight, knight_indexes))
   {
     return true;
   }
@@ -298,7 +309,7 @@ inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
   // bishop/queen
   const std::vector<std::pair<int, int>> diag_offsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
   auto diag_indexes = Piece::linear_square_indexes(king_index, diag_offsets, piece_placement);
-  if (piece_in_indexes('b', diag_indexes))
+  if (is_piece_in_indexes_lambda(ChessPiece::BlackBishop, diag_indexes))
   {
     return true;
   }
@@ -306,7 +317,7 @@ inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
   // rook/queen
   const std::vector<std::pair<int, int>> horizvert_offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
   auto horizvert_indexes = Piece::linear_square_indexes(king_index, horizvert_offsets, piece_placement);
-  if (piece_in_indexes('r', horizvert_indexes))
+  if (is_piece_in_indexes_lambda(ChessPiece::BlackRook, horizvert_indexes))
   {
     return true;
   }
@@ -323,7 +334,7 @@ inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
       {-1, -1},
   };
   auto king_indexes = Piece::square_indexes(king_index, king_offsets);
-  if (piece_in_indexes('k', king_indexes))
+  if (is_piece_in_indexes_lambda(ChessPiece::BlackKing, king_indexes))
   {
     return true;
   }

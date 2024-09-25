@@ -8,13 +8,13 @@
 inline const std::string starting_piece_placement_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
 inline const PiecePlacement starting_piece_placement = {
-    'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',
-    'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
-    'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'};
+    ChessPiece::BlackRook, ChessPiece::BlackKnight, ChessPiece::BlackBishop, ChessPiece::BlackQueen, ChessPiece::BlackKing, ChessPiece::BlackBishop, ChessPiece::BlackKnight, ChessPiece::BlackRook,
+    ChessPiece::BlackPawn, ChessPiece::BlackPawn, ChessPiece::BlackPawn, ChessPiece::BlackPawn, ChessPiece::BlackPawn, ChessPiece::BlackPawn, ChessPiece::BlackPawn, ChessPiece::BlackPawn,
+    ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty,
+    ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty,
+    ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty,
+    ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty, ChessPiece::Empty,
+    ChessPiece::WhitePawn, ChessPiece::WhitePawn, ChessPiece::WhitePawn, ChessPiece::WhitePawn, ChessPiece::WhitePawn, ChessPiece::WhitePawn, ChessPiece::WhitePawn, ChessPiece::WhitePawn,
+    ChessPiece::WhiteRook, ChessPiece::WhiteKnight, ChessPiece::WhiteBishop, ChessPiece::WhiteQueen, ChessPiece::WhiteKing, ChessPiece::WhiteBishop, ChessPiece::WhiteKnight, ChessPiece::WhiteRook};
 
 inline const std::string starting_castling_availability = "KQkq";

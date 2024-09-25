@@ -5,7 +5,7 @@
   - [ ] Detect cursor position
     - [ ] Linux and Windows implementation
 - [ ] Logic
-  - [ ] Piece potential squares
+  - [x] Piece potential squares
     - [x] Pawn
     - [x] Knight
     - [x] Bishop

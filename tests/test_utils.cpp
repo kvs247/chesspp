@@ -8,16 +8,10 @@
 
 TEST(PieceColorTest, ValidInput)
 {
-  ASSERT_EQ(piece_color('q'), 'b');
-  ASSERT_EQ(piece_color('k'), 'b');
-  ASSERT_EQ(piece_color('Q'), 'w');
-  ASSERT_EQ(piece_color('K'), 'w');
-}
-
-TEST(PieceColorTest, InvalidInput)
-{
-  ASSERT_THROW(piece_color('a'), std::invalid_argument);
-  ASSERT_THROW(piece_color('$'), std::invalid_argument);
+  ASSERT_EQ(piece_color(ChessPiece::BlackQueen), 'b');
+  ASSERT_EQ(piece_color(ChessPiece::BlackKing), 'b');
+  ASSERT_EQ(piece_color(ChessPiece::WhiteQueen), 'w');
+  ASSERT_EQ(piece_color(ChessPiece::WhiteKing), 'w');
 }
 
 TEST(AlgebraicToIndexTest, ValidInput)
@@ -87,12 +81,12 @@ TEST(PiecePlacementArrayToStringTest, ValidInput)
   ASSERT_EQ(actual, expected);
 }
 
-TEST(PiecePlacementArrayToStringTest, InvalidInput)
-{
-  PiecePlacement test_array = starting_piece_placement;
-  test_array[31] = 'a';
-  ASSERT_THROW(piece_placement_array_to_string(test_array), std::invalid_argument);
-}
+// TEST(PiecePlacementArrayToStringTest, InvalidInput)
+// {
+//   PiecePlacement test_array = starting_piece_placement;
+//   test_array[31] = 'a';
+//   ASSERT_THROW(piece_placement_array_to_string(test_array), std::invalid_argument);
+// }
 
 TEST(IndexToFileRank, ValidInput)
 {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.hpp"
+#include "utils.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -43,7 +44,8 @@ void draw(PiecePlacement pieces, const std::string &message)
       // pieces
       else if (draw_piece)
       {
-        c = pieces[piece_index] ? pieces[piece_index] : ' ';
+        char piece_char = chessPiece_to_char(pieces[piece_index]);
+        c = piece_char ? piece_char : ' ';
         ++piece_index;
       }
       else

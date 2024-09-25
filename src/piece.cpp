@@ -17,7 +17,7 @@ std::vector<int> Piece::linear_square_indexes(
 {
   std::vector<int> res = {};
 
-  char piece = piece_placement[index];
+  ChessPiece piece = piece_placement[index];
   char color = piece_color(piece);
   auto [file, rank] = index_to_file_rank(index);
   int target_index, target_file, target_rank;
@@ -36,8 +36,8 @@ std::vector<int> Piece::linear_square_indexes(
 
       target_index = file_rank_to_index({target_file, target_rank});
 
-      char target_piece = piece_placement[target_index];
-      if (is_chess_piece(target_piece))
+      ChessPiece target_piece = piece_placement[target_index];
+      if (target_piece != ChessPiece::Empty)
       {
         if (piece_color(piece_placement[target_index]) != color)
           res.push_back(target_index);
@@ -79,8 +79,8 @@ std::vector<int> Pawn::legal_square_indexes(int index)
 {
   std::vector<int> res;
 
-  char piece = game.piece_placement[index];
-  char target_piece = '\0';
+  ChessPiece piece = game.piece_placement[index];
+  ChessPiece target_piece = ChessPiece::Empty;
   char color = piece_color(piece);
   auto [file, rank] = index_to_file_rank(index);
   int target_index;
@@ -91,14 +91,14 @@ std::vector<int> Pawn::legal_square_indexes(int index)
 
   // 1 rank
   target_index = file_rank_to_index({file, rank + sign});
-  if (!game.piece_placement[target_index])
+  if (game.piece_placement[target_index] == ChessPiece::Empty)
   {
     res.push_back(target_index);
     // 2 ranks
     if (rank == white_start_rank || rank == black_start_rank)
     {
       target_index = file_rank_to_index({file, rank + 2 * sign});
-      if (!game.piece_placement[target_index])
+      if (game.piece_placement[target_index] == ChessPiece::Empty)
         res.push_back(target_index);
     }
   }
@@ -112,7 +112,7 @@ std::vector<int> Pawn::legal_square_indexes(int index)
       break;
     target_index = file_rank_to_index({file + offset, rank + sign});
     target_piece = game.piece_placement[target_index];
-    if (target_piece && piece_color(target_piece) != color)
+    if (target_piece != ChessPiece::Empty && piece_color(target_piece) != color)
       res.push_back(target_index);
     // en passant
     if (game.en_passant_index == target_index)

@@ -8,6 +8,7 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 
 struct FileRank
 {
@@ -26,11 +27,41 @@ inline bool is_chess_piece(const char c)
   return chess_pieces.find(c) != chess_pieces.end();
 }
 
-inline char piece_color(const char c)
+inline char chessPiece_to_char(const ChessPiece piece)
+{
+  return static_cast<char>(piece);
+}
+
+inline ChessPiece char_to_ChessPiece(const char c)
 {
   if (!is_chess_piece(c))
+  {
     throw std::invalid_argument("Argument is not a chess piece.");
-  return ((std::tolower(c) == c) ? 'b' : 'w');
+  }
+
+  std::unordered_map<char, ChessPiece> piece_map = {
+      {'p', ChessPiece::BlackPawn},
+      {'n', ChessPiece::BlackKnight},
+      {'b', ChessPiece::BlackBishop},
+      {'r', ChessPiece::BlackRook},
+      {'q', ChessPiece::BlackQueen},
+      {'k', ChessPiece::BlackKing},
+      {'P', ChessPiece::WhitePawn},
+      {'N', ChessPiece::WhiteKnight},
+      {'B', ChessPiece::WhiteBishop},
+      {'R', ChessPiece::WhiteRook},
+      {'Q', ChessPiece::WhiteQueen},
+      {'K', ChessPiece::WhiteKing},
+  };
+
+  return piece_map[c];
+}
+
+
+inline char piece_color(const ChessPiece piece)
+{
+  char c_char = chessPiece_to_char(piece);
+  return ((std::tolower(c_char) == c_char) ? 'b' : 'w');
 }
 
 inline int algebraic_to_index(const std::string &algebraic_square)
@@ -89,7 +120,7 @@ inline PiecePlacement piece_placement_string_to_array(const std::string &s)
     if (isdigit(c))
     {
       for (int i = 0; i != (c - '0'); ++i)
-        res[res_i++] = '\0';
+        res[res_i++] = ChessPiece::Empty;
     }
     else
     {
@@ -98,7 +129,7 @@ inline PiecePlacement piece_placement_string_to_array(const std::string &s)
         throw std::invalid_argument("Encountered invalid chess piece.");
       }
 
-      res[res_i++] = c;
+      res[res_i++] = char_to_ChessPiece(c);
     }
   }
 
@@ -124,7 +155,7 @@ inline std::string piece_placement_array_to_string(const PiecePlacement &a)
     }
   };
 
-  char c;
+  ChessPiece piece;
   for (int i = 0; i != 64; i++)
   {
     if (i % 8 == 0 && i != 0)
@@ -133,15 +164,11 @@ inline std::string piece_placement_array_to_string(const PiecePlacement &a)
       res += '/';
     }
 
-    c = a[i];
-    if (c)
+    piece = a[i];
+    if (piece != ChessPiece::Empty)
     {
-      if (!is_chess_piece(c))
-      {
-        throw std::invalid_argument("Encountered invalid chess piece.");
-      }
       handle_gap();
-      res += c;
+      res += chessPiece_to_char(piece);
     }
     else
       ++gap;
