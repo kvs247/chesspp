@@ -2,6 +2,11 @@
 
 #include <array>
 
+enum class PieceColor: char {
+  White = 'w',
+  Black = 'b',
+};
+
 enum class ChessPiece : char {
   BlackPawn = 'p',
   BlackKnight = 'n',

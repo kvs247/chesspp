@@ -24,7 +24,7 @@ class Game
   friend class King;
 
 public:
-  Game(const PiecePlacement &, char, std::string, int, int, int);
+  Game(const PiecePlacement &, PieceColor, std::string, int, int, int);
   Game();
   Game(std::string &);
 
@@ -33,12 +33,12 @@ public:
 
   bool move();
   void read_move(int &, int &) const;
-  void handle_en_passant(ChessPiece, char, int, int); // could this be private?
-  static bool is_king_in_check(char, PiecePlacement &);
+  void handle_en_passant(ChessPiece, PieceColor, int, int); // could this be private?
+  static bool is_king_in_check(PieceColor, PiecePlacement &);
 
 private:
   PiecePlacement piece_placement;
-  char active_color;
+  PieceColor active_color;
   std::string castling_availability;
   int en_passant_index;
   int halfmove_clock;
@@ -52,7 +52,13 @@ private:
   King king;
 };
 
-inline Game::Game(const PiecePlacement &pp, char ac, std::string ca, int ep, int hc, int fc)
+inline Game::Game(
+    const PiecePlacement &pp,
+    PieceColor ac,
+    std::string ca,
+    int ep,
+    int hc,
+    int fc)
     : piece_placement(pp),
       active_color(ac),
       castling_availability(ca),
@@ -66,7 +72,7 @@ inline Game::Game(const PiecePlacement &pp, char ac, std::string ca, int ep, int
       queen(*this),
       king(*this) {}
 
-inline Game::Game() : Game(starting_piece_placement, 'w', starting_castling_availability, -1, 0, 0) {}
+inline Game::Game() : Game(starting_piece_placement, PieceColor::White, starting_castling_availability, -1, 0, 0) {}
 
 inline Game::Game(std::string &fen) : Game()
 {
@@ -86,7 +92,7 @@ inline Game::Game(std::string &fen) : Game()
       piece_placement = piece_placement_string_to_array(token);
       break;
     case 2:
-      active_color = token[0];
+      active_color = char_to_Color(token[0]);
       break;
     case 3:
       castling_availability = token;
@@ -116,7 +122,7 @@ inline std::string Game::get_fen_str()
       (en_passant_index < 0) ? "-" : index_to_algebraic(en_passant_index);
 
   fen << piece_placement_array_to_string(piece_placement) << " "
-      << active_color << " "
+      << color_to_char(active_color) << " "
       << castling_availability << " "
       << en_passant << " "
       << std::to_string(halfmove_clock) << " "
@@ -143,8 +149,8 @@ inline bool Game::move()
     return false;
   }
 
-  char from_color = piece_color(from_piece);
-  char to_color = '\0';
+  auto from_color = piece_color(from_piece);
+  PieceColor to_color;
 
   if (to_piece != ChessPiece::Empty)
   {
@@ -223,21 +229,27 @@ inline void Game::read_move(int &from_index, int &to_index) const
   to_index = algebraic_to_index(to_algebraic);
 }
 
-inline void Game::handle_en_passant(ChessPiece from_piece, char from_color, int from_index, int to_index)
+inline void Game::handle_en_passant(
+    ChessPiece from_piece,
+    PieceColor from_color,
+    int from_index,
+    int to_index)
 {
   bool is_pawn = (from_piece == ChessPiece::BlackPawn || from_piece == ChessPiece::WhitePawn);
   if (to_index == en_passant_index)
-    piece_placement[to_index + (from_color == 'w' ? +8 : -8)] = ChessPiece::Empty;
+    piece_placement[to_index + (from_color == PieceColor::White ? +8 : -8)] = ChessPiece::Empty;
 
   if (is_pawn && abs(from_index - to_index) == 16)
-    en_passant_index = from_index + (from_color == 'w' ? -8 : +8);
+    en_passant_index = from_index + (from_color == PieceColor::White ? -8 : +8);
   else
     en_passant_index = -1;
 }
 
-inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
+inline bool Game::is_king_in_check(
+    PieceColor color,
+    PiecePlacement &piece_placement)
 {
-  ChessPiece king_piece = color == 'w' ? ChessPiece::WhiteKing : ChessPiece::BlackKing;
+  ChessPiece king_piece = color == PieceColor::White ? ChessPiece::WhiteKing : ChessPiece::BlackKing;
   auto king_iter = std::find(piece_placement.begin(), piece_placement.end(), king_piece);
   int king_index = std::distance(piece_placement.begin(), king_iter);
 
@@ -274,7 +286,7 @@ inline bool Game::is_king_in_check(char color, PiecePlacement &piece_placement)
 
   // pawn
   const std::vector<std::pair<int, int>> pawn_offsets =
-      (color == 'w')
+      (color == PieceColor::White)
           ? std::vector<std::pair<int, int>>{
                 {1, 1},
                 {-1, 1},

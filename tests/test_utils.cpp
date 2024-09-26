@@ -8,10 +8,10 @@
 
 TEST(PieceColorTest, ValidInput)
 {
-  ASSERT_EQ(piece_color(ChessPiece::BlackQueen), 'b');
-  ASSERT_EQ(piece_color(ChessPiece::BlackKing), 'b');
-  ASSERT_EQ(piece_color(ChessPiece::WhiteQueen), 'w');
-  ASSERT_EQ(piece_color(ChessPiece::WhiteKing), 'w');
+  ASSERT_EQ(piece_color(ChessPiece::BlackQueen), PieceColor::Black);
+  ASSERT_EQ(piece_color(ChessPiece::BlackKing), PieceColor::Black);
+  ASSERT_EQ(piece_color(ChessPiece::WhiteQueen), PieceColor::White);
+  ASSERT_EQ(piece_color(ChessPiece::WhiteKing), PieceColor::White);
 }
 
 TEST(AlgebraicToIndexTest, ValidInput)

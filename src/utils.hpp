@@ -27,6 +27,26 @@ inline bool is_chess_piece(const char c)
   return chess_pieces.find(c) != chess_pieces.end();
 }
 
+inline char color_to_char(const PieceColor color)
+{
+  return static_cast<char>(color);
+}
+
+inline PieceColor char_to_Color(const char c)
+{
+  if (c == 'w')
+  {
+    return PieceColor::White;
+  }
+
+  if (c == 'b')
+  {
+    return PieceColor::Black;
+  }
+  
+  throw std::invalid_argument("Argument is not a chess piece color.");
+}
+
 inline char chessPiece_to_char(const ChessPiece piece)
 {
   return static_cast<char>(piece);
@@ -57,11 +77,10 @@ inline ChessPiece char_to_ChessPiece(const char c)
   return piece_map[c];
 }
 
-
-inline char piece_color(const ChessPiece piece)
+inline PieceColor piece_color(const ChessPiece piece)
 {
   char c_char = chessPiece_to_char(piece);
-  return ((std::tolower(c_char) == c_char) ? 'b' : 'w');
+  return ((std::tolower(c_char) == c_char) ? PieceColor::Black : PieceColor::White);
 }
 
 inline int algebraic_to_index(const std::string &algebraic_square)

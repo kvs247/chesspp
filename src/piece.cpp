@@ -18,7 +18,7 @@ std::vector<int> Piece::linear_square_indexes(
   std::vector<int> res = {};
 
   ChessPiece piece = piece_placement[index];
-  char color = piece_color(piece);
+  auto color = piece_color(piece);
   auto [file, rank] = index_to_file_rank(index);
   int target_index, target_file, target_rank;
 
@@ -81,11 +81,11 @@ std::vector<int> Pawn::legal_square_indexes(int index)
 
   ChessPiece piece = game.piece_placement[index];
   ChessPiece target_piece = ChessPiece::Empty;
-  char color = piece_color(piece);
+  auto color = piece_color(piece);
   auto [file, rank] = index_to_file_rank(index);
   int target_index;
 
-  int sign = color == 'w' ? 1 : -1;
+  int sign = color == PieceColor::White ? 1 : -1;
   int black_start_rank = 7;
   int white_start_rank = 2;
 
