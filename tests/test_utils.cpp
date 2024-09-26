@@ -6,6 +6,54 @@
 #include <array>
 #include <gtest/gtest.h>
 
+TEST(IsChessPieceTest, ValidInput)
+{
+  ASSERT_TRUE(is_chess_piece('q'));
+  ASSERT_TRUE(is_chess_piece('Q'));
+}
+
+TEST(IsChessPieceTest, InvalidInput)
+{
+  ASSERT_FALSE(is_chess_piece('a'));
+  ASSERT_FALSE(is_chess_piece('%'));
+}
+
+TEST(ColorToCharTest, ValidInput)
+{
+  ASSERT_EQ(color_to_char(PieceColor::Black), 'b');
+  ASSERT_EQ(color_to_char(PieceColor::White), 'w');
+}
+
+TEST(CharToColorTest, ValidInput)
+{
+  ASSERT_EQ(char_to_Color('w'), PieceColor::White);
+  ASSERT_EQ(char_to_Color('b'), PieceColor::Black);
+}
+
+TEST(CharToColorTest, InvalidInput)
+{
+  ASSERT_THROW(char_to_Color('k'), std::invalid_argument);
+  ASSERT_THROW(char_to_Color('&'), std::invalid_argument);
+}
+
+TEST(ChessPieceToCharTest, ValidInput)
+{
+  ASSERT_EQ(chessPiece_to_char(ChessPiece::BlackRook), 'r');
+  ASSERT_EQ(chessPiece_to_char(ChessPiece::WhiteRook), 'R');
+}
+
+TEST(CharToChessPieceTest, ValidInput)
+{
+  ASSERT_EQ(char_to_ChessPiece('r'), ChessPiece::BlackRook);
+  ASSERT_EQ(char_to_ChessPiece('R'), ChessPiece::WhiteRook);
+}
+
+TEST(CharToChessPieceTest, InvalidInput)
+{
+  ASSERT_THROW(char_to_ChessPiece('$'), std::invalid_argument);
+  ASSERT_THROW(char_to_ChessPiece('a'), std::invalid_argument);
+}
+
 TEST(PieceColorTest, ValidInput)
 {
   ASSERT_EQ(piece_color(ChessPiece::BlackQueen), PieceColor::Black);
@@ -80,13 +128,6 @@ TEST(PiecePlacementArrayToStringTest, ValidInput)
   std::string actual = piece_placement_array_to_string(starting_piece_placement);
   ASSERT_EQ(actual, expected);
 }
-
-// TEST(PiecePlacementArrayToStringTest, InvalidInput)
-// {
-//   PiecePlacement test_array = starting_piece_placement;
-//   test_array[31] = 'a';
-//   ASSERT_THROW(piece_placement_array_to_string(test_array), std::invalid_argument);
-// }
 
 TEST(IndexToFileRank, ValidInput)
 {
