@@ -11,14 +11,13 @@ class Piece
 public:
   Piece(Game &);
 
-  virtual std::vector<int> legal_square_indexes(int) = 0; // pure virtual
+  virtual std::vector<BoardIndex> legal_square_indexes(const BoardIndex) = 0; // pure virtual
 
-  static std::vector<int> linear_square_indexes(
-      int,
-      const std::vector<std::pair<int, int>> &,
-      PiecePlacement &);
+  static std::vector<BoardIndex> linear_square_indexes(
+      const BoardIndex, const std::vector<std::pair<int, int>> &, const PiecePlacement &);
 
-  static std::vector<int> square_indexes(int, const std::vector<std::pair<int, int>> &);
+  static std::vector<BoardIndex> square_indexes(
+      const BoardIndex, const std::vector<std::pair<int, int>> &);
 
 protected:
   Game &game;
@@ -27,35 +26,35 @@ protected:
 struct Pawn : public Piece
 {
   Pawn(Game &);
-  std::vector<int> legal_square_indexes(int) override;
+  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) override;
 };
 
 struct Knight : public Piece
 {
   Knight(Game &);
-  std::vector<int> legal_square_indexes(int) override;
+  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) override;
 };
 
 struct Bishop : public Piece
 {
   Bishop(Game &);
-  std::vector<int> legal_square_indexes(int) override;
+  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) override;
 };
 
 struct Rook : public Piece
 {
   Rook(Game &);
-  std::vector<int> legal_square_indexes(int) override;
+  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) override;
 };
 
 struct Queen : public Piece
 {
   Queen(Game &);
-  std::vector<int> legal_square_indexes(int) override;
+  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) override;
 };
 
 struct King : public Piece
 {
   King(Game &);
-  std::vector<int> legal_square_indexes(int) override;
+  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) override;
 };

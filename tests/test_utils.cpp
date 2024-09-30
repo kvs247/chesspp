@@ -134,21 +134,15 @@ TEST(IndexToFileRank, ValidInput)
   FileRank expected;
 
   expected = {1, 8};
-  ASSERT_EQ(index_to_file_rank(0), expected);
+  ASSERT_EQ(index_to_file_rank(BoardIndex(0)), expected);
   expected = {8, 8};
-  ASSERT_EQ(index_to_file_rank(7), expected);
+  ASSERT_EQ(index_to_file_rank(BoardIndex(7)), expected);
   expected = {1, 1};
-  ASSERT_EQ(index_to_file_rank(56), expected);
+  ASSERT_EQ(index_to_file_rank(BoardIndex(56)), expected);
   expected = {8, 1};
-  ASSERT_EQ(index_to_file_rank(63), expected);
+  ASSERT_EQ(index_to_file_rank(BoardIndex(63)), expected);
   expected = {3, 6};
-  ASSERT_EQ(index_to_file_rank(18), expected);
-}
-
-TEST(IndexToFileRank, InvalidInput)
-{
-  ASSERT_THROW(index_to_file_rank(-1), std::out_of_range);
-  ASSERT_THROW(index_to_file_rank(64), std::out_of_range);
+  ASSERT_EQ(index_to_file_rank(BoardIndex(18)), expected);
 }
 
 TEST(FileRankToIndex, ValidInput)

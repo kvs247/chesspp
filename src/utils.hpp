@@ -83,7 +83,7 @@ inline PieceColor piece_color(const ChessPiece piece)
   return ((std::tolower(c_char) == c_char) ? PieceColor::Black : PieceColor::White);
 }
 
-inline int algebraic_to_index(const std::string &algebraic_square)
+inline BoardIndex algebraic_to_index(const std::string &algebraic_square)
 {
   if (algebraic_square.size() != 2)
   {
@@ -101,10 +101,10 @@ inline int algebraic_to_index(const std::string &algebraic_square)
   int file_i = file_c - 'a';
   int rank_i = rank_c - '0';
 
-  return 8 * (8 - rank_i) + file_i;
+  return BoardIndex(8 * (8 - rank_i) + file_i);
 }
 
-inline std::string index_to_algebraic(int index)
+inline std::string index_to_algebraic(const int index) // need to update this with enpassant
 {
   if (index < 0 || 63 < index)
   {
@@ -197,11 +197,8 @@ inline std::string piece_placement_array_to_string(const PiecePlacement &a)
   return res;
 }
 
-inline FileRank index_to_file_rank(int index)
+inline FileRank index_to_file_rank(const BoardIndex index)
 {
-  if (index < 0 || 63 < index)
-    throw std::out_of_range("Index is out of valid range [0-63].");
-
   int file = index % 8 + 1;
   int rank = 8 - index / 8;
 

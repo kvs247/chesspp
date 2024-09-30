@@ -10,17 +10,18 @@
 
 Piece::Piece(Game &g) : game(g) {}
 
-std::vector<int> Piece::linear_square_indexes(
-    int index,
+std::vector<BoardIndex> Piece::linear_square_indexes(
+    const BoardIndex index, 
     const std::vector<std::pair<int, int>> &offsets,
-    PiecePlacement &piece_placement)
+    const PiecePlacement &piece_placement)
 {
-  std::vector<int> res = {};
+  std::vector<BoardIndex> res = {};
 
   ChessPiece piece = piece_placement[index];
   auto color = piece_color(piece);
   auto [file, rank] = index_to_file_rank(index);
-  int target_index, target_file, target_rank;
+  int target_file, target_rank;
+  BoardIndex target_index;
 
   for (auto &offset : offsets)
   {
@@ -51,12 +52,14 @@ std::vector<int> Piece::linear_square_indexes(
   return res;
 }
 
-std::vector<int> Piece::square_indexes(int index, const std::vector<std::pair<int, int>> &offsets)
+std::vector<BoardIndex> Piece::square_indexes(
+    const BoardIndex index, const std::vector<std::pair<int, int>> &offsets)
 {
-  std::vector<int> res = {};
+  std::vector<BoardIndex> res = {};
 
   auto [file, rank] = index_to_file_rank(index);
-  int target_index, target_file, target_rank;
+  BoardIndex target_index;
+  int target_file, target_rank;
 
   for (auto &offset : offsets)
   {
@@ -75,15 +78,15 @@ std::vector<int> Piece::square_indexes(int index, const std::vector<std::pair<in
 
 Pawn::Pawn(Game &g) : Piece(g) {}
 
-std::vector<int> Pawn::legal_square_indexes(int index)
+std::vector<BoardIndex> Pawn::legal_square_indexes(const BoardIndex index)
 {
-  std::vector<int> res;
+  std::vector<BoardIndex> res;
 
   ChessPiece piece = game.piece_placement[index];
   ChessPiece target_piece = ChessPiece::Empty;
   auto color = piece_color(piece);
   auto [file, rank] = index_to_file_rank(index);
-  int target_index;
+  BoardIndex target_index;
 
   int sign = color == PieceColor::White ? 1 : -1;
   int black_start_rank = 7;
@@ -124,7 +127,7 @@ std::vector<int> Pawn::legal_square_indexes(int index)
 
 Knight::Knight(Game &g) : Piece(g) {}
 
-std::vector<int> Knight::legal_square_indexes(int index)
+std::vector<BoardIndex> Knight::legal_square_indexes(const BoardIndex index)
 {
   const std::vector<std::pair<int, int>> offsets = {
       {1, 2},
@@ -142,7 +145,7 @@ std::vector<int> Knight::legal_square_indexes(int index)
 
 Bishop::Bishop(Game &g) : Piece(g) {}
 
-std::vector<int> Bishop::legal_square_indexes(int index)
+std::vector<BoardIndex> Bishop::legal_square_indexes(const BoardIndex index)
 {
   const std::vector<std::pair<int, int>> offsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
   return linear_square_indexes(index, offsets, game.piece_placement);
@@ -150,7 +153,7 @@ std::vector<int> Bishop::legal_square_indexes(int index)
 
 Rook::Rook(Game &g) : Piece(g) {}
 
-std::vector<int> Rook::legal_square_indexes(int index)
+std::vector<BoardIndex> Rook::legal_square_indexes(const BoardIndex index)
 {
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
   return linear_square_indexes(index, offsets, game.piece_placement);
@@ -158,7 +161,7 @@ std::vector<int> Rook::legal_square_indexes(int index)
 
 Queen::Queen(Game &g) : Piece(g) {}
 
-std::vector<int> Queen::legal_square_indexes(int index)
+std::vector<BoardIndex> Queen::legal_square_indexes(const BoardIndex index)
 {
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
   return linear_square_indexes(index, offsets, game.piece_placement);
@@ -166,7 +169,7 @@ std::vector<int> Queen::legal_square_indexes(int index)
 
 King::King(Game &g) : Piece(g) {}
 
-std::vector<int> King::legal_square_indexes(int index)
+std::vector<BoardIndex> King::legal_square_indexes(const BoardIndex index)
 {
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
   return square_indexes(index, offsets);

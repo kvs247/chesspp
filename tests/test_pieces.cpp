@@ -11,9 +11,9 @@ TEST(PawnTest, Forward)
   Game game(fen);
   Pawn pawn(game);
 
-  int index;
-  std::vector<int> expected;
-  std::vector<int> actual;
+  BoardIndex index;
+  std::vector<BoardIndex> expected;
+  std::vector<BoardIndex> actual;
 
   index = 50;
   expected = {};
@@ -23,14 +23,14 @@ TEST(PawnTest, Forward)
   ASSERT_EQ(actual, expected);
 
   index = 51;
-  expected = {43, 35};
+  expected = BoardIndex::create_vector({43, 35});
   actual = pawn.legal_square_indexes(index);
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
   ASSERT_EQ(actual, expected);
 
   index = 44;
-  expected = {36};
+  expected = BoardIndex::create_vector({36});
   actual = pawn.legal_square_indexes(index);
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -44,14 +44,14 @@ TEST(PawnTest, Forward)
   ASSERT_EQ(actual, expected);
 
   index = 14;
-  expected = {22, 30};
+  expected = BoardIndex::create_vector({22, 30});
   actual = pawn.legal_square_indexes(index);
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
   ASSERT_EQ(actual, expected);
 
   index = 21;
-  expected = {29};
+  expected = BoardIndex::create_vector({29});
   actual = pawn.legal_square_indexes(index);
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -64,19 +64,19 @@ TEST(PawnTest, Capture)
   Game game(fen);
   Pawn pawn(game);
 
-  int index;
-  std::vector<int> expected;
-  std::vector<int> actual;
+  BoardIndex index;
+  std::vector<BoardIndex> expected;
+  std::vector<BoardIndex> actual;
 
   index = 52;
-  expected = {43, 44, 36};
+  expected = BoardIndex::create_vector({43, 44, 36});
   actual = pawn.legal_square_indexes(index);
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
   ASSERT_EQ(actual, expected);
 
   index = 43;
-  expected = {51, 52};
+  expected = BoardIndex::create_vector({51, 52});
   actual = pawn.legal_square_indexes(index);
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -89,9 +89,9 @@ TEST(PawnTest, EnPassant)
   Game game(fen);
   Pawn pawn(game);
 
-  int index = 28;
-  std::vector<int> expected = {20, 19};
-  std::vector<int> actual = pawn.legal_square_indexes(index);
+  BoardIndex index(28);
+  auto expected = BoardIndex::create_vector({20, 19});
+  auto actual = pawn.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -105,9 +105,9 @@ TEST(KnightTest, Center)
   Game game(fen);
   Knight knight(game);
 
-  int index = 28;
-  std::vector<int> expected = {11, 13, 18, 22, 34, 38, 43, 45};
-  std::vector<int> actual = knight.legal_square_indexes(index);
+  BoardIndex index(28);
+  auto expected = BoardIndex::create_vector({11, 13, 18, 22, 34, 38, 43, 45});
+  auto actual = knight.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -121,9 +121,9 @@ TEST(KnightTest, Corner)
   Game game(fen);
   Knight knight(game);
 
-  int index = 63;
-  std::vector<int> expected = {46, 53};
-  std::vector<int> actual = knight.legal_square_indexes(index);
+  BoardIndex index(63);
+  auto expected = BoardIndex::create_vector({46, 53});
+  auto actual = knight.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -137,9 +137,9 @@ TEST(KnightTest, Edge)
   Game game(fen);
   Knight knight(game);
 
-  int index = 58;
-  std::vector<int> expected = {41, 43, 48, 52};
-  std::vector<int> actual = knight.legal_square_indexes(index);
+  BoardIndex index(58);
+  auto expected = BoardIndex::create_vector({41, 43, 48, 52});
+  auto actual = knight.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -153,9 +153,9 @@ TEST(BishopTest, Center)
   Game game(fen);
   Bishop bishop(game);
 
-  int index = 27;
-  std::vector<int> expected = {0, 9, 18, 20, 13, 6, 34, 41, 48, 36, 45, 54, 63};
-  std::vector<int> actual = bishop.legal_square_indexes(index);
+  BoardIndex index(27);
+  auto expected = BoardIndex::create_vector({0, 9, 18, 20, 13, 6, 34, 41, 48, 36, 45, 54, 63});
+  std::vector<BoardIndex> actual = bishop.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -169,9 +169,9 @@ TEST(BishopTest, CenterBlocked)
   Game game(fen);
   Bishop bishop(game);
 
-  int index = 27;
-  std::vector<int> expected = {20, 13, 34, 36};
-  std::vector<int> actual = bishop.legal_square_indexes(index);
+  BoardIndex index(27);
+  auto expected = BoardIndex::create_vector({20, 13, 34, 36});
+  auto actual = bishop.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -185,9 +185,9 @@ TEST(BishopTest, Corner)
   Game game(fen);
   Bishop bishop(game);
 
-  int index = 56;
-  std::vector<int> expected = {49, 42, 35, 28, 21, 14, 7};
-  std::vector<int> actual = bishop.legal_square_indexes(index);
+  BoardIndex index(56);
+  auto expected = BoardIndex::create_vector({49, 42, 35, 28, 21, 14, 7});
+  auto actual = bishop.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -201,9 +201,9 @@ TEST(BishopTest, Edge)
   Game game(fen);
   Bishop bishop(game);
 
-  int index = 8;
-  std::vector<int> expected = {1, 17, 26, 35, 44, 53, 62};
-  std::vector<int> actual = bishop.legal_square_indexes(index);
+  BoardIndex index(8);
+  auto expected = BoardIndex::create_vector({1, 17, 26, 35, 44, 53, 62});
+  auto actual = bishop.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -217,9 +217,9 @@ TEST(RookTest, Center)
   Game game(fen);
   Rook rook(game);
 
-  int index = 27;
-  std::vector<int> expected = {3, 11, 19, 24, 25, 26, 28, 29, 30, 31, 35, 43, 51, 59};
-  std::vector<int> actual = rook.legal_square_indexes(index);
+  BoardIndex index(27);
+  auto expected = BoardIndex::create_vector({3, 11, 19, 24, 25, 26, 28, 29, 30, 31, 35, 43, 51, 59});
+  auto actual = rook.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -233,9 +233,9 @@ TEST(RookTest, CenterBlocked)
   Game game(fen);
   Rook rook(game);
 
-  int index = 27;
-  std::vector<int> expected = {19, 26, 28, 29};
-  std::vector<int> actual = rook.legal_square_indexes(index);
+  BoardIndex index(27);
+  auto expected = BoardIndex::create_vector({19, 26, 28, 29});
+  auto actual = rook.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -249,9 +249,9 @@ TEST(RookTest, Corner)
   Game game(fen);
   Rook rook(game);
 
-  int index = 7;
-  std::vector<int> expected = {0, 1, 2, 3, 4, 5, 6, 15, 23, 31, 39, 47, 55, 63};
-  std::vector<int> actual = rook.legal_square_indexes(index);
+  BoardIndex index(7);
+  auto expected = BoardIndex::create_vector({0, 1, 2, 3, 4, 5, 6, 15, 23, 31, 39, 47, 55, 63});
+  auto actual = rook.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -265,9 +265,9 @@ TEST(RookTest, Edge)
   Game game(fen);
   Rook rook(game);
 
-  int index = 31;
-  std::vector<int> expected = {7, 15, 23, 24, 25, 26, 27, 28, 29, 30, 39, 47, 55, 63};
-  std::vector<int> actual = rook.legal_square_indexes(index);
+  BoardIndex index(31);
+  auto expected = BoardIndex::create_vector({7, 15, 23, 24, 25, 26, 27, 28, 29, 30, 39, 47, 55, 63});
+  auto actual = rook.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -281,13 +281,13 @@ TEST(QueenTest, Center)
   Game game(fen);
   Queen queen(game);
 
-  int index = 27;
-  std::vector<int> expected = {
+  BoardIndex index(27);
+  auto expected = BoardIndex::create_vector({
       0, 9, 18, 36, 45, 54, 63,
       6, 13, 20, 34, 41, 48,
       3, 11, 19, 35, 43, 51, 59,
-      24, 25, 26, 28, 29, 30, 31};
-  std::vector<int> actual = queen.legal_square_indexes(index);
+      24, 25, 26, 28, 29, 30, 31});
+  auto actual = queen.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -301,9 +301,9 @@ TEST(QueenTest, CenterBlocked)
   Game game(fen);
   Queen queen(game);
 
-  int index = 27;
-  std::vector<int> expected = {18, 19, 20, 13, 25, 26, 34, 41, 48, 35, 43, 36, 45, 54};
-  std::vector<int> actual = queen.legal_square_indexes(index);
+  BoardIndex index(27);
+  auto expected = BoardIndex::create_vector({18, 19, 20, 13, 25, 26, 34, 41, 48, 35, 43, 36, 45, 54});
+  auto actual = queen.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -317,12 +317,12 @@ TEST(QueenTest, Corner)
   Game game(fen);
   Queen queen(game);
 
-  int index = 63;
-  std::vector<int> expected = {
+  BoardIndex index(63);
+  auto expected = BoardIndex::create_vector({
       0, 9, 18, 27, 36, 45, 54,
       56, 57, 58, 59, 60, 61, 62,
-      7, 15, 23, 31, 39, 47, 55};
-  std::vector<int> actual = queen.legal_square_indexes(index);
+      7, 15, 23, 31, 39, 47, 55});
+  auto actual = queen.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -336,12 +336,12 @@ TEST(QueenTest, Edge)
   Game game(fen);
   Queen queen(game);
 
-  int index = 2;
-  std::vector<int> expected = {
+  BoardIndex index(2);
+  auto expected = BoardIndex::create_vector({
       0, 1, 3, 4, 5, 6, 7, 9, 16,
       10, 18, 26, 34, 42, 50, 58,
-      11, 20, 29, 38, 47};
-  std::vector<int> actual = queen.legal_square_indexes(index);
+      11, 20, 29, 38, 47});
+  auto actual = queen.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -355,9 +355,9 @@ TEST(KingTest, Center)
   Game game(fen);
   King king(game);
 
-  int index = 27;
-  std::vector<int> expected = {18, 19, 20, 28, 36, 35, 34, 26};
-  std::vector<int> actual = king.legal_square_indexes(index);
+  BoardIndex index(27);
+  auto expected = BoardIndex::create_vector({18, 19, 20, 28, 36, 35, 34, 26});
+  auto actual = king.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -371,9 +371,9 @@ TEST(KingTest, Corner)
   Game game(fen);
   King king(game);
 
-  int index = 56;
-  std::vector<int> expected = {48, 49, 57};
-  std::vector<int> actual = king.legal_square_indexes(index);
+  BoardIndex index(56);
+  auto expected = BoardIndex::create_vector({48, 49, 57});
+  auto actual = king.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -387,9 +387,9 @@ TEST(KingTest, Edge)
   Game game(fen);
   King king(game);
 
-  int index = 16;
-  std::vector<int> expected = {8, 9, 17, 25, 24};
-  std::vector<int> actual = king.legal_square_indexes(index);
+  BoardIndex index(16);
+  auto expected = BoardIndex::create_vector({8, 9, 17, 25, 24});
+  auto actual = king.legal_square_indexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());

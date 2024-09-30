@@ -32,9 +32,9 @@ public:
   PiecePlacement get_piece_placement();
 
   bool move();
-  void read_move(int &, int &) const;
-  void handle_en_passant(ChessPiece, PieceColor, int, int); // could this be private?
-  static bool is_king_in_check(PieceColor, PiecePlacement &);
+  void read_move(BoardIndex &, BoardIndex &) const;
+  void handle_en_passant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
+  static bool is_king_in_check(const PieceColor, const PiecePlacement &);
 
 private:
   PiecePlacement piece_placement;
@@ -138,7 +138,7 @@ inline PiecePlacement Game::get_piece_placement()
 
 inline bool Game::move()
 {
-  int from_index, to_index;
+  BoardIndex from_index, to_index;
   read_move(from_index, to_index);
 
   auto from_piece = piece_placement[from_index];
@@ -162,7 +162,7 @@ inline bool Game::move()
     return false;
   }
 
-  std::vector<int> indexes = {};
+  std::vector<BoardIndex> indexes = {};
   switch (from_piece)
   {
   case ChessPiece::BlackPawn:
@@ -214,7 +214,7 @@ inline bool Game::move()
   return true;
 }
 
-inline void Game::read_move(int &from_index, int &to_index) const
+inline void Game::read_move(BoardIndex &from_index, BoardIndex &to_index) const
 {
   std::string from_algebraic, to_algebraic;
 
@@ -230,10 +230,10 @@ inline void Game::read_move(int &from_index, int &to_index) const
 }
 
 inline void Game::handle_en_passant(
-    ChessPiece from_piece,
-    PieceColor from_color,
-    int from_index,
-    int to_index)
+    const ChessPiece from_piece,
+    const PieceColor from_color,
+    const BoardIndex from_index,
+    const BoardIndex to_index)
 {
   bool is_pawn = (from_piece == ChessPiece::BlackPawn || from_piece == ChessPiece::WhitePawn);
   if (to_index == en_passant_index)
@@ -246,14 +246,14 @@ inline void Game::handle_en_passant(
 }
 
 inline bool Game::is_king_in_check(
-    PieceColor color,
-    PiecePlacement &piece_placement)
+    const PieceColor color,
+    const PiecePlacement &piece_placement)
 {
   ChessPiece king_piece = color == PieceColor::White ? ChessPiece::WhiteKing : ChessPiece::BlackKing;
-  auto king_iter = std::find(piece_placement.begin(), piece_placement.end(), king_piece);
-  int king_index = std::distance(piece_placement.begin(), king_iter);
+  auto king_iter = std::find(piece_placement.cbegin(), piece_placement.cend(), king_piece);
+  BoardIndex king_index(king_iter - piece_placement.cbegin());
 
-  auto is_piece_in_indexes_lambda = [color, piece_placement](ChessPiece search_piece, std::vector<int> &indexes)
+  auto is_piece_in_indexes_lambda = [color, piece_placement](ChessPiece search_piece, std::vector<BoardIndex> &indexes)
   {
     for (auto &idx : indexes)
     {
@@ -295,7 +295,7 @@ inline bool Game::is_king_in_check(
                 {1, -1},
                 {-1, -1},
             };
-  std::vector<int> pawn_indexes = Piece::square_indexes(king_index, pawn_offsets);
+  std::vector<BoardIndex> pawn_indexes = Piece::square_indexes(king_index, pawn_offsets);
   if (is_piece_in_indexes_lambda(ChessPiece::BlackPawn, pawn_indexes))
   {
     return true;
