@@ -3,61 +3,10 @@
 #include "logger.hpp"
 
 #include <array>
-#include <stdexcept>
 #include <initializer_list>
+#include <stdexcept>
+#include <string>
 #include <vector>
-
-class BoardIndex
-{
-private:
-  int val;
-
-  void validate(int index)
-  {
-    if (index < 0 || index > 63)
-    {
-      throw std::out_of_range("BoardIndex must be in range [0, 63]");
-    }
-  }
-
-public:
-  BoardIndex() = default;
-
-  explicit BoardIndex(int index)
-  {
-    validate(index);
-    val = index;
-  }
-
-  int get_val() const
-  {
-    return val;
-  }
-
-  operator int() const
-  {
-    return val;
-  }
-
-  BoardIndex &operator=(int index)
-  {
-    validate(index);
-    val = index;
-    return *this;
-  }
-
-  static std::vector<BoardIndex> create_vector(std::initializer_list<int> indices)
-  {
-    std::vector<BoardIndex> result;
-    result.reserve(indices.size());
-    for (auto index : indices)
-    {
-      result.emplace_back(index);
-    }
-
-    return result;
-  }
-};
 
 enum class PieceColor : char
 {
@@ -83,3 +32,61 @@ enum class ChessPiece : char
 };
 
 using PiecePlacement = std::array<ChessPiece, 64>;
+
+class RangedInt
+{
+private:
+  int val;
+  int minVal;
+  int maxVal;
+
+  void validate(int index)
+  {
+    if (index < minVal || index > maxVal)
+    {
+      throw std::out_of_range(
+          "RangedInt must be in range [" + std::to_string(minVal) + ", " + std::to_string(maxVal) + "]\n");
+    }
+  }
+
+public:
+  RangedInt() = default;
+
+  explicit RangedInt(int v, int minV, int maxV) : minVal(minV), maxVal(maxV)
+  {
+    validate(v);
+    val = v;
+  }
+
+  int get_val() const { return val; }
+
+  operator int() const { return val; }
+
+  RangedInt &operator=(int v)
+  {
+    validate(v);
+    val = v;
+    return *this;
+  }
+};
+
+class BoardIndex : public RangedInt
+{
+public:
+  BoardIndex() : RangedInt(0, 0, 63) {}
+
+  BoardIndex(int v) : RangedInt(v, 0, 63) {}
+
+  static std::vector<BoardIndex> create_vector(std::initializer_list<int> indices)
+  {
+    std::vector<BoardIndex> result;
+    result.reserve(indices.size());
+    for (auto &index : indices)
+    {
+      result.emplace_back(BoardIndex(index));
+    }
+
+    return result;
+  }
+};
+
