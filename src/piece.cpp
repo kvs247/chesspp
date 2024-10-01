@@ -11,7 +11,7 @@
 Piece::Piece(Game &g) : game(g) {}
 
 std::vector<BoardIndex> Piece::linear_square_indexes(
-    const BoardIndex index, 
+    const BoardIndex index,
     const std::vector<std::pair<int, int>> &offsets,
     const PiecePlacement &piece_placement)
 {
@@ -20,7 +20,7 @@ std::vector<BoardIndex> Piece::linear_square_indexes(
   ChessPiece piece = piece_placement[index];
   auto color = piece_color(piece);
   auto [file, rank] = index_to_file_rank(index);
-  int target_file, target_rank;
+  int target_file, target_rank; // not FileRankIndex since we are testing if on board
   BoardIndex target_index;
 
   for (auto &offset : offsets)
@@ -59,7 +59,7 @@ std::vector<BoardIndex> Piece::square_indexes(
 
   auto [file, rank] = index_to_file_rank(index);
   BoardIndex target_index;
-  int target_file, target_rank;
+  int target_file, target_rank; // not FileRankIndex since we are testing if on board
 
   for (auto &offset : offsets)
   {
@@ -110,7 +110,7 @@ std::vector<BoardIndex> Pawn::legal_square_indexes(const BoardIndex index)
   std::array<int, 2> offsets = {1, -1};
   for (auto &offset : offsets)
   {
-    int target_file = file + offset;
+    int target_file = file + offset; // not FileRankIndex since we are testing if on board
     if (target_file < 1 || 8 < target_file)
       break;
     target_index = file_rank_to_index({file + offset, rank + sign});

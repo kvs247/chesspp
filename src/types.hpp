@@ -40,9 +40,9 @@ private:
   int minVal;
   int maxVal;
 
-  void validate(int index)
+  void validate(int v)
   {
-    if (index < minVal || index > maxVal)
+    if (v < minVal || v > maxVal)
     {
       throw std::out_of_range(
           "RangedInt must be in range [" + std::to_string(minVal) + ", " + std::to_string(maxVal) + "]\n");
@@ -68,6 +68,13 @@ public:
     val = v;
     return *this;
   }
+
+  RangedInt &operator+=(int v)
+  {
+    validate(val + v);
+    val += v;
+    return *this;
+  }
 };
 
 class BoardIndex : public RangedInt
@@ -90,3 +97,10 @@ public:
   }
 };
 
+class FileRankIndex : public RangedInt
+{
+public:
+  FileRankIndex() : RangedInt(1, 1, 8) {}
+
+  FileRankIndex(int v) : RangedInt(v, 1, 8) {}
+};

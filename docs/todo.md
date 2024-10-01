@@ -6,6 +6,8 @@
   - [x] PieceColor
   - [x] IntRange
   - [x] BoardIndex
-  - [ ] FileRank
+  - [x] FileRank
+  - [ ] EnPassant?
 - Somewhat duplicated logic with check logic, e.g. knight_offsets are copied from piece.cpp
 - switch to camelCase
+- in file rank usage (piece.hpp & utils.cpp), rank meaning is inconsistent with traditional chess lingo

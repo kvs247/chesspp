@@ -195,7 +195,6 @@ inline bool Game::move()
 
   if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
   {
-
     return false;
   }
 

@@ -12,12 +12,12 @@
 
 struct FileRank
 {
-  int file;
-  int rank;
+  FileRankIndex file;
+  FileRankIndex rank;
 
-  bool operator==(const FileRank &sqr) const
+  bool operator==(const FileRank &fr) const
   {
-    return file == sqr.file && rank == sqr.rank;
+    return file == fr.file && rank == fr.rank;
   }
 };
 
@@ -43,7 +43,7 @@ inline PieceColor char_to_Color(const char c)
   {
     return PieceColor::Black;
   }
-  
+
   throw std::invalid_argument("Argument is not a chess piece color.");
 }
 
@@ -93,29 +93,19 @@ inline BoardIndex algebraic_to_index(const std::string &algebraic_square)
   char file_c = std::tolower(algebraic_square[0]);
   char rank_c = algebraic_square[1];
 
-  if (file_c < 'a' || file_c > 'h' || rank_c < '1' || rank_c > '8')
-  {
-    throw std::invalid_argument("Argument is not a valid chess square.");
-  }
+  FileRankIndex file_i = file_c - 'a' + 1;
+  FileRankIndex rank_i = rank_c - '0';
 
-  int file_i = file_c - 'a';
-  int rank_i = rank_c - '0';
-
-  return BoardIndex(8 * (8 - rank_i) + file_i);
+  return BoardIndex(8 * (8 - (rank_i)) + file_i - 1);
 }
 
 inline std::string index_to_algebraic(const int index) // need to update this with enpassant
 {
-  if (index < 0 || 63 < index)
-  {
-    throw std::out_of_range("Index is out of valid range [0-63].");
-  }
+  FileRankIndex file_i = index % 8 + 1 ;
+  FileRankIndex rank_i = 8 - (index / 8);
 
-  int file_i = index % 8;
-  int rank_i = index / 8;
-
-  char file_c = file_i + 'a';
-  char rank_c = (8 - rank_i) + '0';
+  char file_c = (file_i - 1) + 'a';
+  char rank_c = rank_i + '0';
 
   return std::string(1, file_c) + std::string(1, rank_c);
 }
@@ -199,8 +189,8 @@ inline std::string piece_placement_array_to_string(const PiecePlacement &a)
 
 inline FileRank index_to_file_rank(const BoardIndex index)
 {
-  int file = index % 8 + 1;
-  int rank = 8 - index / 8;
+  FileRankIndex file = index % 8 + 1;
+  FileRankIndex rank = 8 - index / 8;
 
   return {file, rank};
 };
@@ -208,11 +198,7 @@ inline FileRank index_to_file_rank(const BoardIndex index)
 inline int file_rank_to_index(FileRank square)
 {
   auto [file, rank] = square;
-  if (file < 1 || 8 < file || rank < 1 || 8 < rank)
-  {
-    throw std::out_of_range("File and/or rank out of valid range [1-8].");
-  }
 
-  int res = --file + 8 * (8 - rank);
+  int res = (file - 1) + 8 * (8 - rank);
   return res;
 };

@@ -77,12 +77,12 @@ TEST(AlgebraicToIndexTest, InvalidInput)
   ASSERT_THROW(algebraic_to_index("a"), std::invalid_argument);
   ASSERT_THROW(algebraic_to_index("a77"), std::invalid_argument);
 
-  ASSERT_THROW(algebraic_to_index("`1"), std::invalid_argument);
-  ASSERT_THROW(algebraic_to_index("i2"), std::invalid_argument);
-  ASSERT_THROW(algebraic_to_index("@3"), std::invalid_argument);
-  ASSERT_THROW(algebraic_to_index("I4"), std::invalid_argument);
-  ASSERT_THROW(algebraic_to_index("A0"), std::invalid_argument);
-  ASSERT_THROW(algebraic_to_index("H9"), std::invalid_argument);
+  ASSERT_THROW(algebraic_to_index("`1"), std::out_of_range);
+  ASSERT_THROW(algebraic_to_index("i2"), std::out_of_range);
+  ASSERT_THROW(algebraic_to_index("@3"), std::out_of_range);
+  ASSERT_THROW(algebraic_to_index("I4"), std::out_of_range);
+  ASSERT_THROW(algebraic_to_index("A0"), std::out_of_range);
+  ASSERT_THROW(algebraic_to_index("H9"), std::out_of_range);
 }
 
 TEST(IndexToAlgebraicTest, ValidInput)

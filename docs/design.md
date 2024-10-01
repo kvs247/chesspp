@@ -3,8 +3,11 @@
 - [ ] Terminal board/pieces display
   - [x] Draw board & pieces
   - [ ] Detect cursor position
-    - [ ] Linux and Windows implementation
-- [ ] Logic
+- [ ] OS portability
+  - [ ] Linux
+  - [ ] Windows
+  - [ ] Mac
+- [ ] Piece Logic
   - [x] Piece potential squares
     - [x] Pawn
     - [x] Knight
@@ -18,5 +21,8 @@
     - [ ] Stalemate
     - [ ] ...other win conditions
     - [ ] Pawn promotion
-- [ ] Logging
-  - [ ] Setup ability to log debug to log file separate from stdout/stderr
+- [ ] CPU Opponent
+  - [ ] Random moves
+  - [ ] Sophisticated moves (LLM?)
+- [x] Logging
+  - [x] Setup ability to log debug to log file separate from stdout/stderr
