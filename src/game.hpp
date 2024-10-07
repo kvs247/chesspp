@@ -14,6 +14,14 @@
 #include <sstream>
 #include <string>
 
+#include <cstdlib>
+#include <ctime>
+#include <vector>
+#include <sstream>
+
+#define BLACK_IS_CPU true
+#define DISABLE_TURN_ORDER true
+
 class Game
 {
   friend class Piece;
@@ -33,7 +41,9 @@ public:
 
   bool move();
   void read_move(BoardIndex &, BoardIndex &) const;
+  std::vector<BoardIndex> get_piece_legal_moves(const ChessPiece &, const BoardIndex) const;
   void handle_en_passant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
+  std::pair<BoardIndex, BoardIndex> generate_cpu_move_black() const;
   static bool is_king_in_check(const PieceColor, const PiecePlacement &);
 
 private:
@@ -139,7 +149,18 @@ inline PiecePlacement Game::get_piece_placement()
 inline bool Game::move()
 {
   BoardIndex from_index, to_index;
-  read_move(from_index, to_index);
+
+  if (BLACK_IS_CPU && active_color == PieceColor::Black)
+  {
+    auto [cpu_from_index, cpu_to_index] = generate_cpu_move_black();
+    from_index = cpu_from_index;
+    to_index = cpu_to_index;
+    // logger.log("to: ", to_index, " from: ", from_index);
+  }
+  else
+  {
+    read_move(from_index, to_index);
+  }
 
   auto from_piece = piece_placement[from_index];
   auto to_piece = piece_placement[to_index];
@@ -150,8 +171,12 @@ inline bool Game::move()
   }
 
   auto from_color = piece_color(from_piece);
-  PieceColor to_color;
+  if (!DISABLE_TURN_ORDER && from_color != active_color)
+  {
+    return false;
+  }
 
+  PieceColor to_color;
   if (to_piece != ChessPiece::Empty)
   {
     to_color = piece_color(to_piece);
@@ -162,37 +187,7 @@ inline bool Game::move()
     return false;
   }
 
-  std::vector<BoardIndex> indexes = {};
-  switch (from_piece)
-  {
-  case ChessPiece::BlackPawn:
-  case ChessPiece::WhitePawn:
-    indexes = pawn.legal_square_indexes(from_index);
-    break;
-  case ChessPiece::BlackKnight:
-  case ChessPiece::WhiteKnight:
-    indexes = knight.legal_square_indexes(from_index);
-    break;
-  case ChessPiece::BlackBishop:
-  case ChessPiece::WhiteBishop:
-    indexes = bishop.legal_square_indexes(from_index);
-    break;
-  case ChessPiece::BlackRook:
-  case ChessPiece::WhiteRook:
-    indexes = rook.legal_square_indexes(from_index);
-    break;
-  case ChessPiece::BlackQueen:
-  case ChessPiece::WhiteQueen:
-    indexes = queen.legal_square_indexes(from_index);
-    break;
-  case ChessPiece::BlackKing:
-  case ChessPiece::WhiteKing:
-    indexes = king.legal_square_indexes(from_index);
-    break;
-  default:
-    break;
-  }
-
+  auto indexes = get_piece_legal_moves(from_piece, from_index);
   if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
   {
     return false;
@@ -208,7 +203,11 @@ inline bool Game::move()
 
   piece_placement = new_piece_placement;
 
+  active_color = !active_color;
+
   handle_en_passant(from_piece, from_color, from_index, to_index);
+
+  logger.log(this->get_fen_str());
 
   return true;
 }
@@ -228,6 +227,44 @@ inline void Game::read_move(BoardIndex &from_index, BoardIndex &to_index) const
   to_index = algebraic_to_index(to_algebraic);
 }
 
+inline std::vector<BoardIndex> Game::get_piece_legal_moves(
+    const ChessPiece &piece,
+    const BoardIndex index) const
+{
+  std::vector<BoardIndex> indexes = {};
+  switch (piece)
+  {
+  case ChessPiece::BlackPawn:
+  case ChessPiece::WhitePawn:
+    indexes = pawn.legal_square_indexes(index);
+    break;
+  case ChessPiece::BlackKnight:
+  case ChessPiece::WhiteKnight:
+    indexes = knight.legal_square_indexes(index);
+    break;
+  case ChessPiece::BlackBishop:
+  case ChessPiece::WhiteBishop:
+    indexes = bishop.legal_square_indexes(index);
+    break;
+  case ChessPiece::BlackRook:
+  case ChessPiece::WhiteRook:
+    indexes = rook.legal_square_indexes(index);
+    break;
+  case ChessPiece::BlackQueen:
+  case ChessPiece::WhiteQueen:
+    indexes = queen.legal_square_indexes(index);
+    break;
+  case ChessPiece::BlackKing:
+  case ChessPiece::WhiteKing:
+    indexes = king.legal_square_indexes(index);
+    break;
+  default:
+    break;
+  }
+
+  return indexes;
+}
+
 inline void Game::handle_en_passant(
     const ChessPiece from_piece,
     const PieceColor from_color,
@@ -243,6 +280,57 @@ inline void Game::handle_en_passant(
   else
     en_passant_index = -1;
 }
+
+inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
+{
+  std::vector<int> cpu_pieces_idxs;
+  cpu_pieces_idxs.reserve(32);
+
+  for (size_t i = 0; i < piece_placement.size(); ++i)
+  {
+    auto piece = piece_placement[i];
+    if (piece != ChessPiece::Empty && piece_color(piece_placement[i]) == PieceColor::Black)
+    {
+      cpu_pieces_idxs.push_back(i);
+    }
+  }
+
+  std::srand(std::time(nullptr)); // may want to do this at program start
+
+  // probably a risky loop
+  BoardIndex from_index, to_index;
+  int loop_count = 0;
+  while (true)
+  {
+    ++loop_count;
+    from_index = std::rand() % cpu_pieces_idxs.size();
+    auto piece = piece_placement[from_index];
+
+    auto legal_moves = get_piece_legal_moves(piece, from_index);
+    if (!legal_moves.size()) { 
+      cpu_pieces_idxs.erase(cpu_pieces_idxs.begin() + from_index);
+      continue; 
+    }
+
+    BoardIndex legal_moves_index = std::rand() % legal_moves.size();
+    to_index = legal_moves[legal_moves_index];
+
+    PiecePlacement new_piece_placement = piece_placement;
+    new_piece_placement[to_index] = new_piece_placement[from_index];
+    new_piece_placement[from_index] = ChessPiece::Empty;
+    auto from_piece = piece_placement[from_index];
+    if (is_king_in_check(piece_color(from_piece), new_piece_placement))
+    {
+      continue;
+    }
+
+    logger.log("loop count ", loop_count);
+
+    break;
+  }
+
+  return {from_index, to_index};
+};
 
 inline bool Game::is_king_in_check(
     const PieceColor color,

@@ -12,7 +12,12 @@ enum class PieceColor : char
 {
   White = 'w',
   Black = 'b',
+
 };
+
+inline PieceColor operator!(PieceColor current) {
+  return (current == PieceColor::White) ? PieceColor::Black : PieceColor::White;
+}
 
 enum class ChessPiece : char
 {
