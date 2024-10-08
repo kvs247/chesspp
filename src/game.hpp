@@ -207,7 +207,7 @@ inline bool Game::move()
 
   handle_en_passant(from_piece, from_color, from_index, to_index);
 
-  logger.log(this->get_fen_str());
+  // logger.log(this->get_fen_str());
 
   return true;
 }
@@ -283,6 +283,7 @@ inline void Game::handle_en_passant(
 
 inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
 {
+  logger.log("\n");
   std::vector<int> cpu_pieces_idxs;
   cpu_pieces_idxs.reserve(32);
 
@@ -294,39 +295,49 @@ inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
       cpu_pieces_idxs.push_back(i);
     }
   }
+  std::random_shuffle(cpu_pieces_idxs.begin(), cpu_pieces_idxs.end());
 
-  std::srand(std::time(nullptr)); // may want to do this at program start
+  // std::srand(std::time(nullptr)); // may want to do this at program start
 
-  // probably a risky loop
   BoardIndex from_index, to_index;
-  int loop_count = 0;
-  while (true)
-  {
-    ++loop_count;
-    from_index = std::rand() % cpu_pieces_idxs.size();
-    auto piece = piece_placement[from_index];
 
-    auto legal_moves = get_piece_legal_moves(piece, from_index);
-    if (!legal_moves.size()) { 
-      cpu_pieces_idxs.erase(cpu_pieces_idxs.begin() + from_index);
-      continue; 
+  bool stop = false;
+  for (auto from_index : cpu_pieces_idxs)
+  {
+    logger.log(from_index);
+    if (stop)
+    {
+      break;
     }
 
-    BoardIndex legal_moves_index = std::rand() % legal_moves.size();
-    to_index = legal_moves[legal_moves_index];
-
-    PiecePlacement new_piece_placement = piece_placement;
-    new_piece_placement[to_index] = new_piece_placement[from_index];
-    new_piece_placement[from_index] = ChessPiece::Empty;
     auto from_piece = piece_placement[from_index];
-    if (is_king_in_check(piece_color(from_piece), new_piece_placement))
+    auto indexes = get_piece_legal_moves(from_piece, from_index);
+    if (!indexes.size())
     {
       continue;
     }
 
-    logger.log("loop count ", loop_count);
+    std::random_shuffle(indexes.begin(), indexes.end());
 
-    break;
+    for (auto to_index : indexes)
+    {
+      auto to_piece = piece_placement[to_index];
+      if (to_piece != ChessPiece::Empty && (piece_color(from_piece) == piece_color(to_piece)))
+      {
+        continue;
+      }
+
+      PiecePlacement new_piece_placement = piece_placement;
+      new_piece_placement[to_index] = new_piece_placement[from_index];
+      new_piece_placement[from_index] = ChessPiece::Empty;
+      if (is_king_in_check(piece_color(from_piece), new_piece_placement))
+      {
+        continue;
+      }
+
+      stop = true;
+      break;
+    }
   }
 
   return {from_index, to_index};
