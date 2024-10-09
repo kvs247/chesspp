@@ -283,7 +283,6 @@ inline void Game::handle_en_passant(
 
 inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
 {
-  logger.log("\n");
   std::vector<int> cpu_pieces_idxs;
   cpu_pieces_idxs.reserve(32);
 
@@ -299,7 +298,7 @@ inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
 
   // std::srand(std::time(nullptr)); // may want to do this at program start
 
-  BoardIndex from_index, to_index;
+  BoardIndex res_from_index, res_to_index;
 
   bool stop = false;
   for (auto from_index : cpu_pieces_idxs)
@@ -336,11 +335,13 @@ inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
       }
 
       stop = true;
+      res_from_index = from_index;
+      res_to_index = to_index;
       break;
     }
   }
 
-  return {from_index, to_index};
+  return {res_from_index, res_to_index};
 };
 
 inline bool Game::is_king_in_check(
