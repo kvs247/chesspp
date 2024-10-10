@@ -6,21 +6,25 @@
 #include "utils.hpp"
 #include "piece.hpp"
 
+
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <chrono>
 #include <fstream>
 #include <iostream>
+#include <random>
+#include <sstream>
 #include <sstream>
 #include <string>
-
-#include <cstdlib>
-#include <ctime>
+#include <thread>
+#include <tuple>
 #include <vector>
-#include <sstream>
 
 #define BLACK_IS_CPU true
+#define WHITE_IS_CPU true
 #define DISABLE_TURN_ORDER true
+#define CPU_MOVE_DELAY_MS 250
 
 class Game
 {
@@ -43,8 +47,9 @@ public:
   void read_move(BoardIndex &, BoardIndex &) const;
   std::vector<BoardIndex> get_piece_legal_moves(const ChessPiece &, const BoardIndex) const;
   void handle_en_passant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
-  std::pair<BoardIndex, BoardIndex> generate_cpu_move_black() const;
+  std::pair<BoardIndex, BoardIndex> generate_cpu_move(PieceColor) const;
   static bool is_king_in_check(const PieceColor, const PiecePlacement &);
+  bool validate_move(BoardIndex, BoardIndex) const;
 
 private:
   PiecePlacement piece_placement;
@@ -93,8 +98,6 @@ inline Game::Game(std::string &fen) : Game()
     pos = fen.find(' ');
     token = fen.substr(0, pos);
     fen.erase(0, pos + 1);
-
-    // logger.log(token);
 
     switch (token_count)
     {
@@ -152,64 +155,33 @@ inline bool Game::move()
 
   if (BLACK_IS_CPU && active_color == PieceColor::Black)
   {
-    auto [cpu_from_index, cpu_to_index] = generate_cpu_move_black();
-    from_index = cpu_from_index;
-    to_index = cpu_to_index;
-    // logger.log("to: ", to_index, " from: ", from_index);
+    std::tie(from_index, to_index) = generate_cpu_move(PieceColor::Black);
+  }
+  else if (WHITE_IS_CPU && active_color == PieceColor::White)
+  {
+    std::tie(from_index, to_index) = generate_cpu_move(PieceColor::White);
   }
   else
   {
     read_move(from_index, to_index);
   }
 
-  auto from_piece = piece_placement[from_index];
-  auto to_piece = piece_placement[to_index];
-
-  if (from_piece == ChessPiece::Empty)
+  if (validate_move(from_index, to_index))
   {
-    return false;
+    auto from_piece = piece_placement[from_index];
+    auto from_color = piece_color(from_piece);
+    piece_placement[to_index] = piece_placement[from_index];
+    piece_placement[from_index] = ChessPiece::Empty;
+    active_color = !active_color;
+    handle_en_passant(from_piece, from_color, from_index, to_index);
+    return true;
   }
-
-  auto from_color = piece_color(from_piece);
-  if (!DISABLE_TURN_ORDER && from_color != active_color)
-  {
-    return false;
-  }
-
-  PieceColor to_color;
-  if (to_piece != ChessPiece::Empty)
-  {
-    to_color = piece_color(to_piece);
-  }
-
-  if (from_color == to_color)
-  {
-    return false;
-  }
-
-  auto indexes = get_piece_legal_moves(from_piece, from_index);
-  if (std::find(indexes.begin(), indexes.end(), to_index) == indexes.end())
-  {
-    return false;
-  }
-
-  PiecePlacement new_piece_placement = piece_placement;
-  new_piece_placement[to_index] = piece_placement[from_index];
-  new_piece_placement[from_index] = ChessPiece::Empty;
-  if (is_king_in_check(from_color, new_piece_placement))
+  else
   {
     return false;
   };
 
-  piece_placement = new_piece_placement;
-
-  active_color = !active_color;
-
-  handle_en_passant(from_piece, from_color, from_index, to_index);
-
-  // logger.log(this->get_fen_str());
-
-  return true;
+  return false;
 }
 
 inline void Game::read_move(BoardIndex &from_index, BoardIndex &to_index) const
@@ -281,7 +253,40 @@ inline void Game::handle_en_passant(
     en_passant_index = -1;
 }
 
-inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
+inline bool Game::validate_move(BoardIndex from_index, BoardIndex to_index) const
+{
+  auto from_piece = piece_placement[from_index];
+  auto to_piece = piece_placement[to_index];
+
+  if (from_piece == ChessPiece::Empty)
+  {
+    return false;
+  }
+
+  auto from_color = piece_color(from_piece);
+  if (to_piece != ChessPiece::Empty && from_color == piece_color(to_piece))
+  {
+    return false;
+  }
+
+  auto indexes = get_piece_legal_moves(from_piece, from_index);
+  if (std::find(indexes.cbegin(), indexes.cend(), to_index) == indexes.cend())
+  {
+    return false;
+  }
+
+  PiecePlacement new_piece_placement = piece_placement;
+  new_piece_placement[to_index] = piece_placement[from_index];
+  new_piece_placement[from_index] = ChessPiece::Empty;
+  if (is_king_in_check(from_color, new_piece_placement))
+  {
+    return false;
+  }
+
+  return true;
+}
+
+inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move(PieceColor cpu_color) const
 {
   std::vector<int> cpu_pieces_idxs;
   cpu_pieces_idxs.reserve(32);
@@ -289,14 +294,16 @@ inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
   for (size_t i = 0; i < piece_placement.size(); ++i)
   {
     auto piece = piece_placement[i];
-    if (piece != ChessPiece::Empty && piece_color(piece_placement[i]) == PieceColor::Black)
+    if (piece != ChessPiece::Empty && piece_color(piece_placement[i]) == cpu_color)
     {
       cpu_pieces_idxs.push_back(i);
     }
   }
-  std::random_shuffle(cpu_pieces_idxs.begin(), cpu_pieces_idxs.end());
 
-  // std::srand(std::time(nullptr)); // may want to do this at program start
+  std::random_device rd;
+  std::mt19937 g(rd());
+
+  std::shuffle(cpu_pieces_idxs.begin(), cpu_pieces_idxs.end(), g);
 
   BoardIndex res_from_index, res_to_index;
 
@@ -316,32 +323,21 @@ inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move_black() const
       continue;
     }
 
-    std::random_shuffle(indexes.begin(), indexes.end());
+    std::shuffle(indexes.begin(), indexes.end(), g);
 
     for (auto to_index : indexes)
     {
-      auto to_piece = piece_placement[to_index];
-      if (to_piece != ChessPiece::Empty && (piece_color(from_piece) == piece_color(to_piece)))
+      if (validate_move(from_index, to_index))
       {
-        continue;
+        std::this_thread::sleep_for(std::chrono::milliseconds(CPU_MOVE_DELAY_MS));
+        return {from_index, to_index};
       }
-
-      PiecePlacement new_piece_placement = piece_placement;
-      new_piece_placement[to_index] = new_piece_placement[from_index];
-      new_piece_placement[from_index] = ChessPiece::Empty;
-      if (is_king_in_check(piece_color(from_piece), new_piece_placement))
-      {
-        continue;
-      }
-
-      stop = true;
-      res_from_index = from_index;
-      res_to_index = to_index;
-      break;
     }
   }
 
-  return {res_from_index, res_to_index};
+  std::this_thread::sleep_for(std::chrono::milliseconds(CPU_MOVE_DELAY_MS));
+  logger.log("CHECKMATE");
+  return {res_from_index, res_to_index}; // getting here implies checkmate
 };
 
 inline bool Game::is_king_in_check(
