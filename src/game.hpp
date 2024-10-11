@@ -47,6 +47,7 @@ public:
   void read_move(BoardIndex &, BoardIndex &) const;
   std::vector<BoardIndex> get_piece_legal_moves(const ChessPiece &, const BoardIndex) const;
   void handle_en_passant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
+  void handle_pawn_promotion(const ChessPiece, const BoardIndex);
   std::pair<BoardIndex, BoardIndex> generate_cpu_move(PieceColor) const;
   static bool is_king_in_check(const PieceColor, const PiecePlacement &);
   bool validate_move(BoardIndex, BoardIndex) const;
@@ -174,6 +175,7 @@ inline bool Game::move()
     piece_placement[from_index] = ChessPiece::Empty;
     active_color = !active_color;
     handle_en_passant(from_piece, from_color, from_index, to_index);
+    handle_pawn_promotion(from_piece, to_index);
     return true;
   }
   else
@@ -251,6 +253,19 @@ inline void Game::handle_en_passant(
     en_passant_index = from_index + (from_color == PieceColor::White ? -8 : +8);
   else
     en_passant_index = -1;
+}
+
+inline void Game::handle_pawn_promotion(const ChessPiece from_piece, const BoardIndex to_index)
+{
+  auto [file, rank] = index_to_file_rank(to_index);
+  if (from_piece == ChessPiece::WhitePawn && rank == 8)
+  {
+    piece_placement[to_index] = ChessPiece::WhiteQueen;
+  }
+  if (from_piece == ChessPiece::BlackPawn && rank == 1)
+  {
+    piece_placement[to_index] = ChessPiece::BlackQueen;
+  }
 }
 
 inline bool Game::validate_move(BoardIndex from_index, BoardIndex to_index) const
