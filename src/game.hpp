@@ -310,7 +310,6 @@ inline std::pair<BoardIndex, BoardIndex> Game::generate_cpu_move(PieceColor cpu_
   bool stop = false;
   for (auto from_index : cpu_pieces_idxs)
   {
-    logger.log(from_index);
     if (stop)
     {
       break;

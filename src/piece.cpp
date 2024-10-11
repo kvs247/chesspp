@@ -78,7 +78,7 @@ std::vector<BoardIndex> Piece::square_indexes(
 
 Pawn::Pawn(Game &g) : Piece(g) {}
 
-std::vector<BoardIndex> Pawn::legal_square_indexes(const BoardIndex index) const 
+std::vector<BoardIndex> Pawn::legal_square_indexes(const BoardIndex index) const
 {
   std::vector<BoardIndex> res;
 
@@ -98,7 +98,7 @@ std::vector<BoardIndex> Pawn::legal_square_indexes(const BoardIndex index) const
   {
     res.push_back(target_index);
     // 2 ranks
-    if (rank == white_start_rank || rank == black_start_rank)
+    if ((color == PieceColor::White && rank == white_start_rank) || (color == PieceColor::Black && rank == black_start_rank))
     {
       target_index = file_rank_to_index({file, rank + 2 * sign});
       if (game.piece_placement[target_index] == ChessPiece::Empty)
