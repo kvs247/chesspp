@@ -6,13 +6,13 @@
 #include "utils.hpp"
 #include "piece.hpp"
 
-
 #include <algorithm>
 #include <array>
 #include <cctype>
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <random>
 #include <sstream>
 #include <sstream>
@@ -36,14 +36,13 @@ class Game
   friend class King;
 
 public:
-  Game(const PiecePlacement &, PieceColor, std::string, int, int, int);
+  Game(const PiecePlacement &, PieceColor, std::string, std::optional<BoardIndex>, int, int);
   Game();
   Game(std::string &);
 
+  bool move();
   std::string get_fen_str();
   PiecePlacement get_piece_placement();
-
-  bool move();
   void read_move(BoardIndex &, BoardIndex &) const;
   std::vector<BoardIndex> get_piece_legal_moves(const ChessPiece &, const BoardIndex) const;
   void handle_en_passant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
@@ -56,7 +55,7 @@ private:
   PiecePlacement piece_placement;
   PieceColor active_color;
   std::string castling_availability;
-  int en_passant_index;
+  std::optional<BoardIndex> en_passant_index;
   int halfmove_clock;
   int fullmove_clock;
 
@@ -72,7 +71,7 @@ inline Game::Game(
     const PiecePlacement &pp,
     PieceColor ac,
     std::string ca,
-    int ep,
+    std::optional<BoardIndex> ep,
     int hc,
     int fc)
     : piece_placement(pp),
@@ -88,7 +87,13 @@ inline Game::Game(
       queen(*this),
       king(*this) {}
 
-inline Game::Game() : Game(starting_piece_placement, PieceColor::White, starting_castling_availability, -1, 0, 0) {}
+inline Game::Game() : Game(
+                          starting_piece_placement,
+                          PieceColor::White,
+                          starting_castling_availability,
+                          std::nullopt,
+                          0,
+                          0) {}
 
 inline Game::Game(std::string &fen) : Game()
 {
@@ -113,7 +118,7 @@ inline Game::Game(std::string &fen) : Game()
       break;
     case 4:
       if (token == "-")
-        en_passant_index = -1;
+        en_passant_index = std::nullopt;
       else
         en_passant_index = algebraic_to_index(token);
       break;
@@ -132,13 +137,10 @@ inline Game::Game(std::string &fen) : Game()
 inline std::string Game::get_fen_str()
 {
   std::ostringstream fen;
-  std::string en_passant =
-      (en_passant_index < 0) ? "-" : index_to_algebraic(en_passant_index);
-
   fen << piece_placement_array_to_string(piece_placement) << " "
       << color_to_char(active_color) << " "
       << castling_availability << " "
-      << en_passant << " "
+      << index_to_algebraic(en_passant_index) << " "
       << std::to_string(halfmove_clock) << " "
       << std::to_string(fullmove_clock);
 
@@ -176,6 +178,7 @@ inline bool Game::move()
     active_color = !active_color;
     handle_en_passant(from_piece, from_color, from_index, to_index);
     handle_pawn_promotion(from_piece, to_index);
+    logger.log(this->get_fen_str());
     return true;
   }
   else
@@ -252,7 +255,7 @@ inline void Game::handle_en_passant(
   if (is_pawn && abs(from_index - to_index) == 16)
     en_passant_index = from_index + (from_color == PieceColor::White ? -8 : +8);
   else
-    en_passant_index = -1;
+    en_passant_index.reset();
 }
 
 inline void Game::handle_pawn_promotion(const ChessPiece from_piece, const BoardIndex to_index)

@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <optional>
 
 struct FileRank
 {
@@ -99,14 +100,18 @@ inline BoardIndex algebraic_to_index(const std::string &algebraic_square)
   return BoardIndex(8 * (8 - (rank_i)) + file_i - 1);
 }
 
-inline std::string index_to_algebraic(const int index) // need to update this with enpassant
+inline std::string index_to_algebraic(const std::optional<BoardIndex> index)
 {
-  FileRankIndex file_i = index % 8 + 1;
-  FileRankIndex rank_i = 8 - (index / 8);
+  if (!index)
+  {
+    return "-";
+  }
+
+  FileRankIndex file_i = index.value() % 8 + 1;
+  FileRankIndex rank_i = 8 - (index.value() / 8);
 
   char file_c = (file_i - 1) + 'a';
   char rank_c = rank_i + '0';
-
   return std::string(1, file_c) + std::string(1, rank_c);
 }
 
@@ -225,7 +230,7 @@ inline CastlingAvailability parse_castling_availability(const std::string &castl
   return result;
 }
 
-inline std::string castling_availability_to_string(const CastlingAvailability& castling_availability)
+inline std::string castling_availability_to_string(const CastlingAvailability &castling_availability)
 {
   std::string result = "";
   result.reserve(4);
