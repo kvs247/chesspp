@@ -129,6 +129,32 @@ TEST(PiecePlacementArrayToStringTest, ValidInput)
   ASSERT_EQ(actual, expected);
 }
 
+TEST(ParseCastlingAvailabilityTest, ValidInput)
+{
+  CastlingAvailability expected;
+
+  expected.black_long = true;
+  ASSERT_EQ(parse_castling_availability("q"), expected);
+
+  expected.black_short = true;
+  expected.white_long = true;
+  expected.white_short = true;
+  ASSERT_EQ(parse_castling_availability("KQkq"), expected);
+}
+
+TEST(ParseCastlingAvailabilityTest, InvalidInput)
+{
+  ASSERT_THROW(parse_castling_availability("&"), std::invalid_argument);
+  ASSERT_THROW(parse_castling_availability("Kk$"), std::invalid_argument);
+  ASSERT_THROW(parse_castling_availability("KQkqb"), std::invalid_argument);
+}
+
+TEST(CastlingAvailabilityToString, ValidInput)
+{
+  ASSERT_EQ(castling_availability_to_string(CastlingAvailability({true, true, true, true})), "KQkq");
+  ASSERT_EQ(castling_availability_to_string(CastlingAvailability({false, false, false, true})), "q");
+}
+
 TEST(IndexToFileRank, ValidInput)
 {
   FileRank expected;

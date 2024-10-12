@@ -101,7 +101,7 @@ inline BoardIndex algebraic_to_index(const std::string &algebraic_square)
 
 inline std::string index_to_algebraic(const int index) // need to update this with enpassant
 {
-  FileRankIndex file_i = index % 8 + 1 ;
+  FileRankIndex file_i = index % 8 + 1;
   FileRankIndex rank_i = 8 - (index / 8);
 
   char file_c = (file_i - 1) + 'a';
@@ -185,6 +185,69 @@ inline std::string piece_placement_array_to_string(const PiecePlacement &a)
   handle_gap();
 
   return res;
+}
+
+inline CastlingAvailability parse_castling_availability(const std::string &castling_availability_string)
+{
+  if (castling_availability_string.size() > 4)
+  {
+    throw std::invalid_argument("Castling availability string must be < 4 chars");
+  }
+
+  CastlingAvailability result;
+
+  const std::string valid_chars = "KQkq";
+
+  for (auto &c : castling_availability_string)
+  {
+    if (valid_chars.find(c) == std::string::npos)
+    {
+      throw std::invalid_argument("Invaid char in castling availability string");
+    }
+
+    switch (c)
+    {
+    case 'K':
+      result.white_short = true;
+      break;
+    case 'Q':
+      result.white_long = true;
+      break;
+    case 'k':
+      result.black_short = true;
+      break;
+    case 'q':
+      result.black_long = true;
+      break;
+    }
+  }
+
+  return result;
+}
+
+inline std::string castling_availability_to_string(const CastlingAvailability& castling_availability)
+{
+  std::string result = "";
+  result.reserve(4);
+
+  if (castling_availability.white_short)
+  {
+    result += "K";
+  }
+  if (castling_availability.white_long)
+  {
+    result += "Q";
+  }
+  if (castling_availability.black_short)
+  {
+    result += "k";
+  }
+  if (castling_availability.black_long)
+  {
+    result += "q";
+  }
+
+  return result;
 }
 
 inline FileRank index_to_file_rank(const BoardIndex index)

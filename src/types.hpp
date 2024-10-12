@@ -15,7 +15,8 @@ enum class PieceColor : char
 
 };
 
-inline PieceColor operator!(PieceColor current) {
+inline PieceColor operator!(PieceColor current)
+{
   return (current == PieceColor::White) ? PieceColor::Black : PieceColor::White;
 }
 
@@ -37,6 +38,23 @@ enum class ChessPiece : char
 };
 
 using PiecePlacement = std::array<ChessPiece, 64>;
+
+struct CastlingAvailability
+{
+  bool white_short;
+  bool white_long;
+  bool black_short;
+  bool black_long;
+
+  bool operator==(const CastlingAvailability &other) const
+  {
+    return (
+        white_short == other.white_short &&
+        white_long == other.white_long &&
+        black_short == other.black_short &&
+        black_long == other.black_long);
+  }
+};
 
 class RangedInt
 {
