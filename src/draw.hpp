@@ -1,54 +1,48 @@
 #pragma once
 
-#include "types.hpp"
-#include "utils.hpp"
-
 #include <fstream>
 #include <iostream>
 #include <vector>
 
+#include "types.hpp"
+#include "utils.hpp"
+
 using std::cout;
 
-int BORDER_WIDTH = 3; // at least 2
+int BORDER_WIDTH = 3;  // at least 2
 
-void draw(PiecePlacement pieces, const std::string &message)
-{
-  int col_mult = 8; // must be even
-  int row_mult = 4; // must be even
+void draw(PiecePlacement pieces, const std::string &message) {
+  int colMult = 8;  // must be even
+  int rowMult = 4;  // must be even
 
   char c;
-  size_t piece_index = 0;
-  for (int row = 0; row <= 8 * row_mult; ++row)
-  {
+  size_t pieceIndex = 0;
+  for (int row = 0; row <= 8 * rowMult; ++row) {
     // ranks
     cout << ' ';
-    if ((row + row_mult / 2) % row_mult == 0)
-      cout << 8 - row / row_mult << std::string(BORDER_WIDTH - 2, ' ');
+    if ((row + rowMult / 2) % rowMult == 0)
+      cout << 8 - row / rowMult << std::string(BORDER_WIDTH - 2, ' ');
     else
       cout << std::string(BORDER_WIDTH - 1, ' ');
 
-    for (int col = 0; col <= 8 * col_mult; ++col)
-    {
-      bool draw_row = row % row_mult == 0;
-      bool draw_col = col % col_mult == 0;
-      bool draw_piece = col % (col_mult / 2) == 0 && row % (row_mult / 2) == 0;
+    for (int col = 0; col <= 8 * colMult; ++col) {
+      bool drawRow = row % rowMult == 0;
+      bool drawCol = col % colMult == 0;
+      bool drawPiece = col % (colMult / 2) == 0 && row % (rowMult / 2) == 0;
 
-      if (draw_row && draw_col)
-        c = '+';
+      if (drawRow && drawCol) c = '+';
       // horizontal lines
-      else if (draw_row)
+      else if (drawRow)
         c = '-';
       // vertical lines
-      else if (draw_col)
+      else if (drawCol)
         c = '|';
       // pieces
-      else if (draw_piece)
-      {
-        char piece_char = chessPiece_to_char(pieces[piece_index]);
-        c = piece_char ? piece_char : ' ';
-        ++piece_index;
-      }
-      else
+      else if (drawPiece) {
+        char pieceChar = chessPieceToChar(pieces[pieceIndex]);
+        c = pieceChar ? pieceChar : ' ';
+        ++pieceIndex;
+      } else
         c = ' ';
       cout << c;
     }
@@ -58,30 +52,23 @@ void draw(PiecePlacement pieces, const std::string &message)
   // files
   cout << std::string(BORDER_WIDTH / 2 - 1, '\n');
   cout << std::string(BORDER_WIDTH, ' ');
-  for (int i = 0; i <= 8 * col_mult + 2; i++)
-  {
-    if ((i + col_mult / 2) % col_mult == 0)
-    {
-      char c = i / col_mult + 'A';
+  for (int i = 0; i <= 8 * colMult + 2; i++) {
+    if ((i + colMult / 2) % colMult == 0) {
+      char c = i / colMult + 'A';
       cout << c;
-    }
-    else
+    } else
       cout << ' ';
   }
 
   cout << "\n\n";
-  size_t message_size = message.size();
-  if (message_size > 0)
-  {
-    int board_width = 8 * col_mult / 2;
-    int msg_offset = message_size / 2 + message_size % 2;
-    int num_space = BORDER_WIDTH + board_width - msg_offset;
-    cout << std::string(num_space, ' ') << "~" << message
-         << ((message_size % 2 == 0) ? " " : "~") << "\n\n";
+  size_t messageSize = message.size();
+  if (messageSize > 0) {
+    int boardWidth = 8 * colMult / 2;
+    int msgOffset = messageSize / 2 + messageSize % 2;
+    int numSpace = BORDER_WIDTH + boardWidth - msgOffset;
+    cout << std::string(numSpace, ' ') << "~" << message
+         << ((messageSize % 2 == 0) ? " " : "~") << "\n\n";
   }
 }
 
-void clear_screen()
-{
-  cout << "\033[2J\033[H";
-}
+void clearScreen() { cout << "\033[2J\033[H"; }

@@ -6,59 +6,49 @@
 #include <sstream>
 #include <string>
 
-class Logger
-{
-public:
-  static Logger &getInstance()
-  {
+class Logger {
+ public:
+  static Logger &getInstance() {
     static Logger instance;
     return instance;
   }
 
   template <typename... Args>
-  bool log(const Args &...args)
-  {
+  bool log(const Args &...args) {
     std::lock_guard<std::mutex> lock(mutex);
 
-    if (log_file.is_open())
-    {
+    if (logFile.is_open()) {
       std::ostringstream oss;
       (oss << ... << args);
 
-      log_file << oss.str() << std::endl;
-      log_file.flush();
+      logFile << oss.str() << std::endl;
+      logFile.flush();
       return true;
-    }
-    else
-    {
+    } else {
       std::cerr << "Failed to log message: log file is not open." << std::endl;
       return false;
     }
   }
 
-  bool isOpen() const { return log_file.is_open(); }
+  bool isOpen() const { return logFile.is_open(); }
 
   Logger(const Logger &) = delete;
   Logger &operator=(const Logger &) = delete;
 
-private:
-  Logger()
-  {
-    log_file.open("log.txt", std::ios::out | std::ios::trunc);
-    if (!log_file.is_open())
-    {
+ private:
+  Logger() {
+    logFile.open("log.txt", std::ios::out | std::ios::trunc);
+    if (!logFile.is_open()) {
       std::cerr << "Failed to open log file." << std::endl;
     }
   }
-  ~Logger()
-  {
-    if (log_file.is_open())
-    {
-      log_file.close();
+  ~Logger() {
+    if (logFile.is_open()) {
+      logFile.close();
     }
   }
 
-  std::ofstream log_file;
+  std::ofstream logFile;
   std::mutex mutex;
 };
 

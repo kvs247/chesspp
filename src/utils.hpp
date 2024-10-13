@@ -1,270 +1,226 @@
 #pragma once
 
-#include "logger.hpp"
-#include "types.hpp"
-
 #include <array>
 #include <cctype>
+#include <optional>
 #include <set>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include <optional>
 
-struct FileRank
-{
+#include "logger.hpp"
+#include "types.hpp"
+
+struct FileRank {
   FileRankIndex file;
   FileRankIndex rank;
 
-  bool operator==(const FileRank &fr) const
-  {
+  bool operator==(const FileRank &fr) const {
     return file == fr.file && rank == fr.rank;
   }
 };
 
-inline bool is_chess_piece(const char c)
-{
-  static const std::set<char> chess_pieces{'p', 'r', 'n', 'b', 'k', 'q', 'P', 'R', 'N', 'B', 'K', 'Q'};
-  return chess_pieces.find(c) != chess_pieces.end();
+inline bool isChessPiece(const char c) {
+  static const std::set<char> chessPieces{'p', 'r', 'n', 'b', 'k', 'q',
+                                          'P', 'R', 'N', 'B', 'K', 'Q'};
+  return chessPieces.find(c) != chessPieces.end();
 }
 
-inline char color_to_char(const PieceColor color)
-{
+inline char colorToChar(const PieceColor color) {
   return static_cast<char>(color);
 }
 
-inline PieceColor char_to_Color(const char c)
-{
-  if (c == 'w')
-  {
+inline PieceColor charToColor(const char c) {
+  if (c == 'w') {
     return PieceColor::White;
   }
 
-  if (c == 'b')
-  {
+  if (c == 'b') {
     return PieceColor::Black;
   }
 
   throw std::invalid_argument("Argument is not a chess piece color.");
 }
 
-inline char chessPiece_to_char(const ChessPiece piece)
-{
+inline char chessPieceToChar(const ChessPiece piece) {
   return static_cast<char>(piece);
 }
 
-inline ChessPiece char_to_ChessPiece(const char c)
-{
-  if (!is_chess_piece(c))
-  {
+inline ChessPiece charToChessPiece(const char c) {
+  if (!isChessPiece(c)) {
     throw std::invalid_argument("Argument is not a chess piece.");
   }
 
-  std::unordered_map<char, ChessPiece> piece_map = {
-      {'p', ChessPiece::BlackPawn},
-      {'n', ChessPiece::BlackKnight},
-      {'b', ChessPiece::BlackBishop},
-      {'r', ChessPiece::BlackRook},
-      {'q', ChessPiece::BlackQueen},
-      {'k', ChessPiece::BlackKing},
-      {'P', ChessPiece::WhitePawn},
-      {'N', ChessPiece::WhiteKnight},
-      {'B', ChessPiece::WhiteBishop},
-      {'R', ChessPiece::WhiteRook},
-      {'Q', ChessPiece::WhiteQueen},
-      {'K', ChessPiece::WhiteKing},
+  std::unordered_map<char, ChessPiece> pieceMap = {
+      {'p', ChessPiece::BlackPawn},   {'n', ChessPiece::BlackKnight},
+      {'b', ChessPiece::BlackBishop}, {'r', ChessPiece::BlackRook},
+      {'q', ChessPiece::BlackQueen},  {'k', ChessPiece::BlackKing},
+      {'P', ChessPiece::WhitePawn},   {'N', ChessPiece::WhiteKnight},
+      {'B', ChessPiece::WhiteBishop}, {'R', ChessPiece::WhiteRook},
+      {'Q', ChessPiece::WhiteQueen},  {'K', ChessPiece::WhiteKing},
   };
 
-  return piece_map[c];
+  return pieceMap[c];
 }
 
-inline PieceColor piece_color(const ChessPiece piece)
-{
-  char c_char = chessPiece_to_char(piece);
-  return ((std::tolower(c_char) == c_char) ? PieceColor::Black : PieceColor::White);
+inline PieceColor pieceColor(const ChessPiece piece) {
+  char cChar = chessPieceToChar(piece);
+  return ((std::tolower(cChar) == cChar) ? PieceColor::Black
+                                         : PieceColor::White);
 }
 
-inline BoardIndex algebraic_to_index(const std::string &algebraic_square)
-{
-  if (algebraic_square.size() != 2)
-  {
+inline BoardIndex algebraicToIndex(const std::string &algebraicSquare) {
+  if (algebraicSquare.size() != 2) {
     throw std::invalid_argument("Argument is not 2 characters long.");
   }
 
-  char file_c = std::tolower(algebraic_square[0]);
-  char rank_c = algebraic_square[1];
+  char fileChar = std::tolower(algebraicSquare[0]);
+  char rankChar = algebraicSquare[1];
 
-  FileRankIndex file_i = file_c - 'a' + 1;
-  FileRankIndex rank_i = rank_c - '0';
+  FileRankIndex file = fileChar - 'a' + 1;
+  FileRankIndex rank = rankChar - '0';
 
-  return BoardIndex(8 * (8 - (rank_i)) + file_i - 1);
+  return BoardIndex(8 * (8 - (rank)) + file - 1);
 }
 
-inline std::string index_to_algebraic(const std::optional<BoardIndex> index)
-{
-  if (!index)
-  {
+inline std::string indexToAlgebraic(const std::optional<BoardIndex> index) {
+  if (!index) {
     return "-";
   }
 
-  FileRankIndex file_i = index.value() % 8 + 1;
-  FileRankIndex rank_i = 8 - (index.value() / 8);
+  FileRankIndex file = index.value() % 8 + 1;
+  FileRankIndex rank = 8 - (index.value() / 8);
 
-  char file_c = (file_i - 1) + 'a';
-  char rank_c = rank_i + '0';
-  return std::string(1, file_c) + std::string(1, rank_c);
+  char fileChar = (file - 1) + 'a';
+  char rankChar = rank + '0';
+  return std::string(1, fileChar) + std::string(1, rankChar);
 }
 
-inline PiecePlacement piece_placement_string_to_array(const std::string &s)
-{
+inline PiecePlacement piecePlacementStringToArray(const std::string &s) {
   PiecePlacement res;
-  size_t res_i = 0;
+  size_t resIdx = 0;
 
-  for (auto &c : s)
-  {
-    if (res_i == 64)
-    {
+  for (auto &c : s) {
+    if (resIdx == 64) {
       throw std::invalid_argument("Array elements exceeds 64.");
       break;
     }
 
-    if (c == '/')
-      continue;
+    if (c == '/') continue;
 
-    if (isdigit(c))
-    {
-      for (int i = 0; i != (c - '0'); ++i)
-        res[res_i++] = ChessPiece::Empty;
-    }
-    else
-    {
-      if (!is_chess_piece(c))
-      {
+    if (isdigit(c)) {
+      for (int i = 0; i != (c - '0'); ++i) res[resIdx++] = ChessPiece::Empty;
+    } else {
+      if (!isChessPiece(c)) {
         throw std::invalid_argument("Encountered invalid chess piece.");
       }
 
-      res[res_i++] = char_to_ChessPiece(c);
+      res[resIdx++] = charToChessPiece(c);
     }
   }
 
-  if (res_i != 64)
-  {
+  if (resIdx != 64) {
     throw std::invalid_argument("Incorrect number of array elements.");
   }
 
   return res;
 }
 
-inline std::string piece_placement_array_to_string(const PiecePlacement &a)
-{
+inline std::string piecePlacementArrayToString(const PiecePlacement &a) {
   std::string res;
   unsigned gap = 0;
 
-  auto handle_gap = [&]()
-  {
-    if (gap > 0)
-    {
+  auto handleGap = [&]() {
+    if (gap > 0) {
       res += std::to_string(gap);
       gap = 0;
     }
   };
 
   ChessPiece piece;
-  for (int i = 0; i != 64; i++)
-  {
-    if (i % 8 == 0 && i != 0)
-    {
-      handle_gap();
+  for (int i = 0; i != 64; i++) {
+    if (i % 8 == 0 && i != 0) {
+      handleGap();
       res += '/';
     }
 
     piece = a[i];
-    if (piece != ChessPiece::Empty)
-    {
-      handle_gap();
-      res += chessPiece_to_char(piece);
-    }
-    else
+    if (piece != ChessPiece::Empty) {
+      handleGap();
+      res += chessPieceToChar(piece);
+    } else
       ++gap;
   }
-  handle_gap();
+  handleGap();
 
   return res;
 }
 
-inline CastlingAvailability parse_castling_availability(const std::string &castling_availability_string)
-{
-  if (castling_availability_string.size() > 4)
-  {
-    throw std::invalid_argument("Castling availability string must be < 4 chars");
+inline CastlingAvailability parseCastlingAvailability(
+    const std::string &castlingAvailabilityString) {
+  if (castlingAvailabilityString.size() > 4) {
+    throw std::invalid_argument(
+        "Castling availability string must be < 4 chars");
   }
 
   CastlingAvailability result;
 
-  const std::string valid_chars = "KQkq";
+  const std::string validChars = "KQkq";
 
-  for (auto &c : castling_availability_string)
-  {
-    if (valid_chars.find(c) == std::string::npos)
-    {
-      throw std::invalid_argument("Invaid char in castling availability string");
+  for (auto &c : castlingAvailabilityString) {
+    if (validChars.find(c) == std::string::npos) {
+      throw std::invalid_argument(
+          "Invaid char in castling availability string");
     }
 
-    switch (c)
-    {
-    case 'K':
-      result.white_short = true;
-      break;
-    case 'Q':
-      result.white_long = true;
-      break;
-    case 'k':
-      result.black_short = true;
-      break;
-    case 'q':
-      result.black_long = true;
-      break;
+    switch (c) {
+      case 'K':
+        result.whiteShort = true;
+        break;
+      case 'Q':
+        result.whiteLong = true;
+        break;
+      case 'k':
+        result.blackShort = true;
+        break;
+      case 'q':
+        result.blackLong = true;
+        break;
     }
   }
 
   return result;
 }
 
-inline std::string castling_availability_to_string(const CastlingAvailability &castling_availability)
-{
+inline std::string castlingAvailabilityToString(
+    const CastlingAvailability &castlingAvailability) {
   std::string result = "";
   result.reserve(4);
 
-  if (castling_availability.white_short)
-  {
+  if (castlingAvailability.whiteShort) {
     result += "K";
   }
-  if (castling_availability.white_long)
-  {
+  if (castlingAvailability.whiteLong) {
     result += "Q";
   }
-  if (castling_availability.black_short)
-  {
+  if (castlingAvailability.blackShort) {
     result += "k";
   }
-  if (castling_availability.black_long)
-  {
+  if (castlingAvailability.blackLong) {
     result += "q";
   }
 
   return result;
 }
 
-inline FileRank index_to_file_rank(const BoardIndex index)
-{
+inline FileRank indexToFileRank(const BoardIndex index) {
   FileRankIndex file = index % 8 + 1;
   FileRankIndex rank = 8 - index / 8;
 
   return {file, rank};
 };
 
-inline int file_rank_to_index(FileRank square)
-{
+inline int fileRankToIndex(FileRank square) {
   auto [file, rank] = square;
 
   int res = (file - 1) + 8 * (8 - rank);

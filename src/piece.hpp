@@ -4,57 +4,54 @@
 #include <iostream>
 #include <vector>
 
+#include "types.hpp"
+
 class Game;
 
-class Piece
-{
-public:
+class Piece {
+ public:
   Piece(Game &);
 
-  virtual std::vector<BoardIndex> legal_square_indexes(const BoardIndex) const = 0; // pure virtual
+  virtual std::vector<BoardIndex> legalSquareIndexes(
+      const BoardIndex) const = 0;  // pure virtual
 
-  static std::vector<BoardIndex> linear_square_indexes(
-      const BoardIndex, const std::vector<std::pair<int, int>> &, const PiecePlacement &);
+  static std::vector<BoardIndex> linearSquareIndexes(
+      const BoardIndex, const std::vector<std::pair<int, int>> &,
+      const PiecePlacement &);
 
-  static std::vector<BoardIndex> square_indexes(
+  static std::vector<BoardIndex> squareIndexes(
       const BoardIndex, const std::vector<std::pair<int, int>> &);
 
-protected:
+ protected:
   Game &game;
 };
 
-struct Pawn : public Piece
-{
+struct Pawn : public Piece {
   Pawn(Game &);
-  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) const override;
+  std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct Knight : public Piece
-{
+struct Knight : public Piece {
   Knight(Game &);
-  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) const override;
+  std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct Bishop : public Piece
-{
+struct Bishop : public Piece {
   Bishop(Game &);
-  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) const override;
+  std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct Rook : public Piece
-{
+struct Rook : public Piece {
   Rook(Game &);
-  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) const override;
+  std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct Queen : public Piece
-{
+struct Queen : public Piece {
   Queen(Game &);
-  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) const override;
+  std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct King : public Piece
-{
+struct King : public Piece {
   King(Game &);
-  std::vector<BoardIndex> legal_square_indexes(const BoardIndex) const override;
+  std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };

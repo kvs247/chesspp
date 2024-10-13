@@ -1,189 +1,168 @@
-#include "../src/constants.hpp"
-#include "../src/utils.hpp"
-
-#include "../src/types.hpp"
-
-#include <array>
 #include <gtest/gtest.h>
 
-TEST(IsChessPieceTest, ValidInput)
-{
-  ASSERT_TRUE(is_chess_piece('q'));
-  ASSERT_TRUE(is_chess_piece('Q'));
+#include <array>
+
+#include "../src/constants.hpp"
+#include "../src/types.hpp"
+#include "../src/utils.hpp"
+
+TEST(IsChessPieceTest, ValidInput) {
+  ASSERT_TRUE(isChessPiece('q'));
+  ASSERT_TRUE(isChessPiece('Q'));
 }
 
-TEST(IsChessPieceTest, InvalidInput)
-{
-  ASSERT_FALSE(is_chess_piece('a'));
-  ASSERT_FALSE(is_chess_piece('%'));
+TEST(IsChessPieceTest, InvalidInput) {
+  ASSERT_FALSE(isChessPiece('a'));
+  ASSERT_FALSE(isChessPiece('%'));
 }
 
-TEST(ColorToCharTest, ValidInput)
-{
-  ASSERT_EQ(color_to_char(PieceColor::Black), 'b');
-  ASSERT_EQ(color_to_char(PieceColor::White), 'w');
+TEST(ColorToCharTest, ValidInput) {
+  ASSERT_EQ(colorToChar(PieceColor::Black), 'b');
+  ASSERT_EQ(colorToChar(PieceColor::White), 'w');
 }
 
-TEST(CharToColorTest, ValidInput)
-{
-  ASSERT_EQ(char_to_Color('w'), PieceColor::White);
-  ASSERT_EQ(char_to_Color('b'), PieceColor::Black);
+TEST(CharToColorTest, ValidInput) {
+  ASSERT_EQ(charToColor('w'), PieceColor::White);
+  ASSERT_EQ(charToColor('b'), PieceColor::Black);
 }
 
-TEST(CharToColorTest, InvalidInput)
-{
-  ASSERT_THROW(char_to_Color('k'), std::invalid_argument);
-  ASSERT_THROW(char_to_Color('&'), std::invalid_argument);
+TEST(CharToColorTest, InvalidInput) {
+  ASSERT_THROW(charToColor('k'), std::invalid_argument);
+  ASSERT_THROW(charToColor('&'), std::invalid_argument);
 }
 
-TEST(ChessPieceToCharTest, ValidInput)
-{
-  ASSERT_EQ(chessPiece_to_char(ChessPiece::BlackRook), 'r');
-  ASSERT_EQ(chessPiece_to_char(ChessPiece::WhiteRook), 'R');
+TEST(ChessPieceToCharTest, ValidInput) {
+  ASSERT_EQ(chessPieceToChar(ChessPiece::BlackRook), 'r');
+  ASSERT_EQ(chessPieceToChar(ChessPiece::WhiteRook), 'R');
 }
 
-TEST(CharToChessPieceTest, ValidInput)
-{
-  ASSERT_EQ(char_to_ChessPiece('r'), ChessPiece::BlackRook);
-  ASSERT_EQ(char_to_ChessPiece('R'), ChessPiece::WhiteRook);
+TEST(CharToChessPieceTest, ValidInput) {
+  ASSERT_EQ(charToChessPiece('r'), ChessPiece::BlackRook);
+  ASSERT_EQ(charToChessPiece('R'), ChessPiece::WhiteRook);
 }
 
-TEST(CharToChessPieceTest, InvalidInput)
-{
-  ASSERT_THROW(char_to_ChessPiece('$'), std::invalid_argument);
-  ASSERT_THROW(char_to_ChessPiece('a'), std::invalid_argument);
+TEST(CharToChessPieceTest, InvalidInput) {
+  ASSERT_THROW(charToChessPiece('$'), std::invalid_argument);
+  ASSERT_THROW(charToChessPiece('a'), std::invalid_argument);
 }
 
-TEST(PieceColorTest, ValidInput)
-{
-  ASSERT_EQ(piece_color(ChessPiece::BlackQueen), PieceColor::Black);
-  ASSERT_EQ(piece_color(ChessPiece::BlackKing), PieceColor::Black);
-  ASSERT_EQ(piece_color(ChessPiece::WhiteQueen), PieceColor::White);
-  ASSERT_EQ(piece_color(ChessPiece::WhiteKing), PieceColor::White);
+TEST(PieceColorTest, ValidInput) {
+  ASSERT_EQ(pieceColor(ChessPiece::BlackQueen), PieceColor::Black);
+  ASSERT_EQ(pieceColor(ChessPiece::BlackKing), PieceColor::Black);
+  ASSERT_EQ(pieceColor(ChessPiece::WhiteQueen), PieceColor::White);
+  ASSERT_EQ(pieceColor(ChessPiece::WhiteKing), PieceColor::White);
 }
 
-TEST(AlgebraicToIndexTest, ValidInput)
-{
-  ASSERT_EQ(algebraic_to_index("a8"), 0);
-  ASSERT_EQ(algebraic_to_index("h8"), 7);
-  ASSERT_EQ(algebraic_to_index("a1"), 56);
-  ASSERT_EQ(algebraic_to_index("h1"), 63);
-  ASSERT_EQ(algebraic_to_index("d5"), 27);
+TEST(AlgebraicToIndexTest, ValidInput) {
+  ASSERT_EQ(algebraicToIndex("a8"), 0);
+  ASSERT_EQ(algebraicToIndex("h8"), 7);
+  ASSERT_EQ(algebraicToIndex("a1"), 56);
+  ASSERT_EQ(algebraicToIndex("h1"), 63);
+  ASSERT_EQ(algebraicToIndex("d5"), 27);
 }
 
-TEST(AlgebraicToIndexTest, InvalidInput)
-{
-  ASSERT_THROW(algebraic_to_index(""), std::invalid_argument);
-  ASSERT_THROW(algebraic_to_index("a"), std::invalid_argument);
-  ASSERT_THROW(algebraic_to_index("a77"), std::invalid_argument);
+TEST(AlgebraicToIndexTest, InvalidInput) {
+  ASSERT_THROW(algebraicToIndex(""), std::invalid_argument);
+  ASSERT_THROW(algebraicToIndex("a"), std::invalid_argument);
+  ASSERT_THROW(algebraicToIndex("a77"), std::invalid_argument);
 
-  ASSERT_THROW(algebraic_to_index("`1"), std::out_of_range);
-  ASSERT_THROW(algebraic_to_index("i2"), std::out_of_range);
-  ASSERT_THROW(algebraic_to_index("@3"), std::out_of_range);
-  ASSERT_THROW(algebraic_to_index("I4"), std::out_of_range);
-  ASSERT_THROW(algebraic_to_index("A0"), std::out_of_range);
-  ASSERT_THROW(algebraic_to_index("H9"), std::out_of_range);
+  ASSERT_THROW(algebraicToIndex("`1"), std::out_of_range);
+  ASSERT_THROW(algebraicToIndex("i2"), std::out_of_range);
+  ASSERT_THROW(algebraicToIndex("@3"), std::out_of_range);
+  ASSERT_THROW(algebraicToIndex("I4"), std::out_of_range);
+  ASSERT_THROW(algebraicToIndex("A0"), std::out_of_range);
+  ASSERT_THROW(algebraicToIndex("H9"), std::out_of_range);
 }
 
-TEST(IndexToAlgebraicTest, ValidInput)
-{
-  ASSERT_EQ(index_to_algebraic(0), "a8");
-  ASSERT_EQ(index_to_algebraic(7), "h8");
-  ASSERT_EQ(index_to_algebraic(56), "a1");
-  ASSERT_EQ(index_to_algebraic(63), "h1");
-  ASSERT_EQ(index_to_algebraic(27), "d5");
+TEST(IndexToAlgebraicTest, ValidInput) {
+  ASSERT_EQ(indexToAlgebraic(0), "a8");
+  ASSERT_EQ(indexToAlgebraic(7), "h8");
+  ASSERT_EQ(indexToAlgebraic(56), "a1");
+  ASSERT_EQ(indexToAlgebraic(63), "h1");
+  ASSERT_EQ(indexToAlgebraic(27), "d5");
 }
 
-TEST(IndexToAlgebraicTest, InvalidInput)
-{
-  ASSERT_THROW(index_to_algebraic(-1), std::out_of_range);
-  ASSERT_THROW(index_to_algebraic(64), std::out_of_range);
+TEST(IndexToAlgebraicTest, InvalidInput) {
+  ASSERT_THROW(indexToAlgebraic(-1), std::out_of_range);
+  ASSERT_THROW(indexToAlgebraic(64), std::out_of_range);
 }
 
-TEST(PiecePlacementStringToArrayTest, ValidInput)
-{
-  PiecePlacement expected = starting_piece_placement;
-  PiecePlacement actual = piece_placement_string_to_array(starting_piece_placement_string);
+TEST(PiecePlacementStringToArrayTest, ValidInput) {
+  PiecePlacement expected = startingPiecePlacement;
+  PiecePlacement actual =
+      piecePlacementStringToArray(startingPiecePlacementString);
   ASSERT_EQ(actual, expected);
 }
 
-TEST(PiecePlacementStringToArrayTest, InvalidInput)
-{
-  std::string test_string = starting_piece_placement_string + "K";
-  ASSERT_THROW(
-      piece_placement_string_to_array(test_string),
-      std::invalid_argument);
-  ASSERT_THROW(
-      piece_placement_string_to_array("rnbkqbnr"),
-      std::invalid_argument);
+TEST(PiecePlacementStringToArrayTest, InvalidInput) {
+  std::string test_string = startingPiecePlacementString + "K";
+  ASSERT_THROW(piecePlacementStringToArray(test_string), std::invalid_argument);
+  ASSERT_THROW(piecePlacementStringToArray("rnbkqbnr"), std::invalid_argument);
 
-  ASSERT_THROW(
-      piece_placement_string_to_array("rnbqkbnr/appppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"),
-      std::invalid_argument);
+  ASSERT_THROW(piecePlacementStringToArray(
+                   "rnbqkbnr/appppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"),
+               std::invalid_argument);
 }
 
-TEST(PiecePlacementArrayToStringTest, ValidInput)
-{
-  std::string expected = starting_piece_placement_string;
-  std::string actual = piece_placement_array_to_string(starting_piece_placement);
+TEST(PiecePlacementArrayToStringTest, ValidInput) {
+  std::string expected = startingPiecePlacementString;
+  std::string actual = piecePlacementArrayToString(startingPiecePlacement);
   ASSERT_EQ(actual, expected);
 }
 
-TEST(ParseCastlingAvailabilityTest, ValidInput)
-{
+TEST(ParseCastlingAvailabilityTest, ValidInput) {
   CastlingAvailability expected;
 
-  expected.black_long = true;
-  ASSERT_EQ(parse_castling_availability("q"), expected);
+  expected.blackLong = true;
+  ASSERT_EQ(parseCastlingAvailability("q"), expected);
 
-  expected.black_short = true;
-  expected.white_long = true;
-  expected.white_short = true;
-  ASSERT_EQ(parse_castling_availability("KQkq"), expected);
+  expected.blackShort = true;
+  expected.whiteLong = true;
+  expected.whiteShort = true;
+  ASSERT_EQ(parseCastlingAvailability("KQkq"), expected);
 }
 
-TEST(ParseCastlingAvailabilityTest, InvalidInput)
-{
-  ASSERT_THROW(parse_castling_availability("&"), std::invalid_argument);
-  ASSERT_THROW(parse_castling_availability("Kk$"), std::invalid_argument);
-  ASSERT_THROW(parse_castling_availability("KQkqb"), std::invalid_argument);
+TEST(ParseCastlingAvailabilityTest, InvalidInput) {
+  ASSERT_THROW(parseCastlingAvailability("&"), std::invalid_argument);
+  ASSERT_THROW(parseCastlingAvailability("Kk$"), std::invalid_argument);
+  ASSERT_THROW(parseCastlingAvailability("KQkqb"), std::invalid_argument);
 }
 
-TEST(CastlingAvailabilityToString, ValidInput)
-{
-  ASSERT_EQ(castling_availability_to_string(CastlingAvailability({true, true, true, true})), "KQkq");
-  ASSERT_EQ(castling_availability_to_string(CastlingAvailability({false, false, false, true})), "q");
+TEST(CastlingAvailabilityToString, ValidInput) {
+  ASSERT_EQ(castlingAvailabilityToString(
+                CastlingAvailability({true, true, true, true})),
+            "KQkq");
+  ASSERT_EQ(castlingAvailabilityToString(
+                CastlingAvailability({false, false, false, true})),
+            "q");
 }
 
-TEST(IndexToFileRank, ValidInput)
-{
+TEST(IndexToFileRank, ValidInput) {
   FileRank expected;
 
   expected = {1, 8};
-  ASSERT_EQ(index_to_file_rank(BoardIndex(0)), expected);
+  ASSERT_EQ(indexToFileRank(BoardIndex(0)), expected);
   expected = {8, 8};
-  ASSERT_EQ(index_to_file_rank(BoardIndex(7)), expected);
+  ASSERT_EQ(indexToFileRank(BoardIndex(7)), expected);
   expected = {1, 1};
-  ASSERT_EQ(index_to_file_rank(BoardIndex(56)), expected);
+  ASSERT_EQ(indexToFileRank(BoardIndex(56)), expected);
   expected = {8, 1};
-  ASSERT_EQ(index_to_file_rank(BoardIndex(63)), expected);
+  ASSERT_EQ(indexToFileRank(BoardIndex(63)), expected);
   expected = {3, 6};
-  ASSERT_EQ(index_to_file_rank(BoardIndex(18)), expected);
+  ASSERT_EQ(indexToFileRank(BoardIndex(18)), expected);
 }
 
-TEST(FileRankToIndex, ValidInput)
-{
-  ASSERT_EQ(file_rank_to_index({1, 1}), 56);
-  ASSERT_EQ(file_rank_to_index({1, 8}), 0);
-  ASSERT_EQ(file_rank_to_index({8, 1}), 63);
-  ASSERT_EQ(file_rank_to_index({8, 8}), 7);
-  ASSERT_EQ(file_rank_to_index({3, 6}), 18);
+TEST(FileRankToIndex, ValidInput) {
+  ASSERT_EQ(fileRankToIndex({1, 1}), 56);
+  ASSERT_EQ(fileRankToIndex({1, 8}), 0);
+  ASSERT_EQ(fileRankToIndex({8, 1}), 63);
+  ASSERT_EQ(fileRankToIndex({8, 8}), 7);
+  ASSERT_EQ(fileRankToIndex({3, 6}), 18);
 }
 
-TEST(FileRankToIndex, InvalidInput)
-{
-  ASSERT_THROW(file_rank_to_index({0, 1}), std::out_of_range);
-  ASSERT_THROW(file_rank_to_index({1, 0}), std::out_of_range);
-  ASSERT_THROW(file_rank_to_index({9, 1}), std::out_of_range);
-  ASSERT_THROW(file_rank_to_index({1, 9}), std::out_of_range);
+TEST(FileRankToIndex, InvalidInput) {
+  ASSERT_THROW(fileRankToIndex({0, 1}), std::out_of_range);
+  ASSERT_THROW(fileRankToIndex({1, 0}), std::out_of_range);
+  ASSERT_THROW(fileRankToIndex({9, 1}), std::out_of_range);
+  ASSERT_THROW(fileRankToIndex({1, 9}), std::out_of_range);
 }

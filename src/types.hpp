@@ -1,27 +1,24 @@
 #pragma once
 
-#include "logger.hpp"
-
 #include <array>
 #include <initializer_list>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-enum class PieceColor : char
-{
+#include "logger.hpp"
+
+enum class PieceColor : char {
   White = 'w',
   Black = 'b',
 
 };
 
-inline PieceColor operator!(PieceColor current)
-{
+inline PieceColor operator!(PieceColor current) {
   return (current == PieceColor::White) ? PieceColor::Black : PieceColor::White;
 }
 
-enum class ChessPiece : char
-{
+enum class ChessPiece : char {
   BlackPawn = 'p',
   BlackKnight = 'n',
   BlackBishop = 'b',
@@ -39,44 +36,36 @@ enum class ChessPiece : char
 
 using PiecePlacement = std::array<ChessPiece, 64>;
 
-struct CastlingAvailability
-{
-  bool white_short;
-  bool white_long;
-  bool black_short;
-  bool black_long;
+struct CastlingAvailability {
+  bool whiteShort;
+  bool whiteLong;
+  bool blackShort;
+  bool blackLong;
 
-  bool operator==(const CastlingAvailability &other) const
-  {
-    return (
-        white_short == other.white_short &&
-        white_long == other.white_long &&
-        black_short == other.black_short &&
-        black_long == other.black_long);
+  bool operator==(const CastlingAvailability &other) const {
+    return (whiteShort == other.whiteShort && whiteLong == other.whiteLong &&
+            blackShort == other.blackShort && blackLong == other.blackLong);
   }
 };
 
-class RangedInt
-{
-private:
+class RangedInt {
+ private:
   int val;
   int minVal;
   int maxVal;
 
-  void validate(int v)
-  {
-    if (v < minVal || v > maxVal)
-    {
-      throw std::out_of_range(
-          "RangedInt must be in range [" + std::to_string(minVal) + ", " + std::to_string(maxVal) + "]\n");
+  void validate(int v) {
+    if (v < minVal || v > maxVal) {
+      throw std::out_of_range("RangedInt must be in range [" +
+                              std::to_string(minVal) + ", " +
+                              std::to_string(maxVal) + "]\n");
     }
   }
 
-public:
+ public:
   RangedInt() = default;
 
-  explicit RangedInt(int v, int minV, int maxV) : minVal(minV), maxVal(maxV)
-  {
+  explicit RangedInt(int v, int minV, int maxV) : minVal(minV), maxVal(maxV) {
     validate(v);
     val = v;
   }
@@ -85,34 +74,30 @@ public:
 
   operator int() const { return val; }
 
-  RangedInt &operator=(int v)
-  {
+  RangedInt &operator=(int v) {
     validate(v);
     val = v;
     return *this;
   }
 
-  RangedInt &operator+=(int v)
-  {
+  RangedInt &operator+=(int v) {
     validate(val + v);
     val += v;
     return *this;
   }
 };
 
-class BoardIndex : public RangedInt
-{
-public:
+class BoardIndex : public RangedInt {
+ public:
   BoardIndex() : RangedInt(0, 0, 63) {}
 
   BoardIndex(int v) : RangedInt(v, 0, 63) {}
 
-  static std::vector<BoardIndex> create_vector(std::initializer_list<int> indices)
-  {
+  static std::vector<BoardIndex> create_vector(
+      std::initializer_list<int> indices) {
     std::vector<BoardIndex> result;
     result.reserve(indices.size());
-    for (auto &index : indices)
-    {
+    for (auto &index : indices) {
       result.emplace_back(BoardIndex(index));
     }
 
@@ -120,9 +105,8 @@ public:
   }
 };
 
-class FileRankIndex : public RangedInt
-{
-public:
+class FileRankIndex : public RangedInt {
+ public:
   FileRankIndex() : RangedInt(1, 1, 8) {}
 
   FileRankIndex(int v) : RangedInt(v, 1, 8) {}
