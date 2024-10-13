@@ -34,7 +34,7 @@ class Game {
   friend class King;
 
  public:
-  Game(const PiecePlacement &, PieceColor, std::string,
+  Game(const PiecePlacement &, PieceColor, CastlingAvailability,
        std::optional<BoardIndex>, int, int);
   Game();
   Game(std::string &);
@@ -48,14 +48,17 @@ class Game {
   void handleEnPassant(const ChessPiece, const PieceColor, const BoardIndex,
                        const BoardIndex);  // could this be private?
   void handlePawnPromotion(const ChessPiece, const BoardIndex);
+  void handleCastling(const BoardIndex, const BoardIndex, const ChessPiece);
   std::pair<BoardIndex, BoardIndex> generateCpuMove(PieceColor) const;
-  static bool isKingInCheck(const PieceColor, const PiecePlacement &);
   bool validateMove(BoardIndex, BoardIndex) const;
+  static bool isKingInCheck(const PieceColor, const PiecePlacement &);
+  static bool isSquareUnderAttack(const BoardIndex, const PieceColor,
+                                  const PiecePlacement &);
 
  private:
   PiecePlacement piecePlacement;
   PieceColor activeColor;
-  std::string castlingAvailability;
+  CastlingAvailability castlingAvailability;
   std::optional<BoardIndex> enPassantIndex;
   int halfmoveClock;
   int fullmoveClock;
@@ -68,8 +71,9 @@ class Game {
   King king;
 };
 
-inline Game::Game(const PiecePlacement &pp, PieceColor ac, std::string ca,
-                  std::optional<BoardIndex> ep, int hc, int fc)
+inline Game::Game(const PiecePlacement &pp, PieceColor ac,
+                  CastlingAvailability ca, std::optional<BoardIndex> ep, int hc,
+                  int fc)
     : piecePlacement(pp),
       activeColor(ac),
       castlingAvailability(ca),
@@ -103,7 +107,7 @@ inline Game::Game(std::string &fen) : Game() {
         activeColor = charToColor(token[0]);
         break;
       case 3:
-        castlingAvailability = token;
+        castlingAvailability = parseCastlingAvailability(token);
         break;
       case 4:
         if (token == "-")
@@ -126,7 +130,8 @@ inline Game::Game(std::string &fen) : Game() {
 inline std::string Game::getFenStr() {
   std::ostringstream fen;
   fen << piecePlacementArrayToString(piecePlacement) << " "
-      << colorToChar(activeColor) << " " << castlingAvailability << " "
+      << colorToChar(activeColor) << " "
+      << castlingAvailabilityToString(castlingAvailability) << " "
       << indexToAlgebraic(enPassantIndex) << " "
       << std::to_string(halfmoveClock) << " " << std::to_string(fullmoveClock);
 
@@ -154,6 +159,7 @@ inline bool Game::move() {
     activeColor = !activeColor;
     handleEnPassant(fromPiece, fromColor, fromIndex, toIndex);
     handlePawnPromotion(fromPiece, toIndex);
+    handleCastling(fromIndex, toIndex, fromPiece);
     // logger.log(this->getFenStr());
     return true;
   } else {
@@ -239,6 +245,56 @@ inline void Game::handlePawnPromotion(const ChessPiece fromPiece,
   }
 }
 
+inline void Game::handleCastling(const BoardIndex fromIndex,
+                                 const BoardIndex toIndex,
+                                 const ChessPiece piece) {
+  if (piece == ChessPiece::WhiteKing) {
+    castlingAvailability.whiteShort = false;
+    castlingAvailability.whiteLong = false;
+
+    if (fromIndex == 60 && toIndex == 62) {
+      piecePlacement[63] = ChessPiece::Empty;
+      piecePlacement[61] = ChessPiece::WhiteRook;
+    }
+
+    if (fromIndex == 60 && toIndex == 58) {
+      piecePlacement[56] = ChessPiece::Empty;
+      piecePlacement[59] = ChessPiece::WhiteRook;
+    }
+  }
+
+  if (piece == ChessPiece::BlackKing) {
+    castlingAvailability.blackShort = false;
+    castlingAvailability.blackLong = false;
+
+    if (fromIndex == 4 && toIndex == 6) {
+      piecePlacement[7] = ChessPiece::Empty;
+      piecePlacement[5] = ChessPiece::BlackRook;
+    }
+
+    if (fromIndex == 4 && toIndex == 2) {
+      piecePlacement[0] = ChessPiece::Empty;
+      piecePlacement[3] = ChessPiece::BlackRook;
+    }
+  }
+
+  if (fromIndex == 63 && piece == ChessPiece::WhiteRook) {
+    castlingAvailability.whiteShort = false;
+  }
+
+  if (fromIndex == 56 && piece == ChessPiece::WhiteRook) {
+    castlingAvailability.whiteLong = false;
+  }
+
+  if (fromIndex == 7 && piece == ChessPiece::BlackRook) {
+    castlingAvailability.blackShort = false;
+  }
+
+  if (fromIndex == 0 && piece == ChessPiece::BlackRook) {
+    castlingAvailability.blackLong = false;
+  }
+};
+
 inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const {
   auto fromPiece = piecePlacement[fromIndex];
   auto toPiece = piecePlacement[toIndex];
@@ -323,6 +379,14 @@ inline bool Game::isKingInCheck(const PieceColor color,
       std::find(piecePlacement.cbegin(), piecePlacement.cend(), kingPiece);
   BoardIndex kingIndex(kingIter - piecePlacement.cbegin());
 
+  return isSquareUnderAttack(kingIndex, color, piecePlacement);
+}
+
+inline bool Game::isSquareUnderAttack(
+    const BoardIndex index,
+    const PieceColor color,  // attacking color
+    const PiecePlacement &piecePlacement) {
+  logger.log("boardindex: ", index);
   auto isPieceInIndexesLambda = [color, piecePlacement](
                                     ChessPiece searchPiece,
                                     std::vector<BoardIndex> &indexes) {
@@ -353,7 +417,11 @@ inline bool Game::isKingInCheck(const PieceColor color,
     return false;
   };
 
+  const bool isWhite = color == PieceColor::White;
+
   // pawn
+  const ChessPiece pawn =
+      isWhite ? ChessPiece::BlackPawn : ChessPiece::WhitePawn;
   const std::vector<std::pair<int, int>> pawnOffsets =
       (color == PieceColor::White)
           ? std::vector<std::pair<int, int>>{
@@ -365,46 +433,54 @@ inline bool Game::isKingInCheck(const PieceColor color,
                 {-1, -1},
             };
   std::vector<BoardIndex> pawnIndexes =
-      Piece::squareIndexes(kingIndex, pawnOffsets);
-  if (isPieceInIndexesLambda(ChessPiece::BlackPawn, pawnIndexes)) {
+      Piece::squareIndexes(index, pawnOffsets);
+  if (isPieceInIndexesLambda(pawn, pawnIndexes)) {
     return true;
   }
 
   // knight
+  const ChessPiece knight =
+      isWhite ? ChessPiece::BlackKnight : ChessPiece::WhiteKnight;
   const std::vector<std::pair<int, int>> knightOffsets = {
       {1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
   };
-  auto knightIndexes = Piece::squareIndexes(kingIndex, knightOffsets);
-  if (isPieceInIndexesLambda(ChessPiece::BlackKnight, knightIndexes)) {
+  auto knightIndexes = Piece::squareIndexes(index, knightOffsets);
+  if (isPieceInIndexesLambda(knight, knightIndexes)) {
     return true;
   }
 
   // bishop/queen
+  const ChessPiece bishop =
+      isWhite ? ChessPiece::BlackBishop : ChessPiece::WhiteBishop;
   const std::vector<std::pair<int, int>> diagOffsets = {
       {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
   auto diagIndexes =
-      Piece::linearSquareIndexes(kingIndex, diagOffsets, piecePlacement);
-  if (isPieceInIndexesLambda(ChessPiece::BlackBishop, diagIndexes)) {
+      Piece::linearSquareIndexes(index, color, diagOffsets, piecePlacement);
+  if (isPieceInIndexesLambda(bishop, diagIndexes)) {
     return true;
   }
 
   // rook/queen
+  const ChessPiece rook =
+      isWhite ? ChessPiece::BlackRook : ChessPiece::WhiteRook;
   const std::vector<std::pair<int, int>> horizVertOffsets = {
       {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-  auto horizVertIndexes =
-      Piece::linearSquareIndexes(kingIndex, horizVertOffsets, piecePlacement);
-  if (isPieceInIndexesLambda(ChessPiece::BlackRook, horizVertIndexes)) {
+  auto horizVertIndexes = Piece::linearSquareIndexes(
+      index, color, horizVertOffsets, piecePlacement);
+  if (isPieceInIndexesLambda(rook, horizVertIndexes)) {
     return true;
   }
 
   // king
+  const ChessPiece king =
+      isWhite ? ChessPiece::BlackKing : ChessPiece::WhiteKing;
   const std::vector<std::pair<int, int>> kingOffsets = {
       {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1},
   };
-  auto kingIndexes = Piece::squareIndexes(kingIndex, kingOffsets);
-  if (isPieceInIndexesLambda(ChessPiece::BlackKing, kingIndexes)) {
+  auto kingIndexes = Piece::squareIndexes(index, kingOffsets);
+  if (isPieceInIndexesLambda(king, kingIndexes)) {
     return true;
   }
 
   return false;
-}
+};

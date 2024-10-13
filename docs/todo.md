@@ -9,3 +9,6 @@
 - eventually get std::out_of_range throw with cpu vs cpu
 - make portable (cmake)
 - clear log/txt on new instance
+- need to update unit tests :(
+  - [ ] castling
+  - [ ] pawn promotion

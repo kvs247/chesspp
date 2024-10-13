@@ -163,7 +163,11 @@ inline CastlingAvailability parseCastlingAvailability(
         "Castling availability string must be < 4 chars");
   }
 
-  CastlingAvailability result;
+  CastlingAvailability result({false, false, false, false});
+
+  if (castlingAvailabilityString == "-") {
+    return result;
+  }
 
   const std::string validChars = "KQkq";
 

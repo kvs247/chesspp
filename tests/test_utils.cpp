@@ -111,7 +111,7 @@ TEST(PiecePlacementArrayToStringTest, ValidInput) {
 }
 
 TEST(ParseCastlingAvailabilityTest, ValidInput) {
-  CastlingAvailability expected;
+  CastlingAvailability expected({false, false, false, false});
 
   expected.blackLong = true;
   ASSERT_EQ(parseCastlingAvailability("q"), expected);

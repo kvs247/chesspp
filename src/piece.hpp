@@ -16,8 +16,8 @@ class Piece {
       const BoardIndex) const = 0;  // pure virtual
 
   static std::vector<BoardIndex> linearSquareIndexes(
-      const BoardIndex, const std::vector<std::pair<int, int>> &,
-      const PiecePlacement &);
+      const BoardIndex, const PieceColor,
+      const std::vector<std::pair<int, int>> &, const PiecePlacement &);
 
   static std::vector<BoardIndex> squareIndexes(
       const BoardIndex, const std::vector<std::pair<int, int>> &);

@@ -32,4 +32,5 @@ inline const PiecePlacement startingPiecePlacement = {
     ChessPiece::WhiteKing,   ChessPiece::WhiteBishop, ChessPiece::WhiteKnight,
     ChessPiece::WhiteRook};
 
-inline const std::string startingCastlingAvailability = "KQkq";
+inline const CastlingAvailability startingCastlingAvailability({true, true,
+                                                                true, true});

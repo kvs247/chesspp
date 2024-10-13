@@ -13,12 +13,11 @@
 Piece::Piece(Game &g) : game(g) {}
 
 std::vector<BoardIndex> Piece::linearSquareIndexes(
-    const BoardIndex index, const std::vector<std::pair<int, int>> &offsets,
+    const BoardIndex index, const PieceColor color,
+    const std::vector<std::pair<int, int>> &offsets,
     const PiecePlacement &piecePlacement) {
   std::vector<BoardIndex> res = {};
 
-  ChessPiece piece = piecePlacement[index];
-  auto color = pieceColor(piece);
   auto [file, rank] = indexToFileRank(index);
   int targetFile,
       targetRank;  // not FileRankIndex since we are testing if on board
@@ -133,26 +132,29 @@ Bishop::Bishop(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Bishop::legalSquareIndexes(
     const BoardIndex index) const {
+  const auto color = pieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {
       {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-  return linearSquareIndexes(index, offsets, game.piecePlacement);
+  return linearSquareIndexes(index, color, offsets, game.piecePlacement);
 }
 
 Rook::Rook(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Rook::legalSquareIndexes(const BoardIndex index) const {
+  const auto color = pieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {
       {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-  return linearSquareIndexes(index, offsets, game.piecePlacement);
+  return linearSquareIndexes(index, color, offsets, game.piecePlacement);
 }
 
 Queen::Queen(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Queen::legalSquareIndexes(
     const BoardIndex index) const {
+  const auto color = pieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {
       {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-  return linearSquareIndexes(index, offsets, game.piecePlacement);
+  return linearSquareIndexes(index, color, offsets, game.piecePlacement);
 }
 
 King::King(Game &g) : Piece(g) {}
@@ -160,5 +162,39 @@ King::King(Game &g) : Piece(g) {}
 std::vector<BoardIndex> King::legalSquareIndexes(const BoardIndex index) const {
   const std::vector<std::pair<int, int>> offsets = {
       {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-  return squareIndexes(index, offsets);
+
+  auto res = squareIndexes(index, offsets);
+
+  if (game.castlingAvailability.whiteShort &&
+      game.piecePlacement[61] == ChessPiece::Empty &&
+      game.piecePlacement[62] == ChessPiece::Empty &&
+      !Game::isSquareUnderAttack(61, PieceColor::White, game.piecePlacement) &&
+      !Game::isSquareUnderAttack(62, PieceColor::White, game.piecePlacement)) {
+    res.push_back(62);
+  }
+  if (game.castlingAvailability.whiteLong &&
+      game.piecePlacement[59] == ChessPiece::Empty &&
+      game.piecePlacement[58] == ChessPiece::Empty &&
+      game.piecePlacement[57] == ChessPiece::Empty &&
+      !Game::isSquareUnderAttack(59, PieceColor::White, game.piecePlacement) &&
+      !Game::isSquareUnderAttack(58, PieceColor::White, game.piecePlacement)) {
+    res.push_back(58);
+  }
+  if (game.castlingAvailability.blackShort &&
+      game.piecePlacement[5] == ChessPiece::Empty &&
+      game.piecePlacement[6] == ChessPiece::Empty &&
+      !Game::isSquareUnderAttack(5, PieceColor::Black, game.piecePlacement) &&
+      !Game::isSquareUnderAttack(6, PieceColor::Black, game.piecePlacement)) {
+    res.push_back(6);
+  }
+  if (game.castlingAvailability.blackLong &&
+      game.piecePlacement[3] == ChessPiece::Empty &&
+      game.piecePlacement[2] == ChessPiece::Empty &&
+      game.piecePlacement[1] == ChessPiece::Empty &&
+      !Game::isSquareUnderAttack(3, PieceColor::Black, game.piecePlacement) &&
+      !Game::isSquareUnderAttack(2, PieceColor::Black, game.piecePlacement)) {
+    res.push_back(2);
+  }
+
+  return res;
 }
