@@ -12,3 +12,4 @@
 - need to update unit tests :(
   - [ ] castling
   - [ ] pawn promotion
+- better understand logger and config

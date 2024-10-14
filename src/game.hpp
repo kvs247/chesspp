@@ -19,11 +19,7 @@
 #include "piece.hpp"
 #include "types.hpp"
 #include "utils.hpp"
-
-#define BLACK_IS_CPU true
-#define WHITE_IS_CPU true
-#define DISABLE_TURN_ORDER true
-#define CPU_MOVE_DELAY_MS 250
+#include "config.hpp"
 
 class Game {
   friend class Piece;
@@ -143,9 +139,9 @@ inline PiecePlacement Game::getPiecePlacement() { return piecePlacement; }
 inline bool Game::move() {
   BoardIndex fromIndex, toIndex;
 
-  if (BLACK_IS_CPU && activeColor == PieceColor::Black) {
+  if (config.blackIsCpu && activeColor == PieceColor::Black) {
     std::tie(fromIndex, toIndex) = generateCpuMove(PieceColor::Black);
-  } else if (WHITE_IS_CPU && activeColor == PieceColor::White) {
+  } else if (config.whiteIsCpu && activeColor == PieceColor::White) {
     std::tie(fromIndex, toIndex) = generateCpuMove(PieceColor::White);
   } else {
     readMove(fromIndex, toIndex);
@@ -304,6 +300,10 @@ inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const {
   }
 
   auto fromColor = pieceColor(fromPiece);
+  
+  if (!config.disableTurnOrder && fromColor != activeColor) {
+    return false;
+  }
   if (toPiece != ChessPiece::Empty && fromColor == pieceColor(toPiece)) {
     return false;
   }
@@ -360,13 +360,13 @@ inline std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(
     for (auto toIndex : indexes) {
       if (validateMove(fromIndex, toIndex)) {
         std::this_thread::sleep_for(
-            std::chrono::milliseconds(CPU_MOVE_DELAY_MS));
+            std::chrono::milliseconds(config.cpuMoveDelayMs));
         return {fromIndex, toIndex};
       }
     }
   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(CPU_MOVE_DELAY_MS));
+  std::this_thread::sleep_for(std::chrono::milliseconds(config.cpuMoveDelayMs));
   logger.log("CHECKMATE");
   return {resFromIndex, resToIndex};  // getting here implies checkmate
 };
@@ -386,7 +386,6 @@ inline bool Game::isSquareUnderAttack(
     const BoardIndex index,
     const PieceColor color,  // attacking color
     const PiecePlacement &piecePlacement) {
-  logger.log("boardindex: ", index);
   auto isPieceInIndexesLambda = [color, piecePlacement](
                                     ChessPiece searchPiece,
                                     std::vector<BoardIndex> &indexes) {

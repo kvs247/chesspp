@@ -48,6 +48,13 @@ struct CastlingAvailability {
   }
 };
 
+struct Config {
+  bool whiteIsCpu = false;
+  bool blackIsCpu = false;
+  int cpuMoveDelayMs = 1000;
+  bool disableTurnOrder = false;
+};
+
 class RangedInt {
  private:
   int val;
