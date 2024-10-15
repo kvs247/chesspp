@@ -1,28 +1,39 @@
 # Features
 
-- [ ] Terminal board/pieces display
-  - [x] Draw board & pieces
-  - [ ] Detect cursor position
+- [ ] game logic
+  - [ ] piece potential squares *piece.hpp helpers should handle friendly fire, opening a check etc.
+    - [x] pawn
+    - [x] knight
+    - [x] bishop
+    - [x] rook
+    - [x] king
+    - [x] queen
+  - [ ] other logic
+    - [x] castling
+    - [x] pawn promotion
+      - [ ] choose piece
+    - [x] check
+  - endgame scenarios
+    - [ ]  checkmate
+    - [ ]  resignation
+    - [ ]  timeout
+    - [ ]  draw
+      - [ ]  stalemate
+      - [ ]  insufficient Material
+      - [ ]  50-move rule
+      - [ ]  repetition
+      - [ ]  agreement
+- [ ] terminal board/pieces display
+  - [x] draw board & pieces
+  - [ ] moves played list
+- [x] CPU opponent
+  - [x] random moves
+  - [ ] sophisticated moves (LLM?)
+- [ ] time control
+- [x] logging
+  - [x] setup ability to log debug to log file separate from stdout/stderr
 - [ ] OS portability
   - [ ] Linux
   - [ ] Windows
   - [ ] Mac
-- [ ] Piece Logic
-  - [x] Piece potential squares
-    - [x] Pawn
-    - [x] Knight
-    - [x] Bishop
-    - [x] Rook
-    - [x] King
-    - [x] Queen
-  - [ ] Game logic
-    - [x] Check
-    - [ ] Checkmate
-    - [ ] Stalemate
-    - [ ] ...other win conditions
-    - [ ] Pawn promotion
-- [ ] CPU Opponent
-  - [ ] Random moves
-  - [ ] Sophisticated moves (LLM?)
-- [x] Logging
-  - [x] Setup ability to log debug to log file separate from stdout/stderr
+- [ ] connect to network
