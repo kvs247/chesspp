@@ -20,7 +20,12 @@ class Piece {
       const std::vector<std::pair<int, int>> &, const PiecePlacement &);
 
   static std::vector<BoardIndex> squareIndexes(
-      const BoardIndex, const std::vector<std::pair<int, int>> &);
+      const BoardIndex, const std::vector<std::pair<int, int>> &,
+      const PiecePlacement &);
+
+  static std::vector<BoardIndex> filterSelfCheckMoves(
+      const PiecePlacement &, const BoardIndex,
+      const std::vector<BoardIndex> &);
 
  protected:
   Game &game;

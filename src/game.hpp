@@ -14,16 +14,17 @@
 #include <tuple>
 #include <vector>
 
+#include "config.hpp"
 #include "constants.hpp"
 #include "logger.hpp"
 #include "piece.hpp"
 #include "types.hpp"
 #include "utils.hpp"
-#include "config.hpp"
 
 class Game {
   friend class Piece;
   friend class Pawn;
+  friend class Knight;
   friend class Bishop;
   friend class Rook;
   friend class Queen;
@@ -106,13 +107,18 @@ inline Game::Game(std::string &fen) : Game() {
         castlingAvailability = parseCastlingAvailability(token);
         break;
       case 4:
-        if (token == "-")
+        if (token == "-") {
           enPassantIndex = std::nullopt;
-        else
+        } else {
           enPassantIndex = algebraicToIndex(token);
+        }
         break;
       case 5:
-        halfmoveClock = std::stoi(token);
+        if (token == "-") {
+          halfmoveClock = 0;
+        } else {
+          halfmoveClock = std::stoi(token);
+        }
         break;
       case 6:
         fullmoveClock = std::stoi(token);
@@ -293,30 +299,19 @@ inline void Game::handleCastling(const BoardIndex fromIndex,
 
 inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const {
   auto fromPiece = piecePlacement[fromIndex];
-  auto toPiece = piecePlacement[toIndex];
 
   if (fromPiece == ChessPiece::Empty) {
     return false;
   }
 
   auto fromColor = pieceColor(fromPiece);
-  
+
   if (!config.disableTurnOrder && fromColor != activeColor) {
-    return false;
-  }
-  if (toPiece != ChessPiece::Empty && fromColor == pieceColor(toPiece)) {
     return false;
   }
 
   auto indexes = getPieceLegalMoves(fromPiece, fromIndex);
   if (std::find(indexes.cbegin(), indexes.cend(), toIndex) == indexes.cend()) {
-    return false;
-  }
-
-  PiecePlacement newPiecePlacement = piecePlacement;
-  newPiecePlacement[toIndex] = piecePlacement[fromIndex];
-  newPiecePlacement[fromIndex] = ChessPiece::Empty;
-  if (isKingInCheck(fromColor, newPiecePlacement)) {
     return false;
   }
 
@@ -432,7 +427,7 @@ inline bool Game::isSquareUnderAttack(
                 {-1, -1},
             };
   std::vector<BoardIndex> pawnIndexes =
-      Piece::squareIndexes(index, pawnOffsets);
+      Piece::squareIndexes(index, pawnOffsets, piecePlacement);
   if (isPieceInIndexesLambda(pawn, pawnIndexes)) {
     return true;
   }
@@ -443,7 +438,8 @@ inline bool Game::isSquareUnderAttack(
   const std::vector<std::pair<int, int>> knightOffsets = {
       {1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
   };
-  auto knightIndexes = Piece::squareIndexes(index, knightOffsets);
+  auto knightIndexes =
+      Piece::squareIndexes(index, knightOffsets, piecePlacement);
   if (isPieceInIndexesLambda(knight, knightIndexes)) {
     return true;
   }
@@ -476,7 +472,7 @@ inline bool Game::isSquareUnderAttack(
   const std::vector<std::pair<int, int>> kingOffsets = {
       {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1},
   };
-  auto kingIndexes = Piece::squareIndexes(index, kingOffsets);
+  auto kingIndexes = Piece::squareIndexes(index, kingOffsets, piecePlacement);
   if (isPieceInIndexesLambda(king, kingIndexes)) {
     return true;
   }

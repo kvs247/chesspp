@@ -6,7 +6,7 @@
 #include "../src/game.hpp"
 #include "../src/piece.hpp"
 
-TEST(PawnTest, Forward) {
+TEST(PawnTest, WhiteForward) {
   std::string fen =
       "rnbqkb1r/ppppp1pp/5p1n/8/8/2N1P3/PPPP1PPP/R1BQKBNR w KQkq - 0 1";
   Game game(fen);
@@ -36,6 +36,17 @@ TEST(PawnTest, Forward) {
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
   ASSERT_EQ(actual, expected);
+};
+
+TEST(PawnTest, BlackForward) {
+  std::string fen =
+      "rnbqkb1r/ppppp1pp/5p1n/8/8/2N1P3/PPPP1PPP/R1BQKBNR w KQkq - 0 1";
+  Game game(fen);
+  Pawn pawn(game);
+
+  BoardIndex index;
+  std::vector<BoardIndex> expected;
+  std::vector<BoardIndex> actual;
 
   index = 15;
   expected = {};
@@ -59,8 +70,9 @@ TEST(PawnTest, Forward) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(PawnTest, Capture) {
-  std::string fen = "8/8/8/8/8/3p4/4P3/8 w - - 0 1";
+TEST(PawnTest, WhiteCapture) {
+  std::string fen =
+      "r1bqkbnr/pp2pppp/8/3pNP2/2pnP3/8/PPPP2PP/RNBQKB1R w KQkq - 0 1";
   Game game(fen);
   Pawn pawn(game);
 
@@ -68,22 +80,33 @@ TEST(PawnTest, Capture) {
   std::vector<BoardIndex> expected;
   std::vector<BoardIndex> actual;
 
-  index = 52;
-  expected = BoardIndex::create_vector({43, 44, 36});
-  actual = pawn.legalSquareIndexes(index);
-  std::sort(actual.begin(), actual.end());
-  std::sort(expected.begin(), expected.end());
-  ASSERT_EQ(actual, expected);
-
-  index = 43;
-  expected = BoardIndex::create_vector({51, 52});
+  index = 36;
+  expected = BoardIndex::create_vector({27});
   actual = pawn.legalSquareIndexes(index);
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
   ASSERT_EQ(actual, expected);
 }
 
-TEST(PawnTest, EnPassant) {
+TEST(PawnTest, BlackCapture) {
+  std::string fen =
+      "rnbqkbnr/ppp1pppp/8/3p4/4N3/8/PPPPPPPP/RNBQKB1R w KQkq - 0 1";
+  Game game(fen);
+  Pawn pawn(game);
+
+  BoardIndex index;
+  std::vector<BoardIndex> expected;
+  std::vector<BoardIndex> actual;
+
+  index = 27;
+  expected = BoardIndex::create_vector({35, 36});
+  actual = pawn.legalSquareIndexes(index);
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(PawnTest, WhiteEnPassant) {
   std::string fen =
       "rnbqkbnr/ppp1pppp/8/3pP3/8/7N/PPPP1PPP/RNBQKB1R w KQkq d6 0 4";
   Game game(fen);
@@ -99,13 +122,61 @@ TEST(PawnTest, EnPassant) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(KnightTest, Center) {
-  std::string fen = "8/8/8/4N3/8/8/8/8 w - - 0 1";
+TEST(PawnTest, WhiteCreateSelfCheck) {
+  std::string fen =
+      "rnb1kbnr/pppp1ppp/4p3/8/7q/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  Game game(fen);
+  Pawn pawn(game);
+
+  BoardIndex index(53);
+  auto expected = BoardIndex::create_vector({});
+  auto actual = pawn.legalSquareIndexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(PawnTest, BlackCreateSelfCheck) {
+  std::string fen = "rnbq1bnr/pppp1ppp/8/8/3kp2R/8/PPPPPPPP/RNBQKBN1 w Q - 0 1";
+  Game game(fen);
+  Pawn pawn(game);
+
+  BoardIndex index(36);
+  auto expected = BoardIndex::create_vector({});
+  auto actual = pawn.legalSquareIndexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(PawnTest, BlackEnPassant) {
+  std::string fen =
+      "rnbqkbnr/1ppppppp/8/8/pP5P/7R/P1PPPPP1/RNBQKBN1 b Qkq b3 0 3";
+  Game game(fen);
+  Pawn pawn(game);
+
+  BoardIndex index(32);
+  auto expected = BoardIndex::create_vector({40, 41});
+  auto actual = pawn.legalSquareIndexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(KnightTest, WhiteCenter) {
+  std::string fen =
+      "rnbqkbnr/ppp1p1pp/3p1p2/8/4N3/8/PPPPPPPP/RNBQKB1R w KQkq - 0";
   Game game(fen);
   Knight knight(game);
 
-  BoardIndex index(28);
-  auto expected = BoardIndex::create_vector({11, 13, 18, 22, 34, 38, 43, 45});
+  BoardIndex index(36);
+  auto expected = BoardIndex::create_vector({19, 21, 26, 30, 42, 46});
   auto actual = knight.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -114,13 +185,14 @@ TEST(KnightTest, Center) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(KnightTest, Corner) {
-  std::string fen = "8/8/8/8/8/8/8/7N w - - 0 1";
+TEST(KnightTest, BlackCenter) {
+  std::string fen =
+      "rnbqkb1r/pppppppp/1n6/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 1";
   Game game(fen);
   Knight knight(game);
 
-  BoardIndex index(63);
-  auto expected = BoardIndex::create_vector({46, 53});
+  BoardIndex index(17);
+  auto expected = BoardIndex::create_vector({27, 32, 34});
   auto actual = knight.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -129,13 +201,14 @@ TEST(KnightTest, Corner) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(KnightTest, Edge) {
-  std::string fen = "8/8/8/8/8/8/8/2N5 w - - 0 1";
+TEST(KnightTest, WhiteCreateSelfCheck) {
+  std::string fen =
+      "rnb1kbnr/pppp1ppp/4p3/8/7q/5P2/PPPPPNPP/R1BQKBNR w KQkq - 0 1";
   Game game(fen);
   Knight knight(game);
 
-  BoardIndex index(58);
-  auto expected = BoardIndex::create_vector({41, 43, 48, 52});
+  BoardIndex index(53);
+  auto expected = BoardIndex::create_vector({});
   auto actual = knight.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -144,14 +217,31 @@ TEST(KnightTest, Edge) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(BishopTest, Center) {
-  std::string fen = "8/8/8/3B4/8/8/8/8 w - - 0 1";
+TEST(KnightTest, BlackCreateSelfCheck) {
+  std::string fen =
+      "rnbqkb1r/ppppnppp/8/8/7P/4R3/PPPPPPP1/RNBQKBN1 w Qkq - 0 1";
+  Game game(fen);
+  Knight knight(game);
+
+  BoardIndex index(12);
+  auto expected = BoardIndex::create_vector({});
+  auto actual = knight.legalSquareIndexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(BishopTest, WhiteCenter) {
+  std::string fen =
+      "rnbqkbnr/pppppp1p/6p1/8/3B4/1P6/P1PPPPPP/RNBQK1NR w KQkq - 0 1";
   Game game(fen);
   Bishop bishop(game);
 
-  BoardIndex index(27);
-  auto expected = BoardIndex::create_vector(
-      {0, 9, 18, 20, 13, 6, 34, 41, 48, 36, 45, 54, 63});
+  BoardIndex index(35);
+  auto expected =
+      BoardIndex::create_vector({8, 17, 26, 42, 49, 44, 28, 21, 14, 7});
   std::vector<BoardIndex> actual = bishop.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -160,14 +250,14 @@ TEST(BishopTest, Center) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(BishopTest, CenterBlocked) {
-  std::string fen = "8/5p2/2P5/3B4/4p3/1P6/8/8 w - - 0 1";
+TEST(BishopTest, BlackCenter) {
+  std::string fen = "rnbqk1nr/pppppppp/7b/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
   Game game(fen);
   Bishop bishop(game);
 
-  BoardIndex index(27);
-  auto expected = BoardIndex::create_vector({20, 13, 34, 36});
-  auto actual = bishop.legalSquareIndexes(index);
+  BoardIndex index(23);
+  auto expected = BoardIndex::create_vector({30, 37, 44, 51});
+  std::vector<BoardIndex> actual = bishop.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -175,14 +265,15 @@ TEST(BishopTest, CenterBlocked) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(BishopTest, Corner) {
-  std::string fen = "8/8/8/8/8/8/8/B7 w - - 0 1";
+TEST(BishopTest, WhiteCreateSelfCheck) {
+  std::string fen =
+      "rnbqk1nr/pppp1ppp/4p3/8/1b6/3P4/PPPBPPPP/RN1QKBNR w KQkq - 0 1";
   Game game(fen);
   Bishop bishop(game);
 
-  BoardIndex index(56);
-  auto expected = BoardIndex::create_vector({49, 42, 35, 28, 21, 14, 7});
-  auto actual = bishop.legalSquareIndexes(index);
+  BoardIndex index(51);
+  auto expected = BoardIndex::create_vector({42, 33});
+  std::vector<BoardIndex> actual = bishop.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -190,14 +281,14 @@ TEST(BishopTest, Corner) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(BishopTest, Edge) {
-  std::string fen = "8/B7/8/8/8/8/8/8 w - - 0 1";
+TEST(BishopTest, BlackCreateSelfCheck) {
+  std::string fen = "rnbqk1nr/ppppbppp/8/8/8/4R3/PPPPPPPP/RNBQKBN1 w Qkq - 0 1";
   Game game(fen);
   Bishop bishop(game);
 
-  BoardIndex index(8);
-  auto expected = BoardIndex::create_vector({1, 17, 26, 35, 44, 53, 62});
-  auto actual = bishop.legalSquareIndexes(index);
+  BoardIndex index(12);
+  auto expected = BoardIndex::create_vector({});
+  std::vector<BoardIndex> actual = bishop.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -205,15 +296,80 @@ TEST(BishopTest, Edge) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(RookTest, Center) {
-  std::string fen = "8/8/8/3R4/8/8/8/8 w - - 0 1";
+TEST(RookTest, WhiteCenter) {
+  std::string fen = "rnbqkbnr/pppppppp/8/8/2R5/8/PPPPPPPP/RNBQKBN1 w Qkq - 0 1";
   Game game(fen);
   Rook rook(game);
 
-  BoardIndex index(27);
+  BoardIndex index(34);
+  auto expected =
+      BoardIndex::create_vector({32, 33, 35, 36, 37, 38, 39, 42, 26, 18, 10});
+  auto actual = rook.legalSquareIndexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(RookTest, BlackCenter) {
+  std::string fen = "rnbqkbn1/pppppppp/8/8/8/7r/PPPPPPPP/RNBQKBNR w KQq - 0 1";
+  Game game(fen);
+  Rook rook(game);
+
+  BoardIndex index(47);
+  auto expected =
+      BoardIndex::create_vector({23, 31, 39, 55, 46, 45, 44, 43, 42, 41, 40});
+  auto actual = rook.legalSquareIndexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(RookTest, WhiteCreateSelfCheck) {
+  std::string fen =
+      "rnb1kbnr/pppppppp/4q3/8/8/5P2/PPPPR1PP/RNBQKBN1 w Qkq - 0 1";
+  Game game(fen);
+  Rook rook(game);
+
+  BoardIndex index(52);
+  auto expected = BoardIndex::create_vector({44, 36, 28, 20});
+  auto actual = rook.legalSquareIndexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(RookTest, BlackCreateSelfCheck) {
+  std::string fen =
+      "rnbq1bn1/pppppppp/k7/1r6/8/3Q4/PPPPPPPP/RNB1KBNR w KQ - 0 1";
+  Game game(fen);
+  Rook rook(game);
+
+  BoardIndex index(25);
+  auto expected = BoardIndex::create_vector({});
+  auto actual = rook.legalSquareIndexes(index);
+
+  std::sort(actual.begin(), actual.end());
+  std::sort(expected.begin(), expected.end());
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(QueenTest, WhiteCenter) {
+  std::string fen =
+      "rnbqkbnr/pppppppp/8/8/2Q5/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1";
+  Game game(fen);
+  Queen queen(game);
+
+  BoardIndex index(34);
   auto expected = BoardIndex::create_vector(
-      {3, 11, 19, 24, 25, 26, 28, 29, 30, 31, 35, 43, 51, 59});
-  auto actual = rook.legalSquareIndexes(index);
+      {26, 18, 10, 25, 16, 33, 32, 41, 42, 43, 35, 36, 37, 38, 39, 27, 20, 13});
+  auto actual = queen.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
   std::sort(expected.begin(), expected.end());
@@ -221,62 +377,14 @@ TEST(RookTest, Center) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(RookTest, CenterBlocked) {
-  std::string fen = "8/3P4/8/2pR1p2/3P4/8/8/8 w - - 0 1";
+TEST(QueenTest, BlackCenter) {
+  std::string fen = "rnb1kbnr/pppppppp/8/7q/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
   Game game(fen);
-  Rook rook(game);
-
-  BoardIndex index(27);
-  auto expected = BoardIndex::create_vector({19, 26, 28, 29});
-  auto actual = rook.legalSquareIndexes(index);
-
-  std::sort(actual.begin(), actual.end());
-  std::sort(expected.begin(), expected.end());
-
-  ASSERT_EQ(actual, expected);
-}
-
-TEST(RookTest, Corner) {
-  std::string fen = "7R/8/8/8/8/8/8/8 w - - 0 1";
-  Game game(fen);
-  Rook rook(game);
-
-  BoardIndex index(7);
-  auto expected = BoardIndex::create_vector(
-      {0, 1, 2, 3, 4, 5, 6, 15, 23, 31, 39, 47, 55, 63});
-  auto actual = rook.legalSquareIndexes(index);
-
-  std::sort(actual.begin(), actual.end());
-  std::sort(expected.begin(), expected.end());
-
-  ASSERT_EQ(actual, expected);
-}
-
-TEST(RookTest, Edge) {
-  std::string fen = "8/8/8/7R/8/8/8/8 w - - 0 1";
-  Game game(fen);
-  Rook rook(game);
+  Queen queen(game);
 
   BoardIndex index(31);
   auto expected = BoardIndex::create_vector(
-      {7, 15, 23, 24, 25, 26, 27, 28, 29, 30, 39, 47, 55, 63});
-  auto actual = rook.legalSquareIndexes(index);
-
-  std::sort(actual.begin(), actual.end());
-  std::sort(expected.begin(), expected.end());
-
-  ASSERT_EQ(actual, expected);
-}
-
-TEST(QueenTest, Center) {
-  std::string fen = "8/8/8/3Q4/8/8/8/8 w - - 0 1";
-  Game game(fen);
-  Queen queen(game);
-
-  BoardIndex index(27);
-  auto expected = BoardIndex::create_vector(
-      {0,  9,  18, 36, 45, 54, 63, 6,  13, 20, 34, 41, 48, 3,
-       11, 19, 35, 43, 51, 59, 24, 25, 26, 28, 29, 30, 31});
+      {23, 22, 30, 29, 28, 27, 26, 25, 24, 38, 45, 52, 39, 47, 55});
   auto actual = queen.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -285,14 +393,13 @@ TEST(QueenTest, Center) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(QueenTest, CenterBlocked) {
-  std::string fen = "8/3P1p2/2p5/P2QP3/8/8/p2P2p1/8 w - - 0 1";
+TEST(QueenTest, WhiteCreateSelfCheck) {
+  std::string fen = "rnbqk1nr/pppppppp/8/8/7b/8/PPPPPQPP/RNB1KBNR w KQkq - 0 1";
   Game game(fen);
   Queen queen(game);
 
-  BoardIndex index(27);
-  auto expected = BoardIndex::create_vector(
-      {18, 19, 20, 13, 25, 26, 34, 41, 48, 35, 43, 36, 45, 54});
+  BoardIndex index(53);
+  auto expected = BoardIndex::create_vector({46, 39});
   auto actual = queen.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -301,15 +408,14 @@ TEST(QueenTest, CenterBlocked) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(QueenTest, Corner) {
-  std::string fen = "8/8/8/8/8/8/8/7Q w - - 0 1";
+TEST(QueenTest, BlackCreateSelfCheck) {
+  std::string fen =
+      "rnb1kbnr/pppqpppp/8/1B6/8/8/PPPPPPPP/RNBQK1NR w KQkq - 0 1";
   Game game(fen);
   Queen queen(game);
 
-  BoardIndex index(63);
-  auto expected =
-      BoardIndex::create_vector({0,  9,  18, 27, 36, 45, 54, 56, 57, 58, 59,
-                                 60, 61, 62, 7,  15, 23, 31, 39, 47, 55});
+  BoardIndex index(11);
+  auto expected = BoardIndex::create_vector({18, 25});
   auto actual = queen.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -318,30 +424,14 @@ TEST(QueenTest, Corner) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(QueenTest, Edge) {
-  std::string fen = "2Q5/8/8/8/8/8/8/8 w - - 0 1";
-  Game game(fen);
-  Queen queen(game);
-
-  BoardIndex index(2);
-  auto expected =
-      BoardIndex::create_vector({0,  1,  3,  4,  5,  6,  7,  9,  16, 10, 18,
-                                 26, 34, 42, 50, 58, 11, 20, 29, 38, 47});
-  auto actual = queen.legalSquareIndexes(index);
-
-  std::sort(actual.begin(), actual.end());
-  std::sort(expected.begin(), expected.end());
-
-  ASSERT_EQ(actual, expected);
-}
-
-TEST(KingTest, Center) {
-  std::string fen = "2Q5/8/8/8/8/8/8/8 w - - 0 1";
+TEST(KingTest, WhiteCenter) {
+  std::string fen =
+      "rnb1kbnr/ppp1pppp/8/5q2/7p/6K1/PPPPPPPP/RNBQ1BNR w kq - 0 1";
   Game game(fen);
   King king(game);
 
-  BoardIndex index(27);
-  auto expected = BoardIndex::create_vector({18, 19, 20, 28, 36, 35, 34, 26});
+  BoardIndex index(46);
+  auto expected = BoardIndex::create_vector({39});
   auto actual = king.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -350,28 +440,14 @@ TEST(KingTest, Center) {
   ASSERT_EQ(actual, expected);
 }
 
-TEST(KingTest, Corner) {
-  std::string fen = "8/8/8/8/8/8/8/K7 w - - 0 1";
+TEST(KingTest, BlackCenter) {
+  std::string fen =
+      "rnbq1bnr/pppppppp/8/3k4/4Q3/8/PPPPPPPP/RNB1KBNR w KQ - 0 1";
   Game game(fen);
   King king(game);
 
-  BoardIndex index(56);
-  auto expected = BoardIndex::create_vector({48, 49, 57});
-  auto actual = king.legalSquareIndexes(index);
-
-  std::sort(actual.begin(), actual.end());
-  std::sort(expected.begin(), expected.end());
-
-  ASSERT_EQ(actual, expected);
-}
-
-TEST(KingTest, Edge) {
-  std::string fen = "8/8/K7/8/8/8/8/8 w - - 0 1";
-  Game game(fen);
-  King king(game);
-
-  BoardIndex index(16);
-  auto expected = BoardIndex::create_vector({8, 9, 17, 25, 24});
+  BoardIndex index(27);
+  auto expected = BoardIndex::create_vector({36, 18, 19, 26});
   auto actual = king.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
