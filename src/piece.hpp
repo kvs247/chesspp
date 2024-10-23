@@ -8,12 +8,13 @@
 
 class Game;
 
-class Piece {
- public:
+class Piece
+{
+public:
   Piece(Game &);
 
   virtual std::vector<BoardIndex> legalSquareIndexes(
-      const BoardIndex) const = 0;  // pure virtual
+      const BoardIndex) const = 0; // pure virtual
 
   static std::vector<BoardIndex> linearSquareIndexes(
       const BoardIndex, const PieceColor,
@@ -27,36 +28,42 @@ class Piece {
       const PiecePlacement &, const BoardIndex,
       const std::vector<BoardIndex> &);
 
- protected:
+protected:
   Game &game;
 };
 
-struct Pawn : public Piece {
+struct Pawn : public Piece
+{
   Pawn(Game &);
   std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct Knight : public Piece {
+struct Knight : public Piece
+{
   Knight(Game &);
   std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct Bishop : public Piece {
+struct Bishop : public Piece
+{
   Bishop(Game &);
   std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct Rook : public Piece {
+struct Rook : public Piece
+{
   Rook(Game &);
   std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct Queen : public Piece {
+struct Queen : public Piece
+{
   Queen(Game &);
   std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };
 
-struct King : public Piece {
+struct King : public Piece
+{
   King(Game &);
   std::vector<BoardIndex> legalSquareIndexes(const BoardIndex) const override;
 };

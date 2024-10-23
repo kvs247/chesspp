@@ -9,23 +9,32 @@
 
 #define LOG_FEN false
 
-int main() {
+int main()
+{
   Game game;
   std::string message = "";
 
-  while (true) {
-    if (LOG_FEN) logger.log(game.getFenStr());
+  while (true)
+  {
+    if (LOG_FEN)
+      logger.log(game.getFenStr());
 
     clearScreen();
     draw(game.getPiecePlacement(), message);
 
-    try {
-      if (game.move()) {
+    try
+    {
+      if (game.move())
+      {
         message = "";
-      } else {
+      }
+      else
+      {
         message = "Illegal move.";
       }
-    } catch (std::invalid_argument &e) {
+    }
+    catch (std::invalid_argument &e)
+    {
       message = "Invalid input, please try again.";
       logger.log("ERROR invalid argument encountered: " +
                  std::string(e.what()));
