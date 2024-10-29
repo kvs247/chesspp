@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "game.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 
@@ -11,8 +12,10 @@ using std::cout;
 
 int BORDER_WIDTH = 3; // at least 2
 
-void draw(PiecePlacement pieces, const std::string &message)
+void draw(Game &game)
 {
+  auto piecePlacement = game.getPiecePlacement();
+
   int colMult = 8; // must be even
   int rowMult = 4; // must be even
 
@@ -44,7 +47,7 @@ void draw(PiecePlacement pieces, const std::string &message)
       // pieces
       else if (drawPiece)
       {
-        char pieceChar = chessPieceToChar(pieces[pieceIndex]);
+        char pieceChar = chessPieceToChar(piecePlacement[pieceIndex]);
         c = pieceChar ? pieceChar : ' ';
         ++pieceIndex;
       }
@@ -70,6 +73,7 @@ void draw(PiecePlacement pieces, const std::string &message)
   }
 
   cout << "\n\n";
+  auto message = game.message;
   size_t messageSize = message.size();
   if (messageSize > 0)
   {

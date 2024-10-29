@@ -12,7 +12,6 @@
 int main()
 {
   Game game;
-  std::string message = "";
 
   while (!game.isGameOver)
   {
@@ -20,22 +19,22 @@ int main()
       logger.log(game.getFenStr());
 
     clearScreen();
-    draw(game.getPiecePlacement(), message);
+    draw(game);
 
     try
     {
       if (game.move())
       {
-        message = "";
+        game.message = "";
       }
       else
       {
-        message = "Illegal move.";
+        game.message = "Illegal move.";
       }
     }
     catch (std::invalid_argument &e)
     {
-      message = "Invalid input, please try again.";
+      game.message = "Invalid input, please try again.";
       logger.log("ERROR invalid argument encountered: " +
                  std::string(e.what()));
       continue;

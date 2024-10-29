@@ -56,6 +56,7 @@ public:
 
   bool isGameOver = false;
   std::vector<std::pair<BoardIndex, BoardIndex>> moveList;
+  std::string message;
 
 private:
   PiecePlacement piecePlacement;
