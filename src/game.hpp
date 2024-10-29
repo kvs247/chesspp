@@ -12,6 +12,7 @@
 #include <string>
 #include <thread>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "config.hpp"
@@ -47,11 +48,14 @@ public:
                        const BoardIndex); // could this be private?
   void handlePawnPromotion(const ChessPiece, const BoardIndex);
   void handleCastling(const BoardIndex, const BoardIndex, const ChessPiece);
-  std::pair<BoardIndex, BoardIndex> generateCpuMove(PieceColor) const;
+  std::pair<BoardIndex, BoardIndex> generateCpuMove(PieceColor);
   bool validateMove(BoardIndex, BoardIndex) const;
   static bool isKingInCheck(const PieceColor, const PiecePlacement &);
   static bool isSquareUnderAttack(const BoardIndex, const PieceColor,
                                   const PiecePlacement &);
+
+  bool isGameOver = false;
+  std::vector<std::pair<BoardIndex, BoardIndex>> moveList;
 
 private:
   PiecePlacement piecePlacement;
@@ -172,6 +176,8 @@ inline bool Game::move()
 
   if (validateMove(fromIndex, toIndex))
   {
+    moveList.push_back({fromIndex, toIndex});
+
     auto fromPiece = piecePlacement[fromIndex];
     auto fromColor = pieceColor(fromPiece);
     piecePlacement[toIndex] = piecePlacement[fromIndex];
@@ -361,7 +367,7 @@ inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const
 }
 
 inline std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(
-    PieceColor cpuColor) const
+    PieceColor cpuColor)
 {
   std::vector<int> cpuPiecesIdxs;
   cpuPiecesIdxs.reserve(32);
@@ -413,6 +419,7 @@ inline std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(
 
   std::this_thread::sleep_for(std::chrono::milliseconds(config.cpuMoveDelayMs));
   logger.log("CHECKMATE");
+  isGameOver = true;
   return {resFromIndex, resToIndex}; // getting here implies checkmate
 };
 

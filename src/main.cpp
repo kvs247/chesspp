@@ -14,7 +14,7 @@ int main()
   Game game;
   std::string message = "";
 
-  while (true)
+  while (!game.isGameOver)
   {
     if (LOG_FEN)
       logger.log(game.getFenStr());
@@ -40,6 +40,12 @@ int main()
                  std::string(e.what()));
       continue;
     }
+  }
+
+  logger.log("yo");
+  for (auto ftIndex : game.moveList)
+  {
+    logger.log(ftIndex.first, " ", ftIndex.second);
   }
 
   return 0;
