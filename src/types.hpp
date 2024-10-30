@@ -59,6 +59,7 @@ struct Config
   bool blackIsCpu = false;
   int cpuMoveDelayMs = 1000;
   bool disableTurnOrder = false;
+  bool showMoveList = true;
 };
 
 class RangedInt
@@ -133,4 +134,12 @@ public:
   FileRankIndex() : RangedInt(1, 1, 8) {}
 
   FileRankIndex(int v) : RangedInt(v, 1, 8) {}
+};
+
+struct MoveListItem
+{
+  BoardIndex fromIndex;
+  ChessPiece fromPiece;
+  BoardIndex toIndex;
+  ChessPiece toPiece;
 };

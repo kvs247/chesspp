@@ -41,11 +41,5 @@ int main()
     }
   }
 
-  logger.log("yo");
-  for (auto ftIndex : game.moveList)
-  {
-    logger.log(ftIndex.first, " ", ftIndex.second);
-  }
-
   return 0;
 }

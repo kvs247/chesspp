@@ -55,7 +55,7 @@ public:
                                   const PiecePlacement &);
 
   bool isGameOver = false;
-  std::vector<std::pair<BoardIndex, BoardIndex>> moveList;
+  std::vector<MoveListItem> moveList;
   std::string message;
 
 private:
@@ -177,10 +177,10 @@ inline bool Game::move()
 
   if (validateMove(fromIndex, toIndex))
   {
-    moveList.push_back({fromIndex, toIndex});
-
     auto fromPiece = piecePlacement[fromIndex];
     auto fromColor = pieceColor(fromPiece);
+    auto toPiece = piecePlacement[toIndex];
+    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece});
     piecePlacement[toIndex] = piecePlacement[fromIndex];
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;

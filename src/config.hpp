@@ -53,6 +53,10 @@ inline Config loadConfig()
     {
       config.disableTurnOrder = parseBoolean(value);
     }
+    if (key == "SHOW_MOVE_LIST")
+    {
+      config.showMoveList = parseBoolean(value);
+    }
   }
 
   return config;
