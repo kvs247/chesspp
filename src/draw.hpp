@@ -117,13 +117,26 @@ std::vector<std::string> makeMoveListEntries(std::vector<MoveListItem> &moveList
 
   for (auto &moveListItem : moveList)
   {
-    std::string item;
-    if (moveListItem.fromPiece != ChessPiece::BlackPawn && moveListItem.fromPiece != ChessPiece::WhitePawn)
+    std::stringstream item;
+
+    const bool isPawn = moveListItem.fromPiece == ChessPiece::BlackPawn || moveListItem.fromPiece == ChessPiece::WhitePawn;
+    const bool isCapture = moveListItem.toPiece != ChessPiece::Empty;
+
+    if (!isPawn)
     {
-      item += chessPieceToChar(moveListItem.fromPiece);
+      item << chessPieceToChar(moveListItem.fromPiece);
     }
-    item += indexToAlgebraic(moveListItem.toIndex);
-    res.push_back(item);
+
+    if (isCapture)
+    {
+      if (isPawn)
+      {
+        item << indexToAlgebraic(moveListItem.fromIndex)[0];
+      }
+      item << 'x';
+    }
+    item << indexToAlgebraic(moveListItem.toIndex);
+    res.push_back(item.str());
   }
 
   return res;
@@ -155,19 +168,18 @@ std::vector<std::string> makeMoveListLines(std::vector<std::string> &moveListEnt
 
     while (moveListEntriesIdx + moveListLength * n * 2 < moveListEntries.size())
     {
+      std::stringstream entry;
       size_t j = moveListEntriesIdx + moveListLength * n * 2;
       size_t index = counter + moveListLength * n;
-      size_t entryLength = numDigits(index) + 2 + moveListEntries[j].size();
 
-      line << index << ". " << moveListEntries[j];
-
+      entry << index << ". " << moveListEntries[j];
       if (j + 1 < moveListEntries.size())
       {
-        line << " " << moveListEntries[j + 1];
-        entryLength += 1 + moveListEntries[j + 1].size();
+        entry << " " << moveListEntries[j + 1];
       }
 
-      line << std::string(moveListEntryLength - entryLength, ' ');
+      entry << std::string(moveListEntryLength - entry.str().size(), ' ');
+      line << entry.str();
       ++n;
     }
 
