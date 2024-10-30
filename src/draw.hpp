@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #include "game.hpp"
@@ -11,30 +13,34 @@
 using std::cout;
 
 int BORDER_WIDTH = 3; // at least 2
+int COL_MULT = 8;     // even
+int ROW_MULT = 4;     // even
 
-void draw(Game &game)
+std::vector<std::string> makeBoardLines(PiecePlacement &piecePlacement)
 {
-  auto piecePlacement = game.getPiecePlacement();
-
-  int colMult = 8; // must be even
-  int rowMult = 4; // must be even
-
+  std::vector<std::string> res;
   char c;
   size_t pieceIndex = 0;
-  for (int row = 0; row <= 8 * rowMult; ++row)
+  for (int row = 0; row <= 8 * ROW_MULT; ++row)
   {
-    // ranks
-    cout << ' ';
-    if ((row + rowMult / 2) % rowMult == 0)
-      cout << 8 - row / rowMult << std::string(BORDER_WIDTH - 2, ' ');
-    else
-      cout << std::string(BORDER_WIDTH - 1, ' ');
+    std::stringstream line;
 
-    for (int col = 0; col <= 8 * colMult; ++col)
+    // ranks
+    line << ' ';
+    if ((row + ROW_MULT / 2) % ROW_MULT == 0)
     {
-      bool drawRow = row % rowMult == 0;
-      bool drawCol = col % colMult == 0;
-      bool drawPiece = col % (colMult / 2) == 0 && row % (rowMult / 2) == 0;
+      line << std::to_string(8 - row / ROW_MULT) << std::string(BORDER_WIDTH - 2, ' ');
+    }
+    else
+    {
+      line << std::string(BORDER_WIDTH - 1, ' ');
+    }
+
+    for (int col = 0; col <= 8 * COL_MULT; ++col)
+    {
+      bool drawRow = row % ROW_MULT == 0;
+      bool drawCol = col % COL_MULT == 0;
+      bool drawPiece = col % (COL_MULT / 2) == 0 && row % (ROW_MULT / 2) == 0;
 
       if (drawRow && drawCol)
         c = '+';
@@ -53,36 +59,65 @@ void draw(Game &game)
       }
       else
         c = ' ';
-      cout << c;
+      line << c;
     }
-    cout << '\n';
+    res.push_back(line.str());
   }
 
   // files
-  cout << std::string(BORDER_WIDTH / 2 - 1, '\n');
-  cout << std::string(BORDER_WIDTH, ' ');
-  for (int i = 0; i <= 8 * colMult + 2; i++)
+  std::stringstream line;
+  line << std::string(BORDER_WIDTH / 2 - 1, '\n') << std::string(BORDER_WIDTH, ' ');
+  for (int i = 0; i <= 8 * COL_MULT + 2; i++)
   {
-    if ((i + colMult / 2) % colMult == 0)
+    if ((i + COL_MULT / 2) % COL_MULT == 0)
     {
-      char c = i / colMult + 'A';
-      cout << c;
+      char c = i / COL_MULT + 'A';
+      line << c;
     }
     else
-      cout << ' ';
+      line << ' ';
+  }
+  res.push_back(line.str());
+
+  return res;
+}
+
+std::string makeMessage(std::string message)
+{
+  std::stringstream res("\n\n");
+  auto messageSize = message.size();
+  if (!messageSize)
+  {
+    return res.str();
   }
 
-  cout << "\n\n";
-  auto message = game.message;
-  size_t messageSize = message.size();
-  if (messageSize > 0)
+  int boardWidth = 8 * COL_MULT / 2;
+  int msgOffest = messageSize / 2 + messageSize % 2;
+  int numSpace = BORDER_WIDTH + boardWidth - msgOffest;
+  res << std::string(numSpace, ' ')
+      << '~'
+      << message
+      << ((messageSize % 2 == 0) ? ' ' : '~')
+      << "\n\n";
+  return res.str();
+}
+
+void draw(Game &game)
+{
+  std::stringstream buffer;
+
+  auto piecePlacement = game.getPiecePlacement();
+
+  auto boardLines = makeBoardLines(piecePlacement);
+  for (auto &l : boardLines)
   {
-    int boardWidth = 8 * colMult / 2;
-    int msgOffset = messageSize / 2 + messageSize % 2;
-    int numSpace = BORDER_WIDTH + boardWidth - msgOffset;
-    cout << std::string(numSpace, ' ') << "~" << message
-         << ((messageSize % 2 == 0) ? " " : "~") << "\n\n";
+    buffer << l << "\n";
   }
+
+  auto message = game.message;
+  buffer << makeMessage(game.message);
+
+  std::cout << buffer.str();
 }
 
 void clearScreen() { cout << "\033[2J\033[H"; }
