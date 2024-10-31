@@ -8,6 +8,7 @@
 
 #include "config.hpp"
 #include "game.hpp"
+#include "out.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 
@@ -243,6 +244,8 @@ void draw(Game &game)
   buffer << makeMessage(game.message);
 
   std::cout << buffer.str();
+
+  writeMoveList(moveListEntries);
 }
 
 void clearScreen() { cout << "\033[2J\033[H"; }
