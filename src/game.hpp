@@ -50,6 +50,7 @@ public:
   void handleCastling(const BoardIndex, const BoardIndex, const ChessPiece);
   std::pair<BoardIndex, BoardIndex> generateCpuMove(PieceColor);
   bool validateMove(BoardIndex, BoardIndex) const;
+  std::optional<std::vector<BoardIndex>> getSamePieceIndex(BoardIndex, BoardIndex) const;
   static bool isKingInCheck(const PieceColor, const PiecePlacement &);
   static bool isSquareUnderAttack(const BoardIndex, const PieceColor,
                                   const PiecePlacement &);
@@ -177,10 +178,12 @@ inline bool Game::move()
 
   if (validateMove(fromIndex, toIndex))
   {
-    auto fromPiece = piecePlacement[fromIndex];
-    auto fromColor = pieceColor(fromPiece);
-    auto toPiece = piecePlacement[toIndex];
-    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece});
+    const auto fromPiece = piecePlacement[fromIndex];
+    const auto fromColor = pieceColor(fromPiece);
+    const auto toPiece = piecePlacement[toIndex];
+    const auto isAmbiguous = getSamePieceIndex(fromIndex, toIndex);
+
+    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece, isAmbiguous});
     piecePlacement[toIndex] = piecePlacement[fromIndex];
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
@@ -365,6 +368,28 @@ inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const
   }
 
   return true;
+}
+
+inline std::optional<std::vector<BoardIndex>> Game::getSamePieceIndex(BoardIndex fromIndex, BoardIndex toIndex) const
+{
+  std::vector<BoardIndex> res;
+  const auto fromPiece = piecePlacement[fromIndex];
+
+  const BoardIndex limit = piecePlacement.size() - 1;
+  for (BoardIndex i = 0; i < limit; ++i)
+  {
+    if (i != fromIndex && piecePlacement[i] == fromPiece)
+    {
+      const auto indexes = getPieceLegalMoves(fromPiece, i);
+      auto samePieceIt = std::find(indexes.cbegin(), indexes.cend(), toIndex);
+      if (samePieceIt != indexes.cend())
+      {
+        res.emplace_back(i);
+      }
+    }
+  }
+
+  return res.empty() ? std::nullopt : std::optional{res};
 }
 
 inline std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(

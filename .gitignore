@@ -1,4 +1,4 @@
-/build/
+build/
+out/
 a.out
-log.txt
 .vscode

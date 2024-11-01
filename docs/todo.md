@@ -10,3 +10,4 @@
   - [ ] castling
   - [ ] pawn promotion
 - better understand logger and config
+- add test for draw.hpp

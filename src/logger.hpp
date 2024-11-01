@@ -44,7 +44,7 @@ public:
 private:
   Logger()
   {
-    logFile.open("log.txt", std::ios::out | std::ios::trunc);
+    logFile.open("out/log.txt", std::ios::out | std::ios::trunc);
     if (!logFile.is_open())
     {
       std::cerr << "Failed to open log file." << std::endl;

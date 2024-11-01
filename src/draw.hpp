@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "config.hpp"
+#include "constants.hpp"
 #include "game.hpp"
 #include "out.hpp"
 #include "types.hpp"
@@ -112,17 +113,19 @@ std::string makeMessage(std::string message)
   return res.str();
 }
 
-std::vector<std::string> makeMoveListEntries(std::vector<MoveListItem> &moveList)
+std::vector<std::string> makeMoveListEntries(Game &game)
 {
   std::vector<std::string> res;
 
-  for (auto &moveListItem : moveList)
+  for (auto &moveListItem : game.moveList)
   {
     std::stringstream item;
 
+    const auto fromIndex = moveListItem.fromIndex;
+    const auto toIndex = moveListItem.toIndex;
     const auto fromPiece = moveListItem.fromPiece;
-    const auto [fromFile, fromRank] = indexToFileRank(moveListItem.fromIndex);
-    const auto [toFile, toRank] = indexToFileRank(moveListItem.toIndex);
+    const auto [fromFile, fromRank] = indexToFileRank(fromIndex);
+    const auto [toFile, toRank] = indexToFileRank(toIndex);
 
     const bool isPawn = fromPiece == ChessPiece::BlackPawn || fromPiece == ChessPiece::WhitePawn;
     const bool isCapture = moveListItem.toPiece != ChessPiece::Empty;
@@ -145,6 +148,35 @@ std::vector<std::string> makeMoveListEntries(std::vector<MoveListItem> &moveList
     if (!isPawn)
     {
       item << chessPieceToChar(moveListItem.fromPiece);
+      if (moveListItem.samePieceIndex.has_value())
+      {
+        const auto [pieceFile, pieceRank] = indexToFileRank(fromIndex);
+        bool isDiffFile = false;
+        bool isDiffRank = false;
+
+        for (auto &idx : moveListItem.samePieceIndex.value())
+        {
+          const auto [file, rank] = indexToFileRank(idx);
+          if (file != pieceFile)
+          {
+            isDiffFile = true;
+          }
+          if (rank != pieceRank)
+          {
+            isDiffRank = true;
+          }
+        }
+
+        const auto pieceSquare = indexToAlgebraic(fromIndex);
+        if (isDiffFile)
+        {
+          item << pieceSquare[0];
+        }
+        if (isDiffRank)
+        {
+          item << pieceSquare[1];
+        }
+      }
     }
 
     if (isCapture)
@@ -157,6 +189,7 @@ std::vector<std::string> makeMoveListEntries(std::vector<MoveListItem> &moveList
     }
 
     item << indexToAlgebraic(moveListItem.toIndex);
+
     res.push_back(item.str());
   }
 
@@ -219,7 +252,7 @@ void draw(Game &game)
   auto piecePlacement = game.getPiecePlacement();
 
   auto gameBoardLines = makeGameBoardLines(piecePlacement);
-  auto moveListEntries = makeMoveListEntries(game.moveList);
+  auto moveListEntries = makeMoveListEntries(game);
   auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3);
 
   size_t j = 0;

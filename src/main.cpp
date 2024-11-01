@@ -11,10 +11,12 @@
 
 int main()
 {
+  logger.log("");
   Game game;
 
   while (!game.isGameOver)
   {
+    // logger.log("game: ", sizeof(game), " piecePlacement: ", sizeof(game.getPiecePlacement()));
     if (LOG_FEN)
       logger.log(game.getFenStr());
 

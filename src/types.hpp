@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "logger.hpp"
 
@@ -105,6 +106,13 @@ public:
     val += v;
     return *this;
   }
+
+  RangedInt &operator++()
+  {
+    validate(val + 1);
+    val += 1;
+    return *this;
+  }
 };
 
 class BoardIndex : public RangedInt
@@ -142,4 +150,5 @@ struct MoveListItem
   ChessPiece fromPiece;
   BoardIndex toIndex;
   ChessPiece toPiece;
+  std::optional<std::vector<BoardIndex>> samePieceIndex;
 };
