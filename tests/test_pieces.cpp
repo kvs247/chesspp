@@ -473,7 +473,7 @@ TEST(KingTest, BlackCenter)
   King king(game);
 
   BoardIndex index(27);
-  auto expected = BoardIndex::create_vector({36, 18, 19, 26});
+  auto expected = BoardIndex::create_vector({36, 19, 26});
   auto actual = king.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());

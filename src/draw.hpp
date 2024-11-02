@@ -221,7 +221,7 @@ size_t numDigits(size_t x)
   return res;
 }
 
-size_t moveListEntryLength = 16;
+size_t moveListEntryLength = 20;
 
 std::vector<std::string> makeMoveListLines(std::vector<std::string> &moveListEntries, size_t moveListLength)
 {

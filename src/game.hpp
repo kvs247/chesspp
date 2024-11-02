@@ -371,6 +371,7 @@ inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const
   }
 
   auto indexes = getPieceLegalMoves(fromPiece, fromIndex);
+  for (auto &x : indexes) { logger.log(indexToAlgebraic(x)); }
   if (std::find(indexes.cbegin(), indexes.cend(), toIndex) == indexes.cend())
   {
     return false;

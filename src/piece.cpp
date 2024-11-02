@@ -295,17 +295,8 @@ std::vector<BoardIndex> King::legalSquareIndexes(const BoardIndex index) const
     potentialIndexes.push_back(2);
   }
 
-  // should be able to do this with filterSelfCheckMoves() instead
-  std::vector<BoardIndex> legalIndexes;
-  auto color = pieceColor(game.piecePlacement[index]);
-  PiecePlacement piecePlacement = game.piecePlacement;
-  std::copy_if(
-      potentialIndexes.cbegin(), potentialIndexes.cend(),
-      std::back_inserter(legalIndexes),
-      [color, piecePlacement](BoardIndex idx)
-      {
-        return !(Game::isSquareUnderAttack(idx, color, piecePlacement));
-      });
+  auto legalIndexes =
+    filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }
