@@ -509,15 +509,15 @@ inline bool Game::isSquareUnderAttack(
   const std::vector<std::pair<int, int>> pawnOffsets =
       (color == PieceColor::White)
           ? std::vector<std::pair<int, int>>{
-                {1, 1},
-                {-1, 1},
-            }
-          : std::vector<std::pair<int, int>>{
-                {1, -1},
-                {-1, -1},
-            };
+                    {1, 1},
+                    {-1, 1},
+                }
+              : std::vector<std::pair<int, int>>{
+                    {1, -1},
+                    {-1, -1},
+                };
   std::vector<BoardIndex> pawnIndexes =
-      Piece::squareIndexes(index, pawnOffsets, piecePlacement);
+      Piece::squareIndexes(index, pawnOffsets, piecePlacement, color);
   if (isPieceInIndexesLambda(pawn, pawnIndexes))
   {
     return true;
@@ -537,7 +537,7 @@ inline bool Game::isSquareUnderAttack(
       {-2, -1},
   };
   auto knightIndexes =
-      Piece::squareIndexes(index, knightOffsets, piecePlacement);
+      Piece::squareIndexes(index, knightOffsets, piecePlacement, color);
   if (isPieceInIndexesLambda(knight, knightIndexes))
   {
     return true;

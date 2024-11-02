@@ -2,6 +2,7 @@
 
 #include <array>
 #include <iostream>
+#include <optional>
 #include <vector>
 
 #include "types.hpp"
@@ -22,7 +23,7 @@ public:
 
   static std::vector<BoardIndex> squareIndexes(
       const BoardIndex, const std::vector<std::pair<int, int>> &,
-      const PiecePlacement &);
+      const PiecePlacement &, const std::optional<PieceColor> = std::nullopt);
 
   static std::vector<BoardIndex> filterSelfCheckMoves(
       const PiecePlacement &, const BoardIndex,

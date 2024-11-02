@@ -59,15 +59,16 @@ std::vector<BoardIndex> Piece::linearSquareIndexes(
 }
 
 std::vector<BoardIndex> Piece::squareIndexes(
-    const BoardIndex index, const std::vector<std::pair<int, int>> &offsets,
-    const PiecePlacement &piecePlacement)
+    const BoardIndex index,
+    const std::vector<std::pair<int, int>> &offsets,
+    const PiecePlacement &piecePlacement,
+    std::optional<PieceColor> currentPieceColor)
 {
   std::vector<BoardIndex> res = {};
 
   auto [file, rank] = indexToFileRank(index);
   BoardIndex targetIndex;
-  int targetFile,
-      targetRank; // not FileRankIndex since we are testing if on board
+  int targetFile, targetRank; // not FileRankIndex since we are testing if on board
 
   for (auto &offset : offsets)
   {
@@ -81,8 +82,11 @@ std::vector<BoardIndex> Piece::squareIndexes(
 
     targetIndex = fileRankToIndex({targetFile, targetRank});
     auto targetPiece = piecePlacement[targetIndex];
-    auto currentPiece = piecePlacement[index];
-    auto currentPieceColor = pieceColor(currentPiece);
+    if (currentPieceColor == std::nullopt)
+    {
+      const auto currentPiece = piecePlacement[index];
+      currentPieceColor = pieceColor(currentPiece);
+    }
 
     if (targetPiece != ChessPiece::Empty &&
         currentPieceColor == pieceColor(targetPiece))
