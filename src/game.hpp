@@ -42,15 +42,13 @@ public:
   std::string getFenStr();
   PiecePlacement getPiecePlacement();
   void readMove(BoardIndex &, BoardIndex &) const;
-  std::vector<BoardIndex> getPieceLegalMoves(const ChessPiece &,
-                                             const BoardIndex) const;
-  void handleEnPassant(const ChessPiece, const PieceColor, const BoardIndex,
-                       const BoardIndex); // could this be private?
-  void handlePawnPromotion(const ChessPiece, const BoardIndex);
+  std::vector<BoardIndex> getPieceLegalMoves(const ChessPiece &, const BoardIndex) const;
+  void handleEnPassant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
+  ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);
   void handleCastling(const BoardIndex, const BoardIndex, const ChessPiece);
   std::pair<BoardIndex, BoardIndex> generateCpuMove(PieceColor);
   bool validateMove(BoardIndex, BoardIndex) const;
-  std::optional<std::vector<BoardIndex>> getSamePieceIndex(BoardIndex, BoardIndex) const;
+  std::vector<BoardIndex> getSamePieceIndexes(BoardIndex, BoardIndex) const;
   static bool isKingInCheck(const PieceColor, const PiecePlacement &);
   static bool isSquareUnderAttack(const BoardIndex, const PieceColor,
                                   const PiecePlacement &);
@@ -75,9 +73,13 @@ private:
   King king;
 };
 
-inline Game::Game(const PiecePlacement &pp, PieceColor ac,
-                  CastlingAvailability ca, std::optional<BoardIndex> ep, int hc,
-                  int fc)
+inline Game::Game(
+    const PiecePlacement &pp,
+    PieceColor ac,
+    CastlingAvailability ca,
+    std::optional<BoardIndex> ep,
+    int hc,
+    int fc)
     : piecePlacement(pp),
       activeColor(ac),
       castlingAvailability(ca),
@@ -180,16 +182,18 @@ inline bool Game::move()
   {
     const auto fromPiece = piecePlacement[fromIndex];
     const auto fromColor = pieceColor(fromPiece);
+    const auto samePieceIndexes = getSamePieceIndexes(fromIndex, toIndex);
     const auto toPiece = piecePlacement[toIndex];
-    const auto isAmbiguous = getSamePieceIndex(fromIndex, toIndex);
 
-    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece, isAmbiguous});
     piecePlacement[toIndex] = piecePlacement[fromIndex];
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
     handleEnPassant(fromPiece, fromColor, fromIndex, toIndex);
-    handlePawnPromotion(fromPiece, toIndex);
     handleCastling(fromIndex, toIndex, fromPiece);
+    const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
+
+    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece, samePieceIndexes, promotionPiece});
+
     return true;
   }
   else
@@ -269,18 +273,23 @@ inline void Game::handleEnPassant(const ChessPiece fromPiece,
     enPassantIndex.reset();
 }
 
-inline void Game::handlePawnPromotion(const ChessPiece fromPiece,
-                                      const BoardIndex toIndex)
+inline ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardIndex toIndex)
 {
   auto [file, rank] = indexToFileRank(toIndex);
   if (fromPiece == ChessPiece::WhitePawn && rank == 8)
   {
-    piecePlacement[toIndex] = ChessPiece::WhiteQueen;
+    const ChessPiece promotedPiece = ChessPiece::WhiteQueen;
+    piecePlacement[toIndex] = promotedPiece;
+    return promotedPiece;
   }
   if (fromPiece == ChessPiece::BlackPawn && rank == 1)
   {
-    piecePlacement[toIndex] = ChessPiece::BlackQueen;
+    const ChessPiece promotedPiece = ChessPiece::BlackQueen;
+    piecePlacement[toIndex] = promotedPiece;
+    return promotedPiece;
   }
+
+  return ChessPiece::Empty;
 }
 
 inline void Game::handleCastling(const BoardIndex fromIndex,
@@ -369,7 +378,7 @@ inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const
   return true;
 }
 
-inline std::optional<std::vector<BoardIndex>> Game::getSamePieceIndex(BoardIndex fromIndex, BoardIndex toIndex) const
+inline std::vector<BoardIndex> Game::getSamePieceIndexes(BoardIndex fromIndex, BoardIndex toIndex) const
 {
   std::vector<BoardIndex> res;
   const auto fromPiece = piecePlacement[fromIndex];
@@ -388,7 +397,7 @@ inline std::optional<std::vector<BoardIndex>> Game::getSamePieceIndex(BoardIndex
     }
   }
 
-  return res.empty() ? std::nullopt : std::optional{res};
+  return res;
 }
 
 inline std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(
@@ -509,13 +518,13 @@ inline bool Game::isSquareUnderAttack(
   const std::vector<std::pair<int, int>> pawnOffsets =
       (color == PieceColor::White)
           ? std::vector<std::pair<int, int>>{
-                    {1, 1},
-                    {-1, 1},
-                }
-              : std::vector<std::pair<int, int>>{
-                    {1, -1},
-                    {-1, -1},
-                };
+                {1, 1},
+                {-1, 1},
+            }
+          : std::vector<std::pair<int, int>>{
+                {1, -1},
+                {-1, -1},
+            };
   std::vector<BoardIndex> pawnIndexes =
       Piece::squareIndexes(index, pawnOffsets, piecePlacement, color);
   if (isPieceInIndexesLambda(pawn, pawnIndexes))

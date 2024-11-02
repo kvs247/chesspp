@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <optional>
 
 #include "logger.hpp"
 
@@ -141,5 +140,6 @@ struct MoveListItem
   ChessPiece fromPiece;
   BoardIndex toIndex;
   ChessPiece toPiece;
-  std::optional<std::vector<BoardIndex>> samePieceIndex;
+  std::vector<BoardIndex> samePieceIndexes;
+  ChessPiece promotionPiece;
 };

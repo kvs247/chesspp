@@ -132,6 +132,7 @@ std::vector<std::string> makeMoveListEntries(Game &game)
     const bool isKingMove = fromPiece == ChessPiece::BlackKing || fromPiece == ChessPiece::WhiteKing;
     const bool isShortCastle = isKingMove && fromFile == 5 && toFile == 7;
     const bool isLongCastle = isKingMove && fromFile == 5 && toFile == 3;
+    const bool isPromotion = moveListItem.promotionPiece != ChessPiece::Empty;
 
     if (isShortCastle)
     {
@@ -149,13 +150,13 @@ std::vector<std::string> makeMoveListEntries(Game &game)
     {
       const char piece = std::toupper(chessPieceToChar(moveListItem.fromPiece));
       item << piece;
-      if (moveListItem.samePieceIndex.has_value())
+      if (!moveListItem.samePieceIndexes.empty())
       {
         const auto [pieceFile, pieceRank] = indexToFileRank(fromIndex);
         bool isDiffFile = false;
         bool isDiffRank = false;
 
-        for (auto &idx : moveListItem.samePieceIndex.value())
+        for (auto &idx : moveListItem.samePieceIndexes)
         {
           const auto [file, rank] = indexToFileRank(idx);
           if (file != pieceFile)
@@ -190,6 +191,12 @@ std::vector<std::string> makeMoveListEntries(Game &game)
     }
 
     item << indexToAlgebraic(moveListItem.toIndex);
+
+    if (isPromotion)
+    {
+      const char promotionChar = std::toupper(chessPieceToChar(moveListItem.promotionPiece));
+      item << '=' << promotionChar;
+    }
 
     res.push_back(item.str());
   }
