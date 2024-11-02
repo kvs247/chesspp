@@ -182,17 +182,18 @@ inline bool Game::move()
   {
     const auto fromPiece = piecePlacement[fromIndex];
     const auto fromColor = pieceColor(fromPiece);
-    const auto samePieceIndexes = getSamePieceIndexes(fromIndex, toIndex);
     const auto toPiece = piecePlacement[toIndex];
+    const auto samePieceIndexes = getSamePieceIndexes(fromIndex, toIndex);
 
     piecePlacement[toIndex] = piecePlacement[fromIndex];
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
     handleEnPassant(fromPiece, fromColor, fromIndex, toIndex);
     handleCastling(fromIndex, toIndex, fromPiece);
-    const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
 
-    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece, samePieceIndexes, promotionPiece});
+    const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
+    const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
+    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece, samePieceIndexes, promotionPiece, isOpponentInCheck});
 
     return true;
   }

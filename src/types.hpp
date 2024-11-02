@@ -142,4 +142,5 @@ struct MoveListItem
   ChessPiece toPiece;
   std::vector<BoardIndex> samePieceIndexes;
   ChessPiece promotionPiece;
+  bool isOpponentInCheck;
 };

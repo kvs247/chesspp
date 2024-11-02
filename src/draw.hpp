@@ -133,6 +133,7 @@ std::vector<std::string> makeMoveListEntries(Game &game)
     const bool isShortCastle = isKingMove && fromFile == 5 && toFile == 7;
     const bool isLongCastle = isKingMove && fromFile == 5 && toFile == 3;
     const bool isPromotion = moveListItem.promotionPiece != ChessPiece::Empty;
+    const bool isOpponentInCheck = moveListItem.isOpponentInCheck;
 
     if (isShortCastle)
     {
@@ -196,6 +197,11 @@ std::vector<std::string> makeMoveListEntries(Game &game)
     {
       const char promotionChar = std::toupper(chessPieceToChar(moveListItem.promotionPiece));
       item << '=' << promotionChar;
+    }
+
+    if (isOpponentInCheck)
+    {
+      item << "+";
     }
 
     res.push_back(item.str());
