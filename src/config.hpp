@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <string>
 
 #include "constants.hpp"
@@ -23,9 +24,36 @@ struct Config
   std::string startingFen = startingFenString;
 };
 
+enum class ConfigKey
+{
+  WHITE_IS_CPU,
+  BLACK_IS_CPU,
+  DISABLE_TURN_ORDER,
+  LOG_FEN,
+  CPU_MOVE_DELAY_MS,
+  SHOW_MOVE_LIST,
+  STARTING_FEN,
+  UNKNOWN,
+};
+
 bool parseBoolean(std::string);
 
 int parseInt(std::string);
+
+inline ConfigKey stringToConfigKey(std::string key)
+{
+  static const std::map<std::string, ConfigKey> configKeyMap = {
+      {"WHITE_IS_CPU", ConfigKey::WHITE_IS_CPU},
+      {"BLACK_IS_CPU", ConfigKey::BLACK_IS_CPU},
+      {"DISABLE_TURN_ORDER", ConfigKey::DISABLE_TURN_ORDER},
+      {"LOG_FEN", ConfigKey::LOG_FEN},
+      {"CPU_MOVE_DELAY_MS", ConfigKey::CPU_MOVE_DELAY_MS},
+      {"SHOW_MOVE_LIST", ConfigKey::SHOW_MOVE_LIST},
+      {"STARTING_FEN", ConfigKey::STARTING_FEN},
+  };
+  const auto it = configKeyMap.find(key);
+  return it != configKeyMap.cend() ? it->second : ConfigKey::UNKNOWN;
+}
 
 inline Config loadConfig()
 {
@@ -49,33 +77,31 @@ inline Config loadConfig()
     std::string key = line.substr(0, splitIndex);
     std::string value = line.substr(splitIndex + 1);
 
-    if (key == "WHITE_IS_CPU")
+    switch (stringToConfigKey(key))
     {
+    case ConfigKey::WHITE_IS_CPU:
       config.whiteIsCpu = parseBoolean(value);
-    }
-    if (key == "BLACK_IS_CPU")
-    {
+      break;
+    case ConfigKey::BLACK_IS_CPU:
       config.blackIsCpu = parseBoolean(value);
-    }
-    if (key == "DISABLE_TURN_ORDER")
-    {
+      break;
+    case ConfigKey::DISABLE_TURN_ORDER:
       config.disableTurnOrder = parseBoolean(value);
-    }
-    if (key == "LOG_FEN")
-    {
+      break;
+    case ConfigKey::LOG_FEN:
       config.logFen = parseBoolean(value);
-    }
-    if (key == "CPU_MOVE_DELAY_MS")
-    {
+      break;
+    case ConfigKey::CPU_MOVE_DELAY_MS:
       config.cpuMoveDelayMs = parseInt(value);
-    }
-    if (key == "SHOW_MOVE_LIST")
-    {
+      break;
+    case ConfigKey::SHOW_MOVE_LIST:
       config.showMoveList = parseBoolean(value);
-    }
-    if (key == "STARTING_FEN")
-    {
+      break;
+    case ConfigKey::STARTING_FEN:
       config.startingFen = value.empty() ? startingFenString : value;
+      break;
+    default:
+      throw std::invalid_argument("unknown config key encountered");
     }
   }
 
