@@ -1,39 +1,48 @@
-# Features
+# Design/Features
+
+## Core Features
 
 - [ ] game logic
-  - [ ] piece potential squares *piece.hpp helpers should handle friendly fire, opening a check etc.
+  - [x] find piece legal moves
     - [x] pawn
     - [x] knight
     - [x] bishop
     - [x] rook
     - [x] king
     - [x] queen
-  - [ ] other logic
-    - [x] castling
-    - [x] pawn promotion
-      - [ ] choose piece
-    - [x] check
   - endgame scenarios
     - [ ]  checkmate
     - [ ]  resignation
     - [ ]  timeout
     - [ ]  draw
       - [ ]  stalemate
-      - [ ]  insufficient Material
+      - [ ]  insufficient material
       - [ ]  50-move rule
       - [ ]  repetition
       - [ ]  agreement
-- [ ] terminal board/pieces display
+  - [ ] other
+    - [x] castling
+    - [x] pawn promotion
+      - [ ] choose piece
+    - [x] check
+- [ ] display
   - [x] draw board & pieces
   - [ ] moves played list
+    - [x] piece + to square
+    - [x] capture
+    - [x] ambiguous piece
+    - [x] castle
+    - [ ] check/checkmate
+  - [ ] clock
+  - [ ] help menu
 - [x] CPU opponent
   - [x] random moves
-  - [ ] sophisticated moves (LLM?)
 - [ ] time control
 - [x] logging
-  - [x] setup ability to log debug to log file separate from stdout/stderr
+
+## Strech Features
+
+- [ ] GUI
+- [ ] Sophisticated CPU opponent (LLM)
 - [ ] OS portability
-  - [ ] Linux
-  - [ ] Windows
-  - [ ] Mac
 - [ ] connect to network
