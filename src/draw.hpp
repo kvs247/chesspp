@@ -9,7 +9,7 @@
 #include "config.hpp"
 #include "constants.hpp"
 #include "game.hpp"
-#include "out.hpp"
+#include "pgn.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 
@@ -147,7 +147,8 @@ std::vector<std::string> makeMoveListEntries(Game &game)
 
     if (!isPawn)
     {
-      item << chessPieceToChar(moveListItem.fromPiece);
+      const char piece = std::toupper(chessPieceToChar(moveListItem.fromPiece));
+      item << piece;
       if (moveListItem.samePieceIndex.has_value())
       {
         const auto [pieceFile, pieceRank] = indexToFileRank(fromIndex);
@@ -278,7 +279,7 @@ void draw(Game &game)
 
   std::cout << buffer.str();
 
-  writeMoveList(moveListEntries);
+  writePgn(moveListEntries);
 }
 
 void clearScreen() { cout << "\033[2J\033[H"; }
