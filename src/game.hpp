@@ -190,7 +190,6 @@ inline bool Game::move()
     handleEnPassant(fromPiece, fromColor, fromIndex, toIndex);
     handlePawnPromotion(fromPiece, toIndex);
     handleCastling(fromIndex, toIndex, fromPiece);
-    // logger.log(this->getFenStr());
     return true;
   }
   else

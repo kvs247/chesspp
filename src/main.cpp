@@ -7,18 +7,17 @@
 #include "logger.hpp"
 #include "utils.hpp"
 
-#define LOG_FEN false
-
 int main()
 {
   logger.log("");
-  Game game;
+  Game game(config.startingFen);
 
   while (!game.isGameOver)
   {
-    // logger.log("game: ", sizeof(game), " piecePlacement: ", sizeof(game.getPiecePlacement()));
-    if (LOG_FEN)
+    if (config.logFen)
+    {
       logger.log(game.getFenStr());
+    }
 
     clearScreen();
     draw(game);

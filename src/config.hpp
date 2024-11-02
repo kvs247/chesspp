@@ -8,8 +8,20 @@
 #include <iterator>
 #include <string>
 
+#include "constants.hpp"
 #include "logger.hpp"
 #include "types.hpp"
+
+struct Config
+{
+  bool whiteIsCpu = false;
+  bool blackIsCpu = false;
+  int cpuMoveDelayMs = 1000;
+  bool disableTurnOrder = false;
+  bool logFen = false;
+  bool showMoveList = true;
+  std::string startingFen = startingFenString;
+};
 
 bool parseBoolean(std::string);
 
@@ -45,17 +57,25 @@ inline Config loadConfig()
     {
       config.blackIsCpu = parseBoolean(value);
     }
-    if (key == "CPU_MOVE_DELAY_MS")
-    {
-      config.cpuMoveDelayMs = parseInt(value);
-    }
     if (key == "DISABLE_TURN_ORDER")
     {
       config.disableTurnOrder = parseBoolean(value);
     }
+    if (key == "LOG_FEN")
+    {
+      config.logFen = parseBoolean(value);
+    }
+    if (key == "CPU_MOVE_DELAY_MS")
+    {
+      config.cpuMoveDelayMs = parseInt(value);
+    }
     if (key == "SHOW_MOVE_LIST")
     {
       config.showMoveList = parseBoolean(value);
+    }
+    if (key == "STARTING_FEN")
+    {
+      config.startingFen = value.empty() ? startingFenString : value;
     }
   }
 

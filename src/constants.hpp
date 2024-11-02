@@ -5,8 +5,9 @@
 
 #include "types.hpp"
 
-inline const std::string startingPiecePlacementString =
-    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+inline const std::string startingPiecePlacementString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+
+inline const std::string startingFenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 inline const PiecePlacement startingPiecePlacement = {
     ChessPiece::BlackRook, ChessPiece::BlackKnight, ChessPiece::BlackBishop,
@@ -32,5 +33,4 @@ inline const PiecePlacement startingPiecePlacement = {
     ChessPiece::WhiteKing, ChessPiece::WhiteBishop, ChessPiece::WhiteKnight,
     ChessPiece::WhiteRook};
 
-inline const CastlingAvailability startingCastlingAvailability({true, true,
-                                                                true, true});
+inline const CastlingAvailability startingCastlingAvailability({true, true, true, true});

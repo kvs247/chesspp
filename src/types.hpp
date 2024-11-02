@@ -54,15 +54,6 @@ struct CastlingAvailability
   }
 };
 
-struct Config
-{
-  bool whiteIsCpu = false;
-  bool blackIsCpu = false;
-  int cpuMoveDelayMs = 1000;
-  bool disableTurnOrder = false;
-  bool showMoveList = true;
-};
-
 class RangedInt
 {
 private:
