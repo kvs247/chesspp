@@ -371,7 +371,6 @@ inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const
   }
 
   auto indexes = getPieceLegalMoves(fromPiece, fromIndex);
-  for (auto &x : indexes) { logger.log(indexToAlgebraic(x)); }
   if (std::find(indexes.cbegin(), indexes.cend(), toIndex) == indexes.cend())
   {
     return false;
@@ -385,16 +384,16 @@ inline std::vector<BoardIndex> Game::getSamePieceIndexes(BoardIndex fromIndex, B
   std::vector<BoardIndex> res;
   const auto fromPiece = piecePlacement[fromIndex];
 
-  const BoardIndex limit = piecePlacement.size() - 1;
-  for (BoardIndex i = 0; i < limit; ++i)
+  for (size_t i = 0; i < piecePlacement.size(); ++i)
   {
-    if (i != fromIndex && piecePlacement[i] == fromPiece)
+    const BoardIndex bi = i;
+    if (bi != fromIndex && piecePlacement[bi] == fromPiece)
     {
-      const auto indexes = getPieceLegalMoves(fromPiece, i);
+      const auto indexes = getPieceLegalMoves(fromPiece, bi);
       auto samePieceIt = std::find(indexes.cbegin(), indexes.cend(), toIndex);
       if (samePieceIt != indexes.cend())
       {
-        res.emplace_back(i);
+        res.emplace_back(bi);
       }
     }
   }
