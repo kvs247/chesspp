@@ -45,7 +45,7 @@ public:
   std::vector<BoardIndex> getPieceLegalMoves(const ChessPiece &, const BoardIndex) const;
   bool handleEnPassant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
   ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);
-  void handleCastling(const BoardIndex, const BoardIndex, const ChessPiece);
+  std::string handleCastling(const BoardIndex, const BoardIndex, const ChessPiece);
   std::pair<BoardIndex, BoardIndex> generateCpuMove(PieceColor);
   bool validateMove(BoardIndex, BoardIndex) const;
   std::vector<BoardIndex> getSamePieceIndexes(BoardIndex, BoardIndex) const;
@@ -189,7 +189,7 @@ inline bool Game::move()
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
 
-    handleCastling(fromIndex, toIndex, fromPiece);
+    const auto castlingString = handleCastling(fromIndex, toIndex, fromPiece);
     const auto isEnPassantCapture = handleEnPassant(fromPiece, fromColor, fromIndex, toIndex);
     const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
     const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
@@ -200,6 +200,7 @@ inline bool Game::move()
                         toPiece,
                         samePieceIndexes,
                         promotionPiece,
+                        castlingString,
                         isOpponentInCheck,
                         isEnPassantCapture});
 
@@ -310,10 +311,14 @@ inline ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const Bo
   return ChessPiece::Empty;
 }
 
-inline void Game::handleCastling(const BoardIndex fromIndex,
+inline std::string Game::handleCastling(const BoardIndex fromIndex,
                                  const BoardIndex toIndex,
                                  const ChessPiece piece)
 {
+  std::string res;
+  static const std::string shortCastle = "O-O";
+  static const std::string longCastle = "O-O-O";
+
   if (piece == ChessPiece::WhiteKing)
   {
     castlingAvailability.whiteShort = false;
@@ -323,12 +328,14 @@ inline void Game::handleCastling(const BoardIndex fromIndex,
     {
       piecePlacement[63] = ChessPiece::Empty;
       piecePlacement[61] = ChessPiece::WhiteRook;
+      res = shortCastle;
     }
 
     if (fromIndex == 60 && toIndex == 58)
     {
       piecePlacement[56] = ChessPiece::Empty;
       piecePlacement[59] = ChessPiece::WhiteRook;
+      res = longCastle;
     }
   }
 
@@ -341,12 +348,14 @@ inline void Game::handleCastling(const BoardIndex fromIndex,
     {
       piecePlacement[7] = ChessPiece::Empty;
       piecePlacement[5] = ChessPiece::BlackRook;
+      res = shortCastle;
     }
 
     if (fromIndex == 4 && toIndex == 2)
     {
       piecePlacement[0] = ChessPiece::Empty;
       piecePlacement[3] = ChessPiece::BlackRook;
+      res = longCastle;
     }
   }
 
@@ -369,6 +378,8 @@ inline void Game::handleCastling(const BoardIndex fromIndex,
   {
     castlingAvailability.blackLong = false;
   }
+
+  return res;
 };
 
 inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const

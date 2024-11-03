@@ -122,28 +122,16 @@ std::vector<std::string> makeMoveListEntries(Game &game)
     std::stringstream item;
 
     const auto fromIndex = moveListItem.fromIndex;
-    const auto toIndex = moveListItem.toIndex;
     const auto fromPiece = moveListItem.fromPiece;
-    const auto [fromFile, fromRank] = indexToFileRank(fromIndex);
-    const auto [toFile, toRank] = indexToFileRank(toIndex);
 
     const bool isPawn = fromPiece == ChessPiece::BlackPawn || fromPiece == ChessPiece::WhitePawn;
     const bool isCapture = moveListItem.toPiece != ChessPiece::Empty || moveListItem.isEnPassantCapture;
-    const bool isKingMove = fromPiece == ChessPiece::BlackKing || fromPiece == ChessPiece::WhiteKing;
-    const bool isShortCastle = isKingMove && fromFile == 5 && toFile == 7;
-    const bool isLongCastle = isKingMove && fromFile == 5 && toFile == 3;
     const bool isPromotion = moveListItem.promotionPiece != ChessPiece::Empty;
     const bool isOpponentInCheck = moveListItem.isOpponentInCheck;
 
-    if (isShortCastle)
+    if (!moveListItem.castlingString.empty())
     {
-      res.push_back("0-0");
-      continue;
-    }
-
-    if (isLongCastle)
-    {
-      res.push_back("O-O-O");
+      res.push_back(moveListItem.castlingString);
       continue;
     }
 
