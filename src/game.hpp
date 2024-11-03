@@ -43,7 +43,7 @@ public:
   PiecePlacement getPiecePlacement();
   void readMove(BoardIndex &, BoardIndex &) const;
   std::vector<BoardIndex> getPieceLegalMoves(const ChessPiece &, const BoardIndex) const;
-  void handleEnPassant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
+  bool handleEnPassant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex); // could this be private?
   ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);
   void handleCastling(const BoardIndex, const BoardIndex, const ChessPiece);
   std::pair<BoardIndex, BoardIndex> generateCpuMove(PieceColor);
@@ -188,12 +188,20 @@ inline bool Game::move()
     piecePlacement[toIndex] = piecePlacement[fromIndex];
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
-    handleEnPassant(fromPiece, fromColor, fromIndex, toIndex);
-    handleCastling(fromIndex, toIndex, fromPiece);
 
+    handleCastling(fromIndex, toIndex, fromPiece);
+    const auto isEnPassantCapture = handleEnPassant(fromPiece, fromColor, fromIndex, toIndex);
     const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
     const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
-    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece, samePieceIndexes, promotionPiece, isOpponentInCheck});
+
+    moveList.push_back({fromIndex,
+                        fromPiece,
+                        toIndex,
+                        toPiece,
+                        samePieceIndexes,
+                        promotionPiece,
+                        isOpponentInCheck,
+                        isEnPassantCapture});
 
     return true;
   }
@@ -257,21 +265,30 @@ inline std::vector<BoardIndex> Game::getPieceLegalMoves(
   return indexes;
 }
 
-inline void Game::handleEnPassant(const ChessPiece fromPiece,
+inline bool Game::handleEnPassant(const ChessPiece fromPiece,
                                   const PieceColor fromColor,
                                   const BoardIndex fromIndex,
                                   const BoardIndex toIndex)
 {
-  bool isPawn = (fromPiece == ChessPiece::BlackPawn ||
-                 fromPiece == ChessPiece::WhitePawn);
+  // capture
   if (toIndex == enPassantIndex)
-    piecePlacement[toIndex + (fromColor == PieceColor::White ? +8 : -8)] =
-        ChessPiece::Empty;
+  {
+    piecePlacement[toIndex + (fromColor == PieceColor::White ? +8 : -8)] = ChessPiece::Empty;
+    return true;
+  }
 
+  // create en passant opportunity
+  const bool isPawn = (fromPiece == ChessPiece::BlackPawn || fromPiece == ChessPiece::WhitePawn);
   if (isPawn && abs(fromIndex - toIndex) == 16)
+  {
     enPassantIndex = fromIndex + (fromColor == PieceColor::White ? -8 : +8);
+  }
   else
+  {
     enPassantIndex.reset();
+  }
+
+  return false;
 }
 
 inline ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardIndex toIndex)

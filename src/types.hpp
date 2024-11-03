@@ -143,4 +143,5 @@ struct MoveListItem
   std::vector<BoardIndex> samePieceIndexes;
   ChessPiece promotionPiece;
   bool isOpponentInCheck;
+  bool isEnPassantCapture;
 };

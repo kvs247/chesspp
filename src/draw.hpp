@@ -128,7 +128,7 @@ std::vector<std::string> makeMoveListEntries(Game &game)
     const auto [toFile, toRank] = indexToFileRank(toIndex);
 
     const bool isPawn = fromPiece == ChessPiece::BlackPawn || fromPiece == ChessPiece::WhitePawn;
-    const bool isCapture = moveListItem.toPiece != ChessPiece::Empty;
+    const bool isCapture = moveListItem.toPiece != ChessPiece::Empty || moveListItem.isEnPassantCapture;
     const bool isKingMove = fromPiece == ChessPiece::BlackKing || fromPiece == ChessPiece::WhiteKing;
     const bool isShortCastle = isKingMove && fromFile == 5 && toFile == 7;
     const bool isLongCastle = isKingMove && fromFile == 5 && toFile == 3;
