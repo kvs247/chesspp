@@ -1,0 +1,47 @@
+# Base style to build upon - LLVM is generally clean and conservative
+BasedOnStyle: LLVM
+
+# Maximum characters per line before considering a break
+ColumnLimit: 120
+
+# These two control how function parameters are formatted
+BinPackArguments: true      # Allows multiple function arguments per line
+BinPackParameters: true     # Allows multiple function parameters per line
+
+# If false, prevents putting all parameters on the next line in a declaration
+# Example with true:
+# void foo(
+#     int a, int b, int c
+# )
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# Controls whether short blocks can be on a single line
+# Example: if (x) { return; }
+AllowShortBlocksOnASingleLine: Always
+
+# Allows short functions to be on one line
+# Example: void f() { return; }
+AllowShortFunctionsOnASingleLine: All
+
+# The following are penalties - higher numbers mean "try harder to avoid this"
+PenaltyBreakAssignment: 100         # Breaking after assignment operators (=)
+PenaltyBreakBeforeFirstCallParameter: 100  # Breaking after opening parenthesis in function call
+PenaltyBreakComment: 100            # Breaking comment lines
+PenaltyBreakFirstLessLess: 100      # Breaking after << operator in streams
+PenaltyBreakString: 100             # Breaking string literals
+PenaltyExcessCharacter: 100         # Having characters beyond ColumnLimit
+PenaltyReturnTypeOnItsOwnLine: 100  # Putting function return type on its own line
+
+# These control brace placement
+BreakBeforeBraces: Allman  # This is the main one you want - puts braces on new lines
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false

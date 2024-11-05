@@ -15,8 +15,7 @@ public:
     return instance;
   }
 
-  template <typename... Args>
-  bool log(const Args &...args)
+  template <typename... Args> bool log(const Args &...args)
   {
     std::lock_guard<std::mutex> lock(mutex);
 

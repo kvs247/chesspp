@@ -8,8 +8,7 @@
 
 TEST(PawnTest, WhiteForward)
 {
-  std::string fen =
-      "rnbqkb1r/ppppp1pp/5p1n/8/8/2N1P3/PPPP1PPP/R1BQKBNR w KQkq - 0 1";
+  std::string fen = "rnbqkb1r/ppppp1pp/5p1n/8/8/2N1P3/PPPP1PPP/R1BQKBNR w KQkq - 0 1";
   Game game(fen);
   Pawn pawn(game);
 
@@ -41,8 +40,7 @@ TEST(PawnTest, WhiteForward)
 
 TEST(PawnTest, BlackForward)
 {
-  std::string fen =
-      "rnbqkb1r/ppppp1pp/5p1n/8/8/2N1P3/PPPP1PPP/R1BQKBNR w KQkq - 0 1";
+  std::string fen = "rnbqkb1r/ppppp1pp/5p1n/8/8/2N1P3/PPPP1PPP/R1BQKBNR w KQkq - 0 1";
   Game game(fen);
   Pawn pawn(game);
 
@@ -74,8 +72,7 @@ TEST(PawnTest, BlackForward)
 
 TEST(PawnTest, WhiteCapture)
 {
-  std::string fen =
-      "r1bqkbnr/pp2pppp/8/3pNP2/2pnP3/8/PPPP2PP/RNBQKB1R w KQkq - 0 1";
+  std::string fen = "r1bqkbnr/pp2pppp/8/3pNP2/2pnP3/8/PPPP2PP/RNBQKB1R w KQkq - 0 1";
   Game game(fen);
   Pawn pawn(game);
 
@@ -93,8 +90,7 @@ TEST(PawnTest, WhiteCapture)
 
 TEST(PawnTest, BlackCapture)
 {
-  std::string fen =
-      "rnbqkbnr/ppp1pppp/8/3p4/4N3/8/PPPPPPPP/RNBQKB1R w KQkq - 0 1";
+  std::string fen = "rnbqkbnr/ppp1pppp/8/3p4/4N3/8/PPPPPPPP/RNBQKB1R w KQkq - 0 1";
   Game game(fen);
   Pawn pawn(game);
 
@@ -112,8 +108,7 @@ TEST(PawnTest, BlackCapture)
 
 TEST(PawnTest, WhiteEnPassant)
 {
-  std::string fen =
-      "rnbqkbnr/ppp1pppp/8/3pP3/8/7N/PPPP1PPP/RNBQKB1R w KQkq d6 0 4";
+  std::string fen = "rnbqkbnr/ppp1pppp/8/3pP3/8/7N/PPPP1PPP/RNBQKB1R w KQkq d6 0 4";
   Game game(fen);
   Pawn pawn(game);
 
@@ -129,8 +124,7 @@ TEST(PawnTest, WhiteEnPassant)
 
 TEST(PawnTest, WhiteCreateSelfCheck)
 {
-  std::string fen =
-      "rnb1kbnr/pppp1ppp/4p3/8/7q/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  std::string fen = "rnb1kbnr/pppp1ppp/4p3/8/7q/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
   Game game(fen);
   Pawn pawn(game);
 
@@ -162,8 +156,7 @@ TEST(PawnTest, BlackCreateSelfCheck)
 
 TEST(PawnTest, BlackEnPassant)
 {
-  std::string fen =
-      "rnbqkbnr/1ppppppp/8/8/pP5P/7R/P1PPPPP1/RNBQKBN1 b Qkq b3 0 3";
+  std::string fen = "rnbqkbnr/1ppppppp/8/8/pP5P/7R/P1PPPPP1/RNBQKBN1 b Qkq b3 0 3";
   Game game(fen);
   Pawn pawn(game);
 
@@ -179,8 +172,7 @@ TEST(PawnTest, BlackEnPassant)
 
 TEST(KnightTest, WhiteCenter)
 {
-  std::string fen =
-      "rnbqkbnr/ppp1p1pp/3p1p2/8/4N3/8/PPPPPPPP/RNBQKB1R w KQkq - 0";
+  std::string fen = "rnbqkbnr/ppp1p1pp/3p1p2/8/4N3/8/PPPPPPPP/RNBQKB1R w KQkq - 0";
   Game game(fen);
   Knight knight(game);
 
@@ -196,8 +188,7 @@ TEST(KnightTest, WhiteCenter)
 
 TEST(KnightTest, BlackCenter)
 {
-  std::string fen =
-      "rnbqkb1r/pppppppp/1n6/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 1";
+  std::string fen = "rnbqkb1r/pppppppp/1n6/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 1";
   Game game(fen);
   Knight knight(game);
 
@@ -213,8 +204,7 @@ TEST(KnightTest, BlackCenter)
 
 TEST(KnightTest, WhiteCreateSelfCheck)
 {
-  std::string fen =
-      "rnb1kbnr/pppp1ppp/4p3/8/7q/5P2/PPPPPNPP/R1BQKBNR w KQkq - 0 1";
+  std::string fen = "rnb1kbnr/pppp1ppp/4p3/8/7q/5P2/PPPPPNPP/R1BQKBNR w KQkq - 0 1";
   Game game(fen);
   Knight knight(game);
 
@@ -230,8 +220,7 @@ TEST(KnightTest, WhiteCreateSelfCheck)
 
 TEST(KnightTest, BlackCreateSelfCheck)
 {
-  std::string fen =
-      "rnbqkb1r/ppppnppp/8/8/7P/4R3/PPPPPPP1/RNBQKBN1 w Qkq - 0 1";
+  std::string fen = "rnbqkb1r/ppppnppp/8/8/7P/4R3/PPPPPPP1/RNBQKBN1 w Qkq - 0 1";
   Game game(fen);
   Knight knight(game);
 
@@ -247,14 +236,12 @@ TEST(KnightTest, BlackCreateSelfCheck)
 
 TEST(BishopTest, WhiteCenter)
 {
-  std::string fen =
-      "rnbqkbnr/pppppp1p/6p1/8/3B4/1P6/P1PPPPPP/RNBQK1NR w KQkq - 0 1";
+  std::string fen = "rnbqkbnr/pppppp1p/6p1/8/3B4/1P6/P1PPPPPP/RNBQK1NR w KQkq - 0 1";
   Game game(fen);
   Bishop bishop(game);
 
   BoardIndex index(35);
-  auto expected =
-      BoardIndex::create_vector({8, 17, 26, 42, 49, 44, 28, 21, 14, 7});
+  auto expected = BoardIndex::create_vector({8, 17, 26, 42, 49, 44, 28, 21, 14, 7});
   std::vector<BoardIndex> actual = bishop.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -281,8 +268,7 @@ TEST(BishopTest, BlackCenter)
 
 TEST(BishopTest, WhiteCreateSelfCheck)
 {
-  std::string fen =
-      "rnbqk1nr/pppp1ppp/4p3/8/1b6/3P4/PPPBPPPP/RN1QKBNR w KQkq - 0 1";
+  std::string fen = "rnbqk1nr/pppp1ppp/4p3/8/1b6/3P4/PPPBPPPP/RN1QKBNR w KQkq - 0 1";
   Game game(fen);
   Bishop bishop(game);
 
@@ -319,8 +305,7 @@ TEST(RookTest, WhiteCenter)
   Rook rook(game);
 
   BoardIndex index(34);
-  auto expected =
-      BoardIndex::create_vector({32, 33, 35, 36, 37, 38, 39, 42, 26, 18, 10});
+  auto expected = BoardIndex::create_vector({32, 33, 35, 36, 37, 38, 39, 42, 26, 18, 10});
   auto actual = rook.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -336,8 +321,7 @@ TEST(RookTest, BlackCenter)
   Rook rook(game);
 
   BoardIndex index(47);
-  auto expected =
-      BoardIndex::create_vector({23, 31, 39, 55, 46, 45, 44, 43, 42, 41, 40});
+  auto expected = BoardIndex::create_vector({23, 31, 39, 55, 46, 45, 44, 43, 42, 41, 40});
   auto actual = rook.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -348,8 +332,7 @@ TEST(RookTest, BlackCenter)
 
 TEST(RookTest, WhiteCreateSelfCheck)
 {
-  std::string fen =
-      "rnb1kbnr/pppppppp/4q3/8/8/5P2/PPPPR1PP/RNBQKBN1 w Qkq - 0 1";
+  std::string fen = "rnb1kbnr/pppppppp/4q3/8/8/5P2/PPPPR1PP/RNBQKBN1 w Qkq - 0 1";
   Game game(fen);
   Rook rook(game);
 
@@ -365,8 +348,7 @@ TEST(RookTest, WhiteCreateSelfCheck)
 
 TEST(RookTest, BlackCreateSelfCheck)
 {
-  std::string fen =
-      "rnbq1bn1/pppppppp/k7/1r6/8/3Q4/PPPPPPPP/RNB1KBNR w KQ - 0 1";
+  std::string fen = "rnbq1bn1/pppppppp/k7/1r6/8/3Q4/PPPPPPPP/RNB1KBNR w KQ - 0 1";
   Game game(fen);
   Rook rook(game);
 
@@ -382,14 +364,12 @@ TEST(RookTest, BlackCreateSelfCheck)
 
 TEST(QueenTest, WhiteCenter)
 {
-  std::string fen =
-      "rnbqkbnr/pppppppp/8/8/2Q5/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1";
+  std::string fen = "rnbqkbnr/pppppppp/8/8/2Q5/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1";
   Game game(fen);
   Queen queen(game);
 
   BoardIndex index(34);
-  auto expected = BoardIndex::create_vector(
-      {26, 18, 10, 25, 16, 33, 32, 41, 42, 43, 35, 36, 37, 38, 39, 27, 20, 13});
+  auto expected = BoardIndex::create_vector({26, 18, 10, 25, 16, 33, 32, 41, 42, 43, 35, 36, 37, 38, 39, 27, 20, 13});
   auto actual = queen.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -405,8 +385,7 @@ TEST(QueenTest, BlackCenter)
   Queen queen(game);
 
   BoardIndex index(31);
-  auto expected = BoardIndex::create_vector(
-      {23, 22, 30, 29, 28, 27, 26, 25, 24, 38, 45, 52, 39, 47, 55});
+  auto expected = BoardIndex::create_vector({23, 22, 30, 29, 28, 27, 26, 25, 24, 38, 45, 52, 39, 47, 55});
   auto actual = queen.legalSquareIndexes(index);
 
   std::sort(actual.begin(), actual.end());
@@ -433,8 +412,7 @@ TEST(QueenTest, WhiteCreateSelfCheck)
 
 TEST(QueenTest, BlackCreateSelfCheck)
 {
-  std::string fen =
-      "rnb1kbnr/pppqpppp/8/1B6/8/8/PPPPPPPP/RNBQK1NR w KQkq - 0 1";
+  std::string fen = "rnb1kbnr/pppqpppp/8/1B6/8/8/PPPPPPPP/RNBQK1NR w KQkq - 0 1";
   Game game(fen);
   Queen queen(game);
 
@@ -450,8 +428,7 @@ TEST(QueenTest, BlackCreateSelfCheck)
 
 TEST(KingTest, WhiteCenter)
 {
-  std::string fen =
-      "rnb1kbnr/ppp1pppp/8/5q2/7p/6K1/PPPPPPPP/RNBQ1BNR w kq - 0 1";
+  std::string fen = "rnb1kbnr/ppp1pppp/8/5q2/7p/6K1/PPPPPPPP/RNBQ1BNR w kq - 0 1";
   Game game(fen);
   King king(game);
 
@@ -467,8 +444,7 @@ TEST(KingTest, WhiteCenter)
 
 TEST(KingTest, BlackCenter)
 {
-  std::string fen =
-      "rnbq1bnr/pppppppp/8/3k4/4Q3/8/PPPPPPPP/RNB1KBNR w KQ - 0 1";
+  std::string fen = "rnbq1bnr/pppppppp/8/3k4/4Q3/8/PPPPPPPP/RNB1KBNR w KQ - 0 1";
   Game game(fen);
   King king(game);
 

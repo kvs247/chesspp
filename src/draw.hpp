@@ -105,11 +105,7 @@ std::string makeMessage(std::string message)
   int boardWidth = 8 * COL_MULT / 2;
   int msgOffest = messageSize / 2 + messageSize % 2;
   int numSpace = BORDER_WIDTH + boardWidth - msgOffest;
-  res << std::string(numSpace, ' ')
-      << '~'
-      << message
-      << ((messageSize % 2 == 0) ? ' ' : '~')
-      << "\n\n";
+  res << std::string(numSpace, ' ') << '~' << message << ((messageSize % 2 == 0) ? ' ' : '~') << "\n\n";
   return res.str();
 }
 

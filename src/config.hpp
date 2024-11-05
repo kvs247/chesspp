@@ -129,9 +129,7 @@ inline int parseInt(std::string value)
     throw std::invalid_argument("empty string");
   }
 
-  if (std::find_if(value.cbegin(), value.cend(),
-                   [](char c)
-                   { return !std::isdigit(c); }) != value.cend())
+  if (std::find_if(value.cbegin(), value.cend(), [](char c) { return !std::isdigit(c); }) != value.cend())
   {
     throw std::invalid_argument("value is not a number");
   }

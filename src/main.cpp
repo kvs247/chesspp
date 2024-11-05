@@ -36,8 +36,7 @@ int main()
     catch (std::invalid_argument &e)
     {
       game.message = "Invalid input, please try again.";
-      logger.log("ERROR invalid argument encountered: " +
-                 std::string(e.what()));
+      logger.log("ERROR invalid argument encountered: " + std::string(e.what()));
       continue;
     }
   }

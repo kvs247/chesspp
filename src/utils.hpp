@@ -16,23 +16,16 @@ struct FileRank
   FileRankIndex file;
   FileRankIndex rank;
 
-  bool operator==(const FileRank &fr) const
-  {
-    return file == fr.file && rank == fr.rank;
-  }
+  bool operator==(const FileRank &fr) const { return file == fr.file && rank == fr.rank; }
 };
 
 inline bool isChessPiece(const char c)
 {
-  static const std::set<char> chessPieces{'p', 'r', 'n', 'b', 'k', 'q',
-                                          'P', 'R', 'N', 'B', 'K', 'Q'};
+  static const std::set<char> chessPieces{'p', 'r', 'n', 'b', 'k', 'q', 'P', 'R', 'N', 'B', 'K', 'Q'};
   return chessPieces.find(c) != chessPieces.end();
 }
 
-inline char colorToChar(const PieceColor color)
-{
-  return static_cast<char>(color);
-}
+inline char colorToChar(const PieceColor color) { return static_cast<char>(color); }
 
 inline PieceColor charToColor(const char c)
 {
@@ -49,10 +42,7 @@ inline PieceColor charToColor(const char c)
   throw std::invalid_argument("Argument is not a chess piece color.");
 }
 
-inline char chessPieceToChar(const ChessPiece piece)
-{
-  return static_cast<char>(piece);
-}
+inline char chessPieceToChar(const ChessPiece piece) { return static_cast<char>(piece); }
 
 inline ChessPiece charToChessPiece(const char c)
 {
@@ -62,18 +52,10 @@ inline ChessPiece charToChessPiece(const char c)
   }
 
   std::unordered_map<char, ChessPiece> pieceMap = {
-      {'p', ChessPiece::BlackPawn},
-      {'n', ChessPiece::BlackKnight},
-      {'b', ChessPiece::BlackBishop},
-      {'r', ChessPiece::BlackRook},
-      {'q', ChessPiece::BlackQueen},
-      {'k', ChessPiece::BlackKing},
-      {'P', ChessPiece::WhitePawn},
-      {'N', ChessPiece::WhiteKnight},
-      {'B', ChessPiece::WhiteBishop},
-      {'R', ChessPiece::WhiteRook},
-      {'Q', ChessPiece::WhiteQueen},
-      {'K', ChessPiece::WhiteKing},
+      {'p', ChessPiece::BlackPawn}, {'n', ChessPiece::BlackKnight}, {'b', ChessPiece::BlackBishop},
+      {'r', ChessPiece::BlackRook}, {'q', ChessPiece::BlackQueen},  {'k', ChessPiece::BlackKing},
+      {'P', ChessPiece::WhitePawn}, {'N', ChessPiece::WhiteKnight}, {'B', ChessPiece::WhiteBishop},
+      {'R', ChessPiece::WhiteRook}, {'Q', ChessPiece::WhiteQueen},  {'K', ChessPiece::WhiteKing},
   };
 
   return pieceMap[c];
@@ -82,8 +64,7 @@ inline ChessPiece charToChessPiece(const char c)
 inline PieceColor pieceColor(const ChessPiece piece)
 {
   char cChar = chessPieceToChar(piece);
-  return ((std::tolower(cChar) == cChar) ? PieceColor::Black
-                                         : PieceColor::White);
+  return ((std::tolower(cChar) == cChar) ? PieceColor::Black : PieceColor::White);
 }
 
 inline BoardIndex algebraicToIndex(const std::string &algebraicSquare)
@@ -194,13 +175,11 @@ inline std::string piecePlacementArrayToString(const PiecePlacement &a)
   return res;
 }
 
-inline CastlingAvailability parseCastlingAvailability(
-    const std::string &castlingAvailabilityString)
+inline CastlingAvailability parseCastlingAvailability(const std::string &castlingAvailabilityString)
 {
   if (castlingAvailabilityString.size() > 4)
   {
-    throw std::invalid_argument(
-        "Castling availability string must be < 4 chars");
+    throw std::invalid_argument("Castling availability string must be < 4 chars");
   }
 
   CastlingAvailability result({false, false, false, false});
@@ -216,8 +195,7 @@ inline CastlingAvailability parseCastlingAvailability(
   {
     if (validChars.find(c) == std::string::npos)
     {
-      throw std::invalid_argument(
-          "Invaid char in castling availability string");
+      throw std::invalid_argument("Invaid char in castling availability string");
     }
 
     switch (c)
@@ -240,8 +218,7 @@ inline CastlingAvailability parseCastlingAvailability(
   return result;
 }
 
-inline std::string castlingAvailabilityToString(
-    const CastlingAvailability &castlingAvailability)
+inline std::string castlingAvailabilityToString(const CastlingAvailability &castlingAvailability)
 {
   std::string result = "";
   result.reserve(4);

@@ -38,8 +38,7 @@ TEST(KnightCheck, WhiteInCheck)
 
 TEST(BishopCheck, BlackInCheck)
 {
-  std::string fen =
-      "rnbqkbnr/ppp2ppp/3p4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3";
+  std::string fen = "rnbqkbnr/ppp2ppp/3p4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3";
   Game game(fen);
   PiecePlacement piece_placement = game.getPiecePlacement();
   ASSERT_TRUE(Game::isKingInCheck(PieceColor::Black, piece_placement));
@@ -47,8 +46,7 @@ TEST(BishopCheck, BlackInCheck)
 
 TEST(BishopCheck, WhiteInCheck)
 {
-  std::string fen =
-      "rnbqk2r/pppp1ppp/7n/4p3/1b2P3/3P1N2/PPP2PPP/RNBQKB1R w KQkq - 1 4";
+  std::string fen = "rnbqk2r/pppp1ppp/7n/4p3/1b2P3/3P1N2/PPP2PPP/RNBQKB1R w KQkq - 1 4";
   Game game(fen);
   PiecePlacement piece_placement = game.getPiecePlacement();
   ASSERT_TRUE(Game::isKingInCheck(PieceColor::White, piece_placement));
@@ -72,8 +70,7 @@ TEST(RookCheck, WhiteInCheck)
 
 TEST(QueenCheck, BlackInCheckDiag)
 {
-  std::string fen =
-      "rnbqkbnr/ppppp1pp/5p2/7Q/4P3/8/PPPP1PPP/RNB1KBNR b KQkq - 1 2";
+  std::string fen = "rnbqkbnr/ppppp1pp/5p2/7Q/4P3/8/PPPP1PPP/RNB1KBNR b KQkq - 1 2";
   Game game(fen);
   PiecePlacement piece_placement = game.getPiecePlacement();
   ASSERT_TRUE(Game::isKingInCheck(PieceColor::Black, piece_placement));
@@ -81,8 +78,7 @@ TEST(QueenCheck, BlackInCheckDiag)
 
 TEST(QueenCheck, WhiteInCheckDiag)
 {
-  std::string fen =
-      "rnb1kbnr/pppp1ppp/4p3/8/7q/2N2P2/PPPPP1PP/R1BQKBNR w KQkq - 2 3";
+  std::string fen = "rnb1kbnr/pppp1ppp/4p3/8/7q/2N2P2/PPPPP1PP/R1BQKBNR w KQkq - 2 3";
   Game game(fen);
   PiecePlacement piece_placement = game.getPiecePlacement();
   ASSERT_TRUE(Game::isKingInCheck(PieceColor::White, piece_placement));

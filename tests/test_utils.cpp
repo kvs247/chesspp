@@ -103,8 +103,7 @@ TEST(IndexToAlgebraicTest, InvalidInput)
 TEST(PiecePlacementStringToArrayTest, ValidInput)
 {
   PiecePlacement expected = startingPiecePlacement;
-  PiecePlacement actual =
-      piecePlacementStringToArray(startingPiecePlacementString);
+  PiecePlacement actual = piecePlacementStringToArray(startingPiecePlacementString);
   ASSERT_EQ(actual, expected);
 }
 
@@ -114,9 +113,7 @@ TEST(PiecePlacementStringToArrayTest, InvalidInput)
   ASSERT_THROW(piecePlacementStringToArray(test_string), std::invalid_argument);
   ASSERT_THROW(piecePlacementStringToArray("rnbkqbnr"), std::invalid_argument);
 
-  ASSERT_THROW(piecePlacementStringToArray(
-                   "rnbqkbnr/appppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"),
-               std::invalid_argument);
+  ASSERT_THROW(piecePlacementStringToArray("rnbqkbnr/appppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"), std::invalid_argument);
 }
 
 TEST(PiecePlacementArrayToStringTest, ValidInput)
@@ -148,12 +145,8 @@ TEST(ParseCastlingAvailabilityTest, InvalidInput)
 
 TEST(CastlingAvailabilityToString, ValidInput)
 {
-  ASSERT_EQ(castlingAvailabilityToString(
-                CastlingAvailability({true, true, true, true})),
-            "KQkq");
-  ASSERT_EQ(castlingAvailabilityToString(
-                CastlingAvailability({false, false, false, true})),
-            "q");
+  ASSERT_EQ(castlingAvailabilityToString(CastlingAvailability({true, true, true, true})), "KQkq");
+  ASSERT_EQ(castlingAvailabilityToString(CastlingAvailability({false, false, false, true})), "q");
 }
 
 TEST(IndexToFileRank, ValidInput)
