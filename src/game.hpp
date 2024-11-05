@@ -94,8 +94,7 @@ inline Game::Game(
       king(*this) {}
 
 inline Game::Game()
-    : Game(startingPiecePlacement, PieceColor::White,
-           startingCastlingAvailability, std::nullopt, 0, 0) {}
+    : Game(startingPiecePlacement, PieceColor::White, startingCastlingAvailability, std::nullopt, 0, 0) {}
 
 inline Game::Game(std::string &fen) : Game()
 {
@@ -312,8 +311,8 @@ inline ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const Bo
 }
 
 inline std::string Game::handleCastling(const BoardIndex fromIndex,
-                                 const BoardIndex toIndex,
-                                 const ChessPiece piece)
+                                        const BoardIndex toIndex,
+                                        const ChessPiece piece)
 {
   std::string res;
   static const std::string shortCastle = "O-O";
@@ -385,14 +384,12 @@ inline std::string Game::handleCastling(const BoardIndex fromIndex,
 inline bool Game::validateMove(BoardIndex fromIndex, BoardIndex toIndex) const
 {
   auto fromPiece = piecePlacement[fromIndex];
-
   if (fromPiece == ChessPiece::Empty)
   {
     return false;
   }
 
   auto fromColor = pieceColor(fromPiece);
-
   if (!config.disableTurnOrder && fromColor != activeColor)
   {
     return false;
@@ -438,8 +435,7 @@ inline std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(
   for (size_t i = 0; i < piecePlacement.size(); ++i)
   {
     auto piece = piecePlacement[i];
-    if (piece != ChessPiece::Empty &&
-        pieceColor(piecePlacement[i]) == cpuColor)
+    if (piece != ChessPiece::Empty && pieceColor(piecePlacement[i]) == cpuColor)
     {
       cpuPiecesIdxs.push_back(i);
     }
@@ -510,8 +506,7 @@ inline bool Game::isSquareUnderAttack(
     for (auto &idx : indexes)
     {
       auto currentPiece = piecePlacement[idx];
-      if (currentPiece == ChessPiece::Empty ||
-          pieceColor(currentPiece) == color)
+      if (currentPiece == ChessPiece::Empty || pieceColor(currentPiece) == color)
       {
         continue;
       }
@@ -554,8 +549,7 @@ inline bool Game::isSquareUnderAttack(
                 {1, -1},
                 {-1, -1},
             };
-  std::vector<BoardIndex> pawnIndexes =
-      Piece::squareIndexes(index, pawnOffsets, piecePlacement, color);
+  std::vector<BoardIndex> pawnIndexes = Piece::squareIndexes(index, color, pawnOffsets, piecePlacement);
   if (isPieceInIndexesLambda(pawn, pawnIndexes))
   {
     return true;
@@ -574,8 +568,7 @@ inline bool Game::isSquareUnderAttack(
       {-2, 1},
       {-2, -1},
   };
-  auto knightIndexes =
-      Piece::squareIndexes(index, knightOffsets, piecePlacement, color);
+  auto knightIndexes = Piece::squareIndexes(index, color, knightOffsets, piecePlacement);
   if (isPieceInIndexesLambda(knight, knightIndexes))
   {
     return true;
@@ -618,7 +611,7 @@ inline bool Game::isSquareUnderAttack(
       {-1, 1},
       {-1, -1},
   };
-  auto kingIndexes = Piece::squareIndexes(index, kingOffsets, piecePlacement);
+  auto kingIndexes = Piece::squareIndexes(index, color, kingOffsets, piecePlacement);
   if (isPieceInIndexesLambda(king, kingIndexes))
   {
     return true;

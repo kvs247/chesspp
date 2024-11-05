@@ -15,7 +15,8 @@
 Piece::Piece(Game &g) : game(g) {}
 
 std::vector<BoardIndex> Piece::linearSquareIndexes(
-    const BoardIndex index, const PieceColor color,
+    const BoardIndex index,
+    const PieceColor color,
     const std::vector<std::pair<int, int>> &offsets,
     const PiecePlacement &piecePlacement)
 {
@@ -60,9 +61,9 @@ std::vector<BoardIndex> Piece::linearSquareIndexes(
 
 std::vector<BoardIndex> Piece::squareIndexes(
     const BoardIndex index,
+    const PieceColor color,
     const std::vector<std::pair<int, int>> &offsets,
-    const PiecePlacement &piecePlacement,
-    std::optional<PieceColor> currentPieceColor)
+    const PiecePlacement &piecePlacement)
 {
   std::vector<BoardIndex> res = {};
 
@@ -82,14 +83,8 @@ std::vector<BoardIndex> Piece::squareIndexes(
 
     targetIndex = fileRankToIndex({targetFile, targetRank});
     auto targetPiece = piecePlacement[targetIndex];
-    if (currentPieceColor == std::nullopt)
-    {
-      const auto currentPiece = piecePlacement[index];
-      currentPieceColor = pieceColor(currentPiece);
-    }
 
-    if (targetPiece != ChessPiece::Empty &&
-        currentPieceColor == pieceColor(targetPiece))
+    if (targetPiece != ChessPiece::Empty && color == pieceColor(targetPiece))
     {
       continue;
     }
@@ -179,6 +174,7 @@ Knight::Knight(Game &g) : Piece(g) {}
 std::vector<BoardIndex> Knight::legalSquareIndexes(
     const BoardIndex index) const
 {
+  const auto color = pieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {
       {1, 2},
       {1, -2},
@@ -190,7 +186,7 @@ std::vector<BoardIndex> Knight::legalSquareIndexes(
       {-2, -1},
   };
 
-  auto potentialIndexes = squareIndexes(index, offsets, game.piecePlacement);
+  auto potentialIndexes = squareIndexes(index, color, offsets, game.piecePlacement);
 
   auto legalIndexes =
       filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
@@ -255,10 +251,11 @@ King::King(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> King::legalSquareIndexes(const BoardIndex index) const
 {
+  const auto color = pieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {
       {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-  auto potentialIndexes = squareIndexes(index, offsets, game.piecePlacement);
+  auto potentialIndexes = squareIndexes(index, color, offsets, game.piecePlacement);
 
   if (game.castlingAvailability.whiteShort &&
       game.piecePlacement[61] == ChessPiece::Empty &&
