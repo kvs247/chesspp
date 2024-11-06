@@ -20,9 +20,8 @@ std::vector<BoardIndex> Piece::linearSquareIndexes(const BoardIndex index, const
 {
   std::vector<BoardIndex> res = {};
 
-  auto [file, rank] = indexToFileRank(index);
-  int targetFile,
-      targetRank; // not FileRankIndex since we are testing if on board
+  const auto [file, rank] = indexToFileRank(index);
+  int targetFile, targetRank; // not FileRankIndex since we are testing if on board
   BoardIndex targetIndex;
 
   for (auto &offset : offsets)
@@ -39,8 +38,8 @@ std::vector<BoardIndex> Piece::linearSquareIndexes(const BoardIndex index, const
         break;
 
       targetIndex = fileRankToIndex({targetFile, targetRank});
+      const auto targetPiece = piecePlacement[targetIndex];
 
-      auto targetPiece = piecePlacement[targetIndex];
       if (targetPiece != ChessPiece::Empty)
       {
         if (pieceColor(targetPiece) != color)
@@ -63,7 +62,7 @@ std::vector<BoardIndex> Piece::squareIndexes(const BoardIndex index, const Piece
 {
   std::vector<BoardIndex> res = {};
 
-  auto [file, rank] = indexToFileRank(index);
+  const auto [file, rank] = indexToFileRank(index);
   BoardIndex targetIndex;
   int targetFile, targetRank; // not FileRankIndex since we are testing if on board
 
@@ -78,7 +77,7 @@ std::vector<BoardIndex> Piece::squareIndexes(const BoardIndex index, const Piece
     }
 
     targetIndex = fileRankToIndex({targetFile, targetRank});
-    auto targetPiece = piecePlacement[targetIndex];
+    const auto targetPiece = piecePlacement[targetIndex];
 
     if (targetPiece != ChessPiece::Empty && color == pieceColor(targetPiece))
     {
@@ -94,9 +93,9 @@ std::vector<BoardIndex> Piece::squareIndexes(const BoardIndex index, const Piece
 std::vector<BoardIndex> Piece::filterSelfCheckMoves(const PiecePlacement &piecePlacement, const BoardIndex index,
                                                     const std::vector<BoardIndex> &indexes)
 {
-  auto isKingInCheckLambda = [piecePlacement, index](BoardIndex toIndex)
+  const auto isKingInCheckLambda = [piecePlacement, index](const BoardIndex toIndex)
   {
-    auto color = pieceColor(piecePlacement[index]);
+    const auto color = pieceColor(piecePlacement[index]);
     auto newPiecePlacement = piecePlacement;
     newPiecePlacement[toIndex] = newPiecePlacement[index];
     newPiecePlacement[index] = ChessPiece::Empty;
@@ -115,15 +114,15 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
 {
   std::vector<BoardIndex> potentialIndexes;
 
-  ChessPiece piece = game.piecePlacement[index];
-  ChessPiece targetPiece = ChessPiece::Empty;
-  auto color = pieceColor(piece);
-  auto [file, rank] = indexToFileRank(index);
+  const auto piece = game.piecePlacement[index];
+  auto targetPiece = ChessPiece::Empty;
+  const auto color = pieceColor(piece);
+  const auto [file, rank] = indexToFileRank(index);
   BoardIndex targetIndex;
 
-  int sign = color == PieceColor::White ? 1 : -1;
-  int blackStartRank = 7;
-  int whiteStartRank = 2;
+  const int sign = color == PieceColor::White ? 1 : -1;
+  static const int blackStartRank = 7;
+  static const int whiteStartRank = 2;
 
   // 1 rank
   targetIndex = fileRankToIndex({file, rank + sign});
@@ -141,10 +140,10 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
   }
 
   // capture
-  std::array<int, 2> offsets = {1, -1};
+  const std::array<int, 2> offsets = {1, -1};
   for (auto &offset : offsets)
   {
-    int targetFile = file + offset; // not FileRankIndex since we are testing if on board
+    const int targetFile = file + offset; // not FileRankIndex since we are testing if on board
     if (targetFile < 1 || 8 < targetFile)
       break;
     targetIndex = fileRankToIndex({file + offset, rank + sign});
@@ -156,7 +155,7 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
       potentialIndexes.push_back(targetIndex);
   }
 
-  auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }
@@ -170,9 +169,9 @@ std::vector<BoardIndex> Knight::legalSquareIndexes(const BoardIndex index) const
       {1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
   };
 
-  auto potentialIndexes = squareIndexes(index, color, offsets, game.piecePlacement);
+  const auto potentialIndexes = squareIndexes(index, color, offsets, game.piecePlacement);
 
-  auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 };
@@ -184,9 +183,9 @@ std::vector<BoardIndex> Bishop::legalSquareIndexes(const BoardIndex index) const
   const auto color = pieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-  auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
+  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
 
-  auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }
@@ -198,9 +197,9 @@ std::vector<BoardIndex> Rook::legalSquareIndexes(const BoardIndex index) const
   const auto color = pieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
-  auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
+  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
 
-  auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }
@@ -213,9 +212,9 @@ std::vector<BoardIndex> Queen::legalSquareIndexes(const BoardIndex index) const
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1},  {0, -1},
                                                     {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-  auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
+  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
 
-  auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }

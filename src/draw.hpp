@@ -15,11 +15,12 @@
 
 using std::cout;
 
-int BORDER_WIDTH = 3; // at least 2
-int COL_MULT = 8;     // even
-int ROW_MULT = 4;     // even
+const int BORDER_WIDTH = 3; // at least 2
+const int COL_MULT = 8;     // even
+const int ROW_MULT = 4;     // even
+const size_t MOVE_LIST_ITEM_WIDTH = 20;
 
-std::vector<std::string> makeGameBoardLines(PiecePlacement &piecePlacement)
+std::vector<std::string> makeGameBoardLines(const PiecePlacement &piecePlacement)
 {
   std::vector<std::string> res;
   char c;
@@ -41,9 +42,9 @@ std::vector<std::string> makeGameBoardLines(PiecePlacement &piecePlacement)
 
     for (int col = 0; col <= 8 * COL_MULT; ++col)
     {
-      bool drawRow = row % ROW_MULT == 0;
-      bool drawCol = col % COL_MULT == 0;
-      bool drawPiece = col % (COL_MULT / 2) == 0 && row % (ROW_MULT / 2) == 0;
+      const bool drawRow = row % ROW_MULT == 0;
+      const bool drawCol = col % COL_MULT == 0;
+      const bool drawPiece = col % (COL_MULT / 2) == 0 && row % (ROW_MULT / 2) == 0;
 
       if (drawRow && drawCol)
       {
@@ -62,7 +63,7 @@ std::vector<std::string> makeGameBoardLines(PiecePlacement &piecePlacement)
       // pieces
       else if (drawPiece)
       {
-        char pieceChar = chessPieceToChar(piecePlacement[pieceIndex]);
+        const char pieceChar = chessPieceToChar(piecePlacement[pieceIndex]);
         c = pieceChar ? pieceChar : ' ';
         ++pieceIndex;
       }
@@ -82,7 +83,7 @@ std::vector<std::string> makeGameBoardLines(PiecePlacement &piecePlacement)
   {
     if ((i + COL_MULT / 2) % COL_MULT == 0)
     {
-      char c = i / COL_MULT + 'A';
+      const char c = i / COL_MULT + 'A';
       line << c;
     }
     else
@@ -93,23 +94,23 @@ std::vector<std::string> makeGameBoardLines(PiecePlacement &piecePlacement)
   return res;
 }
 
-std::string makeMessage(std::string message)
+std::string makeMessage(const std::string message)
 {
   std::stringstream res("\n\n");
-  auto messageSize = message.size();
+  const auto messageSize = message.size();
   if (!messageSize)
   {
     return res.str();
   }
 
-  int boardWidth = 8 * COL_MULT / 2;
-  int msgOffest = messageSize / 2 + messageSize % 2;
-  int numSpace = BORDER_WIDTH + boardWidth - msgOffest;
+  const int boardWidth = 8 * COL_MULT / 2;
+  const int msgOffest = messageSize / 2 + messageSize % 2;
+  const int numSpace = BORDER_WIDTH + boardWidth - msgOffest;
   res << std::string(numSpace, ' ') << '~' << message << ((messageSize % 2 == 0) ? ' ' : '~') << "\n\n";
   return res.str();
 }
 
-std::vector<std::string> makeMoveListEntries(Game &game)
+std::vector<std::string> makeMoveListEntries(const Game &game)
 {
   std::vector<std::string> res;
 
@@ -205,9 +206,7 @@ size_t numDigits(size_t x)
   return res;
 }
 
-size_t moveListEntryLength = 20;
-
-std::vector<std::string> makeMoveListLines(std::vector<std::string> &moveListEntries, size_t moveListLength)
+std::vector<std::string> makeMoveListLines(const std::vector<std::string> &moveListEntries, const size_t moveListLength)
 {
   std::vector<std::string> res;
   size_t counter = 1;
@@ -222,7 +221,7 @@ std::vector<std::string> makeMoveListLines(std::vector<std::string> &moveListEnt
     {
       std::stringstream entry;
       size_t j = moveListEntriesIdx + moveListLength * n * 2;
-      size_t index = counter + moveListLength * n;
+      const size_t index = counter + moveListLength * n;
 
       entry << index << ". " << moveListEntries[j];
       if (j + 1 < moveListEntries.size())
@@ -230,7 +229,7 @@ std::vector<std::string> makeMoveListLines(std::vector<std::string> &moveListEnt
         entry << " " << moveListEntries[j + 1];
       }
 
-      entry << std::string(moveListEntryLength - entry.str().size(), ' ');
+      entry << std::string(MOVE_LIST_ITEM_WIDTH - entry.str().size(), ' ');
       line << entry.str();
       ++n;
     }
@@ -243,15 +242,15 @@ std::vector<std::string> makeMoveListLines(std::vector<std::string> &moveListEnt
   return res;
 }
 
-void draw(Game &game)
+void draw(const Game &game)
 {
   std::stringstream buffer;
 
-  auto piecePlacement = game.getPiecePlacement();
+  const auto piecePlacement = game.getPiecePlacement();
 
-  auto gameBoardLines = makeGameBoardLines(piecePlacement);
-  auto moveListEntries = makeMoveListEntries(game);
-  auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3);
+  const auto gameBoardLines = makeGameBoardLines(piecePlacement);
+  const auto moveListEntries = makeMoveListEntries(game);
+  const auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3);
 
   size_t j = 0;
   for (size_t i = 0; i < gameBoardLines.size(); ++i)
@@ -271,7 +270,6 @@ void draw(Game &game)
     buffer << "\n";
   }
 
-  auto message = game.message;
   buffer << makeMessage(game.message);
 
   std::cout << buffer.str();

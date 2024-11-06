@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-void writePgn(std::vector<std::string> &moveList)
+void writePgn(const std::vector<std::string> &moveList)
 {
-  std::string filePath = "out/game.pgn";
+  const std::string filePath = "out/game.pgn";
   std::ofstream f(filePath, std::ios::out | std::ios::trunc);
   if (!f.is_open())
   {

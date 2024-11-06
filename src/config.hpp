@@ -36,11 +36,11 @@ enum class ConfigKey
   UNKNOWN,
 };
 
-bool parseBoolean(std::string);
+bool parseBoolean(const std::string);
 
-int parseInt(std::string);
+int parseInt(const std::string);
 
-inline ConfigKey stringToConfigKey(std::string key)
+inline ConfigKey stringToConfigKey(const std::string key)
 {
   static const std::map<std::string, ConfigKey> configKeyMap = {
       {"WHITE_IS_CPU", ConfigKey::WHITE_IS_CPU},
@@ -68,14 +68,14 @@ inline Config loadConfig()
   std::string line;
   while (getline(file, line))
   {
-    auto splitIndex = line.find('=');
+    const auto splitIndex = line.find('=');
     if (splitIndex == std::string::npos)
     {
       throw std::invalid_argument("no '=' found in config line");
     }
 
-    std::string key = line.substr(0, splitIndex);
-    std::string value = line.substr(splitIndex + 1);
+    const std::string key = line.substr(0, splitIndex);
+    const std::string value = line.substr(splitIndex + 1);
 
     switch (stringToConfigKey(key))
     {
@@ -108,7 +108,7 @@ inline Config loadConfig()
   return config;
 }
 
-inline bool parseBoolean(std::string value)
+inline bool parseBoolean(const std::string value)
 {
   if (value == "true")
   {
@@ -122,7 +122,7 @@ inline bool parseBoolean(std::string value)
   throw std::invalid_argument("value is not 'true' or 'false'");
 }
 
-inline int parseInt(std::string value)
+inline int parseInt(const std::string value)
 {
   if (value.empty())
   {

@@ -51,19 +51,19 @@ inline ChessPiece charToChessPiece(const char c)
     throw std::invalid_argument("Argument is not a chess piece.");
   }
 
-  std::unordered_map<char, ChessPiece> pieceMap = {
+  static const std::unordered_map<char, ChessPiece> pieceMap = {
       {'p', ChessPiece::BlackPawn}, {'n', ChessPiece::BlackKnight}, {'b', ChessPiece::BlackBishop},
       {'r', ChessPiece::BlackRook}, {'q', ChessPiece::BlackQueen},  {'k', ChessPiece::BlackKing},
       {'P', ChessPiece::WhitePawn}, {'N', ChessPiece::WhiteKnight}, {'B', ChessPiece::WhiteBishop},
       {'R', ChessPiece::WhiteRook}, {'Q', ChessPiece::WhiteQueen},  {'K', ChessPiece::WhiteKing},
   };
 
-  return pieceMap[c];
+  return pieceMap.at(c);
 }
 
 inline PieceColor pieceColor(const ChessPiece piece)
 {
-  char cChar = chessPieceToChar(piece);
+  const char cChar = chessPieceToChar(piece);
   return ((std::tolower(cChar) == cChar) ? PieceColor::Black : PieceColor::White);
 }
 
@@ -74,11 +74,11 @@ inline BoardIndex algebraicToIndex(const std::string &algebraicSquare)
     throw std::invalid_argument("Argument is not 2 characters long.");
   }
 
-  char fileChar = std::tolower(algebraicSquare[0]);
-  char rankChar = algebraicSquare[1];
+  const char fileChar = std::tolower(algebraicSquare[0]);
+  const char rankChar = algebraicSquare[1];
 
-  FileRankIndex file = fileChar - 'a' + 1;
-  FileRankIndex rank = rankChar - '0';
+  const FileRankIndex file = fileChar - 'a' + 1;
+  const FileRankIndex rank = rankChar - '0';
 
   return BoardIndex(8 * (8 - (rank)) + file - 1);
 }
@@ -90,8 +90,8 @@ inline std::string indexToAlgebraic(const std::optional<BoardIndex> index)
     return "-";
   }
 
-  FileRankIndex file = index.value() % 8 + 1;
-  FileRankIndex rank = 8 - (index.value() / 8);
+  const FileRankIndex file = index.value() % 8 + 1;
+  const FileRankIndex rank = 8 - (index.value() / 8);
 
   char fileChar = (file - 1) + 'a';
   char rankChar = rank + '0';
@@ -143,7 +143,7 @@ inline std::string piecePlacementArrayToString(const PiecePlacement &a)
   std::string res;
   unsigned gap = 0;
 
-  auto handleGap = [&]()
+  const auto handleGap = [&]()
   {
     if (gap > 0)
     {
@@ -245,16 +245,15 @@ inline std::string castlingAvailabilityToString(const CastlingAvailability &cast
 
 inline FileRank indexToFileRank(const BoardIndex index)
 {
-  FileRankIndex file = index % 8 + 1;
-  FileRankIndex rank = 8 - index / 8;
+  const FileRankIndex file = index % 8 + 1;
+  const FileRankIndex rank = 8 - index / 8;
 
   return {file, rank};
 };
 
 inline int fileRankToIndex(FileRank square)
 {
-  auto [file, rank] = square;
-
-  int res = (file - 1) + 8 * (8 - rank);
+  const auto [file, rank] = square;
+  const int res = (file - 1) + 8 * (8 - rank);
   return res;
 };

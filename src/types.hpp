@@ -15,7 +15,7 @@ enum class PieceColor : char
 
 };
 
-inline PieceColor operator!(PieceColor current)
+inline PieceColor operator!(const PieceColor current)
 {
   return (current == PieceColor::White) ? PieceColor::Black : PieceColor::White;
 }
