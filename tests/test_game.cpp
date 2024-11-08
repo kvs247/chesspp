@@ -1,9 +1,52 @@
 #include <gtest/gtest.h>
-
 #include <string>
 
+#include "../src/constants.hpp"
 #include "../src/game.hpp"
 
+// Game::State
+TEST(GameStateInitialization, FromDefaultFen)
+{
+  const auto defaultState = Game::State::newGameState();
+  std::string defaultFen = startingFenString;
+  const auto defaultFenState = Game::State::fromFEN(defaultFen);
+
+  ASSERT_EQ(defaultState, defaultFenState);
+}
+
+TEST(GameStateInitialization, FromMidGameFen)
+{
+  const PiecePlacement piecePlacement = {
+      ChessPiece::BlackRook,  ChessPiece::Empty,       ChessPiece::BlackBishop, ChessPiece::Empty,
+      ChessPiece::BlackKing,  ChessPiece::BlackBishop, ChessPiece::BlackRook,   ChessPiece::Empty,
+      ChessPiece::BlackPawn,  ChessPiece::BlackPawn,   ChessPiece::BlackPawn,   ChessPiece::BlackPawn,
+      ChessPiece::BlackQueen, ChessPiece::BlackPawn,   ChessPiece::BlackPawn,   ChessPiece::BlackPawn,
+      ChessPiece::Empty,      ChessPiece::Empty,       ChessPiece::BlackKnight, ChessPiece::Empty,
+      ChessPiece::Empty,      ChessPiece::BlackKnight, ChessPiece::Empty,       ChessPiece::Empty,
+      ChessPiece::Empty,      ChessPiece::Empty,       ChessPiece::Empty,       ChessPiece::Empty,
+      ChessPiece::Empty,      ChessPiece::Empty,       ChessPiece::Empty,       ChessPiece::Empty,
+      ChessPiece::Empty,      ChessPiece::Empty,       ChessPiece::Empty,       ChessPiece::Empty,
+      ChessPiece::BlackPawn,  ChessPiece::WhitePawn,   ChessPiece::Empty,       ChessPiece::Empty,
+      ChessPiece::Empty,      ChessPiece::WhitePawn,   ChessPiece::WhiteKnight, ChessPiece::Empty,
+      ChessPiece::WhitePawn,  ChessPiece::Empty,       ChessPiece::Empty,       ChessPiece::Empty,
+      ChessPiece::WhitePawn,  ChessPiece::WhiteBishop, ChessPiece::WhitePawn,   ChessPiece::WhitePawn,
+      ChessPiece::WhiteQueen, ChessPiece::Empty,       ChessPiece::WhitePawn,   ChessPiece::WhitePawn,
+      ChessPiece::Empty,      ChessPiece::Empty,       ChessPiece::WhiteKing,   ChessPiece::WhiteRook,
+      ChessPiece::Empty,      ChessPiece::WhiteBishop, ChessPiece::WhiteKnight, ChessPiece::WhiteRook};
+  const auto activeColor = PieceColor::Black;
+  const auto castlingAvailability = CastlingAvailability{false, false, false, true};
+  const BoardIndex enPassantIndex = 45;
+  const int halfmoveClock = 0;
+  const int fullmoveClock = 7;
+  const Game::State expected{piecePlacement, activeColor,   castlingAvailability,
+                                  enPassantIndex, halfmoveClock, fullmoveClock};
+  std::string fen = "r1b1kbr1/ppppqppp/2n2n2/8/4pP2/1PN1P3/PBPPQ1PP/2KR1BNR b q f3 0 7";
+  const auto actual = Game::State::fromFEN(fen);
+
+  ASSERT_EQ(actual, expected);
+}
+
+// check
 TEST(PawnCheck, BlackInCheck)
 {
   std::string fen = "8/8/3k4/4P3/8/8/8/8 w - - 0 1";

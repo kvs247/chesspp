@@ -21,11 +21,10 @@
 #include "types.hpp"
 #include "utils.hpp"
 
-// constructors
-Game::Game() : Game(State::newGameState()) {}
-
-Game::Game(std::string &fen) : Game()
+Game::State Game::State::fromFEN(std::string &fen)
 {
+  State res{};
+
   size_t pos = 0;
   std::string token;
   for (int tokenCount = 1; tokenCount != 7; ++tokenCount)
@@ -37,44 +36,35 @@ Game::Game(std::string &fen) : Game()
     switch (tokenCount)
     {
     case 1:
-      piecePlacement = piecePlacementStringToArray(token);
+      res.piecePlacement = piecePlacementStringToArray(token);
       break;
     case 2:
-      activeColor = charToColor(token[0]);
+      res.activeColor = charToColor(token[0]);
       break;
     case 3:
-      castlingAvailability = parseCastlingAvailability(token);
+      res.castlingAvailability = parseCastlingAvailability(token);
       break;
     case 4:
-      if (token == "-")
-      {
-        enPassantIndex = std::nullopt;
-      }
-      else
-      {
-        enPassantIndex = algebraicToIndex(token);
-      }
+      res.enPassantIndex = token == "-" ? std::nullopt : std::optional{algebraicToIndex(token)};
       break;
     case 5:
-      if (token == "-")
-      {
-        halfmoveClock = 0;
-      }
-      else
-      {
-        halfmoveClock = std::stoi(token);
-      }
+      res.halfmoveClock = token == "-" ? 0 : std::stoi(token);
       break;
     case 6:
-      fullmoveClock = std::stoi(token);
+      res.fullmoveClock = std::stoi(token);
       break;
     default:
       break;
     }
   }
-}
 
-Game::Game(State initialGameState)
+  return res;
+};
+
+// constructors
+Game::Game() : Game(State::newGameState()) {}
+
+Game::Game(const State &initialGameState)
     : piecePlacement(initialGameState.piecePlacement), activeColor(initialGameState.activeColor),
       castlingAvailability(initialGameState.castlingAvailability), enPassantIndex(initialGameState.enPassantIndex),
       halfmoveClock(initialGameState.halfmoveClock), fullmoveClock(initialGameState.fullmoveClock), pawn(*this),

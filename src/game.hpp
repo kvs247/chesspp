@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "piece.hpp"
 #include "types.hpp"
 
@@ -16,19 +17,27 @@ class Game
 public:
   struct State
   {
-    PiecePlacement piecePlacement;
-    PieceColor activeColor;
-    CastlingAvailability castlingAvailability;
-    std::optional<BoardIndex> enPassantIndex;
-    int halfmoveClock;
-    int fullmoveClock;
+    PiecePlacement piecePlacement = startingPiecePlacement;
+    PieceColor activeColor = PieceColor::White;
+    CastlingAvailability castlingAvailability = startingCastlingAvailability;
+    std::optional<BoardIndex> enPassantIndex = std::nullopt;
+    int halfmoveClock = 0;
+    int fullmoveClock = 1;
 
     static State newGameState() { return {}; };
+    static State fromFEN(std::string &fen);
+
+    bool operator==(const State &other) const
+    {
+      return (piecePlacement == other.piecePlacement && activeColor == other.activeColor &&
+              castlingAvailability == other.castlingAvailability && enPassantIndex == other.enPassantIndex &&
+              halfmoveClock == other.halfmoveClock && fullmoveClock == other.fullmoveClock);
+    };
   };
 
   Game();
-  Game(State);
-  Game(std::string &);
+  Game(const State &state);
+  Game(std::string &fen) : Game(State::fromFEN(fen)) {};
 
   bool move();
   std::string getFenStr() const;
