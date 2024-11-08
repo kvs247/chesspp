@@ -45,13 +45,13 @@ public:
   PiecePlacement getPiecePlacement() const { return piecePlacement; };
   std::string getFenStr() const;
 
-  bool move();
-  static std::pair<BoardIndex, BoardIndex> getUserMove(std::istream &, std::ostream &);
+  bool processNextMove();
+
+  // decided if public or private
   std::vector<BoardIndex> getPieceLegalMoves(const ChessPiece &, const BoardIndex) const;
   bool handleEnPassant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex);
   ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);
   std::string handleCastling(const BoardIndex, const BoardIndex, const ChessPiece);
-  std::pair<BoardIndex, BoardIndex> generateCpuMove(const PieceColor);
   bool validateMove(const BoardIndex, const BoardIndex) const;
   std::vector<BoardIndex> getSamePieceIndexes(const BoardIndex, const BoardIndex) const;
   static bool isKingInCheck(const PieceColor, const PiecePlacement &);
@@ -75,4 +75,8 @@ private:
   Rook rook;
   Queen queen;
   King king;
+  
+  std::pair<BoardIndex, BoardIndex> getNextMove();
+  std::pair<BoardIndex, BoardIndex> getUserMove(std::istream &, std::ostream &);
+  std::pair<BoardIndex, BoardIndex> generateCpuMove(const PieceColor);
 };

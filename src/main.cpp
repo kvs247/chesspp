@@ -24,7 +24,8 @@ int main()
 
     try
     {
-      if (game.move())
+
+      if (game.processNextMove())
       {
         game.message = "";
       }

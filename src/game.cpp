@@ -85,22 +85,9 @@ Game::Game(const State &initialGameState)
 
 // public methods
 
-bool Game::move()
+bool Game::processNextMove()
 {
-  BoardIndex fromIndex, toIndex;
-
-  if (config.blackIsCpu && activeColor == PieceColor::Black)
-  {
-    std::tie(fromIndex, toIndex) = generateCpuMove(PieceColor::Black);
-  }
-  else if (config.whiteIsCpu && activeColor == PieceColor::White)
-  {
-    std::tie(fromIndex, toIndex) = generateCpuMove(PieceColor::White);
-  }
-  else
-  {
-    std::tie(fromIndex, toIndex) = getUserMove(std::cin, std::cout);
-  }
+  const auto [fromIndex, toIndex] = getNextMove();
 
   if (validateMove(fromIndex, toIndex))
   {
@@ -131,7 +118,28 @@ bool Game::move()
   return false;
 }
 
+
 // private methods
+std::pair<BoardIndex, BoardIndex> Game::getNextMove()
+{
+  BoardIndex fromIndex, toIndex;
+
+  if (config.blackIsCpu && activeColor == PieceColor::Black)
+  {
+    std::tie(fromIndex, toIndex) = generateCpuMove(PieceColor::Black);
+  }
+  else if (config.whiteIsCpu && activeColor == PieceColor::White)
+  {
+    std::tie(fromIndex, toIndex) = generateCpuMove(PieceColor::White);
+  }
+  else
+  {
+    std::tie(fromIndex, toIndex) = getUserMove(std::cin, std::cout);
+  }
+
+  return {fromIndex, toIndex};
+};
+
 std::pair<BoardIndex, BoardIndex> Game::getUserMove(std::istream &is, std::ostream &os)
 {
   BoardIndex fromIndex, toIndex;
@@ -150,6 +158,55 @@ std::pair<BoardIndex, BoardIndex> Game::getUserMove(std::istream &is, std::ostre
 
   return {fromIndex, toIndex};
 }
+
+
+std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColor)
+{
+  std::vector<int> cpuPiecesIdxs;
+  cpuPiecesIdxs.reserve(32);
+
+  for (size_t i = 0; i < piecePlacement.size(); ++i)
+  {
+    auto piece = piecePlacement[i];
+    if (piece != ChessPiece::Empty && pieceColor(piecePlacement[i]) == cpuColor)
+    {
+      cpuPiecesIdxs.push_back(i);
+    }
+  }
+
+  std::random_device rd;
+  std::mt19937 g(rd());
+
+  std::shuffle(cpuPiecesIdxs.begin(), cpuPiecesIdxs.end(), g);
+
+  BoardIndex resFromIndex, resToIndex;
+
+  for (auto fromIndex : cpuPiecesIdxs)
+  {
+    const auto fromPiece = piecePlacement[fromIndex];
+    auto indexes = getPieceLegalMoves(fromPiece, fromIndex);
+    if (!indexes.size())
+    {
+      continue;
+    }
+
+    std::shuffle(indexes.begin(), indexes.end(), g);
+
+    for (auto toIndex : indexes)
+    {
+      if (validateMove(fromIndex, toIndex))
+      {
+        std::this_thread::sleep_for(std::chrono::milliseconds(config.cpuMoveDelayMs));
+        return {fromIndex, toIndex};
+      }
+    }
+  }
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(config.cpuMoveDelayMs));
+  logger.log("CHECKMATE");
+  isGameOver = true;
+  return {resFromIndex, resToIndex}; // getting here implies checkmate
+};
 
 // still updating
 
@@ -346,53 +403,6 @@ std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, co
   return res;
 }
 
-std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColor)
-{
-  std::vector<int> cpuPiecesIdxs;
-  cpuPiecesIdxs.reserve(32);
-
-  for (size_t i = 0; i < piecePlacement.size(); ++i)
-  {
-    auto piece = piecePlacement[i];
-    if (piece != ChessPiece::Empty && pieceColor(piecePlacement[i]) == cpuColor)
-    {
-      cpuPiecesIdxs.push_back(i);
-    }
-  }
-
-  std::random_device rd;
-  std::mt19937 g(rd());
-
-  std::shuffle(cpuPiecesIdxs.begin(), cpuPiecesIdxs.end(), g);
-
-  BoardIndex resFromIndex, resToIndex;
-
-  for (auto fromIndex : cpuPiecesIdxs)
-  {
-    const auto fromPiece = piecePlacement[fromIndex];
-    auto indexes = getPieceLegalMoves(fromPiece, fromIndex);
-    if (!indexes.size())
-    {
-      continue;
-    }
-
-    std::shuffle(indexes.begin(), indexes.end(), g);
-
-    for (auto toIndex : indexes)
-    {
-      if (validateMove(fromIndex, toIndex))
-      {
-        std::this_thread::sleep_for(std::chrono::milliseconds(config.cpuMoveDelayMs));
-        return {fromIndex, toIndex};
-      }
-    }
-  }
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(config.cpuMoveDelayMs));
-  logger.log("CHECKMATE");
-  isGameOver = true;
-  return {resFromIndex, resToIndex}; // getting here implies checkmate
-};
 
 bool Game::isKingInCheck(const PieceColor color, const PiecePlacement &piecePlacement)
 {
