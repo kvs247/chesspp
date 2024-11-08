@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
+#include <iostream>
+#include <sstream>
 #include <string>
+#include <utility>
 
 #include "../src/constants.hpp"
 #include "../src/game.hpp"
@@ -39,9 +42,20 @@ TEST(GameStateInitialization, FromMidGameFen)
   const int halfmoveClock = 0;
   const int fullmoveClock = 7;
   const Game::State expected{piecePlacement, activeColor,   castlingAvailability,
-                                  enPassantIndex, halfmoveClock, fullmoveClock};
+                             enPassantIndex, halfmoveClock, fullmoveClock};
   std::string fen = "r1b1kbr1/ppppqppp/2n2n2/8/4pP2/1PN1P3/PBPPQ1PP/2KR1BNR b q f3 0 7";
   const auto actual = Game::State::fromFEN(fen);
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(GameGetUserMove, ReadMove)
+{
+  std::istringstream is("e2 e4 a6");
+  std::ostringstream os;
+  const auto actual = Game::getUserMove(is, os);
+
+  const std::pair<BoardIndex, BoardIndex> expected{52, 36};
 
   ASSERT_EQ(actual, expected);
 }

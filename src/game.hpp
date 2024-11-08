@@ -1,5 +1,8 @@
 #pragma once
 
+#include <istream>
+#include <utility>
+
 #include "constants.hpp"
 #include "piece.hpp"
 #include "types.hpp"
@@ -39,10 +42,11 @@ public:
   Game(const State &state);
   Game(std::string &fen) : Game(State::fromFEN(fen)) {};
 
-  bool move();
+  PiecePlacement getPiecePlacement() const { return piecePlacement; };
   std::string getFenStr() const;
-  PiecePlacement getPiecePlacement() const;
-  void readMove(BoardIndex &, BoardIndex &) const;
+
+  bool move();
+  static std::pair<BoardIndex, BoardIndex> getUserMove(std::istream &, std::ostream &);
   std::vector<BoardIndex> getPieceLegalMoves(const ChessPiece &, const BoardIndex) const;
   bool handleEnPassant(const ChessPiece, const PieceColor, const BoardIndex, const BoardIndex);
   ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);

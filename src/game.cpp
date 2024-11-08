@@ -61,6 +61,17 @@ Game::State Game::State::fromFEN(std::string &fen)
   return res;
 };
 
+// getters/setters
+std::string Game::getFenStr() const
+{
+  std::ostringstream fen;
+  fen << piecePlacementArrayToString(piecePlacement) << " " << colorToChar(activeColor) << " "
+      << castlingAvailabilityToString(castlingAvailability) << " " << indexToAlgebraic(enPassantIndex) << " "
+      << std::to_string(halfmoveClock) << " " << std::to_string(fullmoveClock);
+
+  return fen.str();
+}
+
 // constructors
 Game::Game() : Game(State::newGameState()) {}
 
@@ -72,17 +83,7 @@ Game::Game(const State &initialGameState)
 {
 }
 
-std::string Game::getFenStr() const
-{
-  std::ostringstream fen;
-  fen << piecePlacementArrayToString(piecePlacement) << " " << colorToChar(activeColor) << " "
-      << castlingAvailabilityToString(castlingAvailability) << " " << indexToAlgebraic(enPassantIndex) << " "
-      << std::to_string(halfmoveClock) << " " << std::to_string(fullmoveClock);
-
-  return fen.str();
-}
-
-PiecePlacement Game::getPiecePlacement() const { return piecePlacement; }
+// public methods
 
 bool Game::move()
 {
@@ -98,7 +99,7 @@ bool Game::move()
   }
   else
   {
-    readMove(fromIndex, toIndex);
+    std::tie(fromIndex, toIndex) = getUserMove(std::cin, std::cout);
   }
 
   if (validateMove(fromIndex, toIndex))
@@ -130,20 +131,27 @@ bool Game::move()
   return false;
 }
 
-void Game::readMove(BoardIndex &fromIndex, BoardIndex &toIndex) const
+// private methods
+std::pair<BoardIndex, BoardIndex> Game::getUserMove(std::istream &is, std::ostream &os)
 {
+  BoardIndex fromIndex, toIndex;
+
   std::string fromAlgebraic, toAlgebraic;
 
-  std::cout << "from square: ";
-  std::cin >> fromAlgebraic;
-  std::cout << "\n";
+  os << "from square: ";
+  is >> fromAlgebraic;
+  os << "\n";
   fromIndex = algebraicToIndex(fromAlgebraic);
 
-  std::cout << "to square: ";
-  std::cin >> toAlgebraic;
-  std::cout << "\n";
+  os << "to square: ";
+  is >> toAlgebraic;
+  os << "\n";
   toIndex = algebraicToIndex(toAlgebraic);
+
+  return {fromIndex, toIndex};
 }
+
+// still updating
 
 std::vector<BoardIndex> Game::getPieceLegalMoves(const ChessPiece &piece, const BoardIndex index) const
 {
