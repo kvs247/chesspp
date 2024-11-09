@@ -28,7 +28,7 @@ public:
     int fullmoveClock = 1;
 
     static State newGameState() { return {}; };
-    static State fromFEN(std::string &fen);
+    static State fromFEN(const std::string &fen);
 
     bool operator==(const State &other) const
     {
@@ -40,7 +40,7 @@ public:
 
   Game();
   Game(const State &state);
-  Game(std::string &fen) : Game(State::fromFEN(fen)) {};
+  Game(const std::string &fen) : Game(State::fromFEN(fen)) {};
 
   PiecePlacement getPiecePlacement() const { return piecePlacement; };
   std::string getFenStr() const;

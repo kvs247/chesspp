@@ -21,17 +21,18 @@
 #include "types.hpp"
 #include "utils.hpp"
 
-Game::State Game::State::fromFEN(std::string &fen)
+Game::State Game::State::fromFEN(const std::string &fen)
 {
   State res{};
-
   size_t pos = 0;
   std::string token;
+  std::string fen_copy = fen;
+
   for (int tokenCount = 1; tokenCount != 7; ++tokenCount)
   {
-    pos = fen.find(' ');
-    token = fen.substr(0, pos);
-    fen.erase(0, pos + 1);
+    pos = fen_copy.find(' ');
+    token = fen_copy.substr(0, pos);
+    fen_copy.erase(0, pos + 1);
 
     switch (tokenCount)
     {

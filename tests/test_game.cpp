@@ -133,8 +133,7 @@ TEST(GameHandleEnPassant, CreateEnPassantOpportunity)
 
 TEST(GameHandleEnPassant, EnPassantCapture)
 {
-  std::string fen = "r1bqkbnr/ppp1pppp/n7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3";
-  Game game(fen);
+  Game game("r1bqkbnr/ppp1pppp/n7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
   GameTester gameTester{game};
 
   auto isEnPassantCapture = gameTester.testHandleEnPassant(28, 19);
