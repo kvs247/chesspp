@@ -280,8 +280,6 @@ bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
   return false;
 }
 
-// still updating
-
 ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardIndex toIndex)
 {
   const auto [file, rank] = indexToFileRank(toIndex);
@@ -300,6 +298,8 @@ ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardInde
 
   return ChessPiece::Empty;
 }
+
+// still updating
 
 std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex toIndex, const ChessPiece piece)
 {
