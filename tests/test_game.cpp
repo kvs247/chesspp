@@ -7,7 +7,6 @@
 #include "../src/constants.hpp"
 #include "../src/game.hpp"
 
-// Game::State
 TEST(GameStateInitialization, FromDefaultFen)
 {
   const auto defaultState = Game::State::newGameState();
@@ -60,6 +59,57 @@ TEST(GameGetUserMove, ReadMove)
   const std::pair<BoardIndex, BoardIndex> expected{52, 36};
 
   ASSERT_EQ(actual, expected);
+}
+
+TEST(GameGetPieceLegalMoves, InvokesCorrectPieceClass)
+{
+  std::string fen = "rnbqkb1r/ppp2ppp/5n2/3pp3/P4P2/2P5/1P1PP1PP/RNBQKBNR w KQkq d6 0 4";
+  Game startingGame(fen);
+  GameTester game{startingGame};
+
+  Pawn pawn(startingGame);
+  BoardIndex pawnIndex = 28;
+  auto pawnActual = game.testGetPieceLegalMoves(pawnIndex);
+  auto pawnExpected = pawn.legalSquareIndexes(pawnIndex);
+  ASSERT_EQ(pawnActual, pawnExpected);
+
+  Knight knight(startingGame);
+  BoardIndex knightIndex = 21;
+  auto knightActual = game.testGetPieceLegalMoves(knightIndex);
+  auto knightExpected = knight.legalSquareIndexes(knightIndex);
+  ASSERT_EQ(knightActual, knightExpected);
+
+  Bishop bishop(startingGame);
+  BoardIndex bishopIndex = 2;
+  auto bishopActual = game.testGetPieceLegalMoves(bishopIndex);
+  auto bishopExpected = bishop.legalSquareIndexes(bishopIndex);
+  ASSERT_EQ(bishopActual, bishopExpected);
+
+  Rook rook(startingGame);
+  BoardIndex rookIndex = 56;
+  auto rookActual = game.testGetPieceLegalMoves(rookIndex);
+  auto rookExpected = rook.legalSquareIndexes(rookIndex);
+  ASSERT_EQ(rookActual, rookExpected);
+
+  Queen queen(startingGame);
+  BoardIndex queenIndex = 59;
+  auto queenActual = game.testGetPieceLegalMoves(queenIndex);
+  auto queenExpected = queen.legalSquareIndexes(queenIndex);
+  ASSERT_EQ(queenActual, queenExpected);
+
+  King king(startingGame);
+  BoardIndex kingIndex = 4;
+  auto kingActual = game.testGetPieceLegalMoves(kingIndex);
+  auto kingExpected = king.legalSquareIndexes(kingIndex);
+  ASSERT_EQ(kingActual, kingExpected);
+}
+
+TEST(GameGetPieceLegalMoves, ThrowsErrorOnEmptyPiece)
+{
+  Game defaultGame;
+  GameTester game{defaultGame};
+
+  ASSERT_THROW(game.testGetPieceLegalMoves(30), std::invalid_argument);
 }
 
 // check

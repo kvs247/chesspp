@@ -118,6 +118,47 @@ bool Game::processNextMove()
   return false;
 }
 
+std::vector<BoardIndex> Game::getPieceLegalMoves(const BoardIndex index) const
+{
+  const auto piece = piecePlacement[index];
+  if (piece == ChessPiece::Empty)
+  {
+    throw std::invalid_argument("getPieceLegalMove(): no piece at given index");
+  }
+
+  std::vector<BoardIndex> indexes = {};
+  switch (piece)
+  {
+  case ChessPiece::BlackPawn:
+  case ChessPiece::WhitePawn:
+    indexes = pawn.legalSquareIndexes(index);
+    break;
+  case ChessPiece::BlackKnight:
+  case ChessPiece::WhiteKnight:
+    indexes = knight.legalSquareIndexes(index);
+    break;
+  case ChessPiece::BlackBishop:
+  case ChessPiece::WhiteBishop:
+    indexes = bishop.legalSquareIndexes(index);
+    break;
+  case ChessPiece::BlackRook:
+  case ChessPiece::WhiteRook:
+    indexes = rook.legalSquareIndexes(index);
+    break;
+  case ChessPiece::BlackQueen:
+  case ChessPiece::WhiteQueen:
+    indexes = queen.legalSquareIndexes(index);
+    break;
+  case ChessPiece::BlackKing:
+  case ChessPiece::WhiteKing:
+    indexes = king.legalSquareIndexes(index);
+    break;
+  default:
+    break;
+  }
+
+  return indexes;
+}
 
 // private methods
 std::pair<BoardIndex, BoardIndex> Game::getNextMove()
@@ -159,7 +200,6 @@ std::pair<BoardIndex, BoardIndex> Game::getUserMove(std::istream &is, std::ostre
   return {fromIndex, toIndex};
 }
 
-
 std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColor)
 {
   std::vector<int> cpuPiecesIdxs;
@@ -183,8 +223,7 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
 
   for (auto fromIndex : cpuPiecesIdxs)
   {
-    const auto fromPiece = piecePlacement[fromIndex];
-    auto indexes = getPieceLegalMoves(fromPiece, fromIndex);
+    auto indexes = getPieceLegalMoves(fromIndex);
     if (!indexes.size())
     {
       continue;
@@ -209,42 +248,6 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
 };
 
 // still updating
-
-std::vector<BoardIndex> Game::getPieceLegalMoves(const ChessPiece &piece, const BoardIndex index) const
-{
-  std::vector<BoardIndex> indexes = {};
-  switch (piece)
-  {
-  case ChessPiece::BlackPawn:
-  case ChessPiece::WhitePawn:
-    indexes = pawn.legalSquareIndexes(index);
-    break;
-  case ChessPiece::BlackKnight:
-  case ChessPiece::WhiteKnight:
-    indexes = knight.legalSquareIndexes(index);
-    break;
-  case ChessPiece::BlackBishop:
-  case ChessPiece::WhiteBishop:
-    indexes = bishop.legalSquareIndexes(index);
-    break;
-  case ChessPiece::BlackRook:
-  case ChessPiece::WhiteRook:
-    indexes = rook.legalSquareIndexes(index);
-    break;
-  case ChessPiece::BlackQueen:
-  case ChessPiece::WhiteQueen:
-    indexes = queen.legalSquareIndexes(index);
-    break;
-  case ChessPiece::BlackKing:
-  case ChessPiece::WhiteKing:
-    indexes = king.legalSquareIndexes(index);
-    break;
-  default:
-    break;
-  }
-
-  return indexes;
-}
 
 bool Game::handleEnPassant(const ChessPiece fromPiece, const PieceColor fromColor, const BoardIndex fromIndex,
                            const BoardIndex toIndex)
@@ -372,7 +375,7 @@ bool Game::validateMove(const BoardIndex fromIndex, const BoardIndex toIndex) co
     return false;
   }
 
-  const auto indexes = getPieceLegalMoves(fromPiece, fromIndex);
+  const auto indexes = getPieceLegalMoves(fromIndex);
   if (std::find(indexes.cbegin(), indexes.cend(), toIndex) == indexes.cend())
   {
     return false;
@@ -388,21 +391,20 @@ std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, co
 
   for (size_t i = 0; i < piecePlacement.size(); ++i)
   {
-    const BoardIndex bi = i;
-    if (bi != fromIndex && piecePlacement[bi] == fromPiece)
+    const BoardIndex boardIndex = i;
+    if (boardIndex != fromIndex && piecePlacement[boardIndex] == fromPiece)
     {
-      const auto indexes = getPieceLegalMoves(fromPiece, bi);
+      const auto indexes = getPieceLegalMoves(boardIndex);
       const auto samePieceIt = std::find(indexes.cbegin(), indexes.cend(), toIndex);
       if (samePieceIt != indexes.cend())
       {
-        res.emplace_back(bi);
+        res.emplace_back(boardIndex);
       }
     }
   }
 
   return res;
 }
-
 
 bool Game::isKingInCheck(const PieceColor color, const PiecePlacement &piecePlacement)
 {
