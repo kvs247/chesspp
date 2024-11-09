@@ -4,8 +4,11 @@
 #include <string>
 #include <utility>
 
+#include "../src/config.hpp"
 #include "../src/constants.hpp"
 #include "../src/game.hpp"
+
+// public methods
 
 TEST(GameStateInitialization, FromDefaultFen)
 {
@@ -111,6 +114,48 @@ TEST(GameGetPieceLegalMoves, ThrowsErrorOnEmptyPiece)
 
   ASSERT_THROW(gameTester.testGetPieceLegalMoves(30), std::invalid_argument);
 }
+
+TEST(GameValidateMove, NoPieceSelected)
+{
+  Game game;
+
+  ASSERT_FALSE(game.validateMove(35, 27));
+}
+
+TEST(GameValidateMove, ValidMoveWrongTurnOrder)
+{
+  Game game;
+  const auto originalConfig = config;
+  config.disableTurnOrder = false;
+
+  ASSERT_FALSE(game.validateMove(8, 16));
+
+  config = originalConfig;
+}
+
+TEST(GameValidateMove, InvalidMove)
+{
+  Game game("rnbqkbnr/pppp1ppp/8/4p3/P3P3/8/1PPP1PPP/RNBQKBNR b KQkq a3 0 2");
+
+  ASSERT_FALSE(game.validateMove(56, 8));  // white rook
+  ASSERT_FALSE(game.validateMove(57, 41)); // white knight
+  ASSERT_FALSE(game.validateMove(59, 51)); // white queen
+  ASSERT_FALSE(game.validateMove(60, 45)); // white king
+  ASSERT_FALSE(game.validateMove(36, 27)); // white pawn
+}
+
+TEST(GameValidMove, ValidMove)
+{
+  Game game("rnbqkbnr/pppp1ppp/8/4p3/P3P3/8/1PPP1PPP/RNBQKBNR b KQkq a3 0 2");
+
+  ASSERT_TRUE(game.validateMove(56, 40)); // white rook
+  ASSERT_TRUE(game.validateMove(57, 40)); // white knight
+  ASSERT_TRUE(game.validateMove(59, 31)); // white queen
+  ASSERT_TRUE(game.validateMove(60, 52)); // white king
+  ASSERT_TRUE(game.validateMove(32, 24)); // white pawn
+}
+
+// private methods
 
 TEST(GameHandleEnPassant, NullBehavior)
 {

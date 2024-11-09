@@ -162,6 +162,29 @@ std::vector<BoardIndex> Game::getPieceLegalMoves(const BoardIndex index) const
   return indexes;
 }
 
+bool Game::validateMove(const BoardIndex fromIndex, const BoardIndex toIndex) const
+{
+  const auto fromPiece = piecePlacement[fromIndex];
+  if (fromPiece == ChessPiece::Empty)
+  {
+    return false;
+  }
+
+  const auto fromColor = pieceColor(fromPiece);
+  if (!config.disableTurnOrder && fromColor != activeColor)
+  {
+    return false;
+  }
+
+  const auto indexes = getPieceLegalMoves(fromIndex);
+  if (std::find(indexes.cbegin(), indexes.cend(), toIndex) == indexes.cend())
+  {
+    return false;
+  }
+
+  return true;
+}
+
 // private methods
 
 std::pair<BoardIndex, BoardIndex> Game::getNextMove()
@@ -374,29 +397,6 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
 };
 
 // still updating
-
-bool Game::validateMove(const BoardIndex fromIndex, const BoardIndex toIndex) const
-{
-  const auto fromPiece = piecePlacement[fromIndex];
-  if (fromPiece == ChessPiece::Empty)
-  {
-    return false;
-  }
-
-  const auto fromColor = pieceColor(fromPiece);
-  if (!config.disableTurnOrder && fromColor != activeColor)
-  {
-    return false;
-  }
-
-  const auto indexes = getPieceLegalMoves(fromIndex);
-  if (std::find(indexes.cbegin(), indexes.cend(), toIndex) == indexes.cend())
-  {
-    return false;
-  }
-
-  return true;
-}
 
 std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, const BoardIndex toIndex) const
 {
