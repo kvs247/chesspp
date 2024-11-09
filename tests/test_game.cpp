@@ -106,10 +106,49 @@ TEST(GameGetPieceLegalMoves, InvokesCorrectPieceClass)
 
 TEST(GameGetPieceLegalMoves, ThrowsErrorOnEmptyPiece)
 {
-  Game defaultGame;
-  GameTester game{defaultGame};
+  Game game;
+  GameTester gameTester{game};
 
-  ASSERT_THROW(game.testGetPieceLegalMoves(30), std::invalid_argument);
+  ASSERT_THROW(gameTester.testGetPieceLegalMoves(30), std::invalid_argument);
+}
+
+TEST(GameHandleEnPassant, NullBehavior)
+{
+  Game game;
+  GameTester gameTester{game};
+
+  ASSERT_FALSE(gameTester.testHandleEnPassant(52, 44));
+}
+
+TEST(GameHandleEnPassant, CreateEnPassantOpportunity)
+{
+  Game game;
+  GameTester gameTester{game};
+
+  auto isEnPassantCapture = gameTester.testHandleEnPassant(52, 36);
+
+  ASSERT_FALSE(isEnPassantCapture);
+  ASSERT_EQ(game.getEnPassantIndex(), 44);
+}
+
+TEST(GameHandleEnPassant, EnPassantCapture)
+{
+  std::string fen = "r1bqkbnr/ppp1pppp/n7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3";
+  Game game(fen);
+  GameTester gameTester{game};
+
+  auto isEnPassantCapture = gameTester.testHandleEnPassant(28, 19);
+
+  ASSERT_TRUE(isEnPassantCapture);
+  ASSERT_EQ(game.getPiecePlacement()[27], ChessPiece::Empty);
+}
+
+TEST(GameHandleEnPassant, ThrowsErrorOnEmptyPiece)
+{
+  Game game;
+  GameTester gameTester(game);
+
+  ASSERT_THROW(gameTester.testHandleEnPassant(30, 38), std::invalid_argument);
 }
 
 // check

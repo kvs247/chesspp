@@ -101,7 +101,7 @@ bool Game::processNextMove()
     activeColor = !activeColor;
 
     const auto castlingString = handleCastling(fromIndex, toIndex, fromPiece);
-    const auto isEnPassantCapture = handleEnPassant(fromPiece, fromColor, fromIndex, toIndex);
+    const auto isEnPassantCapture = handleEnPassant(fromIndex, toIndex);
     const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
     const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
 
@@ -161,6 +161,7 @@ std::vector<BoardIndex> Game::getPieceLegalMoves(const BoardIndex index) const
 }
 
 // private methods
+
 std::pair<BoardIndex, BoardIndex> Game::getNextMove()
 {
   BoardIndex fromIndex, toIndex;
@@ -247,11 +248,16 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
   return {resFromIndex, resToIndex}; // getting here implies checkmate
 };
 
-// still updating
-
-bool Game::handleEnPassant(const ChessPiece fromPiece, const PieceColor fromColor, const BoardIndex fromIndex,
-                           const BoardIndex toIndex)
+bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
 {
+  const auto fromPiece = piecePlacement[fromIndex];
+  if (fromPiece == ChessPiece::Empty)
+  {
+    throw std::invalid_argument("getPieceLegalMove(): no piece at given index");
+  }
+
+  const auto fromColor = pieceColor(fromPiece);
+
   // capture
   if (toIndex == enPassantIndex)
   {
@@ -272,6 +278,8 @@ bool Game::handleEnPassant(const ChessPiece fromPiece, const PieceColor fromColo
 
   return false;
 }
+
+// still updating
 
 ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardIndex toIndex)
 {
