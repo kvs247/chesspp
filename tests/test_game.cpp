@@ -49,17 +49,18 @@ TEST(GameStateInitialization, FromMidGameFen)
   ASSERT_EQ(actual, expected);
 }
 
-// white box/black box testing
-// TEST(GameGetUserMove, ReadMove)
-// {
-//   std::istringstream is("e2 e4 a6");
-//   std::ostringstream os;
-//   const auto actual = Game::getUserMove(is, os);
+TEST(GameGetUserMove, ReadMove)
+{
+  std::istringstream is("e2 e4 a6");
+  std::ostringstream os;
+  Game defaultGame;
+  GameTester game{defaultGame};
+  const auto actual = game.testGetUserMove(is, os);
 
-//   const std::pair<BoardIndex, BoardIndex> expected{52, 36};
+  const std::pair<BoardIndex, BoardIndex> expected{52, 36};
 
-//   ASSERT_EQ(actual, expected);
-// }
+  ASSERT_EQ(actual, expected);
+}
 
 // check
 TEST(PawnCheck, BlackInCheck)

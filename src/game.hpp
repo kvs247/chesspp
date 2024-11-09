@@ -75,8 +75,24 @@ private:
   Rook rook;
   Queen queen;
   King king;
-  
+
   std::pair<BoardIndex, BoardIndex> getNextMove();
   std::pair<BoardIndex, BoardIndex> getUserMove(std::istream &, std::ostream &);
   std::pair<BoardIndex, BoardIndex> generateCpuMove(const PieceColor);
+
+  friend struct GameTester;
+};
+
+struct GameTester
+{
+public:
+  GameTester(Game &g) : game(g) {}
+
+  std::pair<BoardIndex, BoardIndex> testGetUserMove(std::istream &is, std::ostream &os)
+  {
+    return game.getUserMove(is, os);
+  };
+
+private:
+  Game &game;
 };
