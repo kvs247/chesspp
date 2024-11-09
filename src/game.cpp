@@ -101,7 +101,7 @@ bool Game::processNextMove()
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
 
-    const auto castlingString = handleCastling(fromIndex, toIndex, fromPiece);
+    const auto castlingString = handleCastling(fromIndex, toIndex);
     const auto isEnPassantCapture = handleEnPassant(fromIndex, toIndex);
     const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
     const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
@@ -254,7 +254,7 @@ bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
   const auto fromPiece = piecePlacement[fromIndex];
   if (fromPiece == ChessPiece::Empty)
   {
-    throw std::invalid_argument("getPieceLegalMove(): no piece at given index");
+    throw std::invalid_argument("handleEnPassant(): no piece at given index");
   }
 
   const auto fromColor = pieceColor(fromPiece);
@@ -299,13 +299,15 @@ ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardInde
   return ChessPiece::Empty;
 }
 
-// still updating
-
-std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex toIndex, const ChessPiece piece)
+std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex toIndex)
 {
+  const auto piece = piecePlacement[fromIndex];
+  if (piece == ChessPiece::Empty)
+  {
+    throw std::invalid_argument("handleCastling(): no piece at given index");
+  }
+
   std::string res;
-  static const std::string shortCastle = "O-O";
-  static const std::string longCastle = "O-O-O";
 
   if (piece == ChessPiece::WhiteKing)
   {
@@ -316,14 +318,14 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
     {
       piecePlacement[63] = ChessPiece::Empty;
       piecePlacement[61] = ChessPiece::WhiteRook;
-      res = shortCastle;
+      res = shortCastleString;
     }
 
     if (fromIndex == 60 && toIndex == 58)
     {
       piecePlacement[56] = ChessPiece::Empty;
       piecePlacement[59] = ChessPiece::WhiteRook;
-      res = longCastle;
+      res = longCastleString;
     }
   }
 
@@ -336,14 +338,14 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
     {
       piecePlacement[7] = ChessPiece::Empty;
       piecePlacement[5] = ChessPiece::BlackRook;
-      res = shortCastle;
+      res = shortCastleString;
     }
 
     if (fromIndex == 4 && toIndex == 2)
     {
       piecePlacement[0] = ChessPiece::Empty;
       piecePlacement[3] = ChessPiece::BlackRook;
-      res = longCastle;
+      res = longCastleString;
     }
   }
 
@@ -369,6 +371,8 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
 
   return res;
 };
+
+// still updating
 
 bool Game::validateMove(const BoardIndex fromIndex, const BoardIndex toIndex) const
 {

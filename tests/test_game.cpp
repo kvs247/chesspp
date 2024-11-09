@@ -152,7 +152,7 @@ TEST(GameHandleEnPassant, ThrowsErrorOnEmptyPiece)
 
 TEST(GameHandlePawnPromotion, PieceIsNotPawn)
 {
-  Game game;
+  Game game("rnbq1bnr/pppkpPpp/8/8/8/5N2/PPpP1PPP/RNBQKB1R w KQ - 0 6");
   GameTester gameTester(game);
 
   ASSERT_EQ(gameTester.testHandlePawnPromotion(ChessPiece::WhiteKnight, 40), ChessPiece::Empty);
@@ -189,6 +189,66 @@ TEST(GameHandlePawnPromotion, BlackPawnIsPromoted)
 
   ASSERT_EQ(promotedPiece, ChessPiece::BlackQueen);
   ASSERT_EQ(game.getPiecePlacement()[59], ChessPiece::BlackQueen);
+}
+
+TEST(GameHandleCastling, PieceIsNotKing)
+{
+  Game game("rn2kbnr/ppp1pppp/3qb3/3p4/8/3BPN2/PPPP1PPP/RNBQK2R w KQkq - 4 4");
+  GameTester gameTester(game);
+
+  const auto castlingResult = gameTester.testHandleCastling(43, 25);
+
+  ASSERT_TRUE(castlingResult.empty());
+}
+
+TEST(GameHandleCastling, WhiteKingIsNotCastling)
+{
+  Game game("rn2kbnr/ppp1pppp/3qb3/3p4/8/3BPN2/PPPP1PPP/RNBQK2R w KQkq - 4 4");
+  GameTester gameTester(game);
+
+  const auto castlingResult = gameTester.testHandleCastling(60, 61);
+
+  ASSERT_TRUE(castlingResult.empty());
+}
+
+TEST(GameHandleCastling, BlackKingIsNotCastling)
+{
+  Game game("r3kbnr/ppp1pppp/2nqb3/3p4/8/3BPN2/PPPPQPPP/RNB2K1R b kq - 7 5");
+  GameTester gameTester(game);
+
+  const auto castlingResult = gameTester.testHandleCastling(4, 3);
+
+  ASSERT_TRUE(castlingResult.empty());
+}
+
+TEST(GameHandleCastling, WhiteKingCastle)
+{
+  Game game("rn2kbnr/ppp1pppp/3qb3/3p4/8/3BPN2/PPPP1PPP/RNBQK2R w KQkq - 4 4");
+  GameTester gameTester(game);
+
+  const auto castlingResult = gameTester.testHandleCastling(60, 62);
+
+  ASSERT_EQ(castlingResult, shortCastleString);
+  ASSERT_EQ(game.getPiecePlacement()[61], ChessPiece::WhiteRook);
+}
+
+TEST(GameHandleCastling, BlackKingCastle)
+{
+  Game game("r3kbnr/ppp1pppp/2nqb3/3p4/8/3BPN2/PPPPQPPP/RNB2K1R b kq - 7 5");
+  GameTester gameTester(game);
+
+  const auto castlingResult = gameTester.testHandleCastling(4, 2);
+
+  ASSERT_EQ(castlingResult, longCastleString);
+  ASSERT_EQ(game.getPiecePlacement()[3], ChessPiece::BlackRook);
+}
+
+TEST(GameHandleCastling, ThrowsErrorOnEmptyPiece)
+{
+  Game game("r3kbnr/ppp1pppp/2nqb3/3p4/8/3BPN2/PPPPQPPP/RNB2K1R b kq - 7 5");
+  GameTester gameTester(game);
+
+  ASSERT_THROW(gameTester.testHandleCastling(3, 2), std::invalid_argument);
 }
 
 // check

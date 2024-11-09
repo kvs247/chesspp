@@ -8,6 +8,4 @@
 - rename/make clearer intent of Piece::linearSquareIndexes & Piece::squareIndexes
 - move list notation for checkmate
 - tests
-  - castling
-  - pawn promotion
   - draw.hpp

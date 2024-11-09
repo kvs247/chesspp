@@ -28,3 +28,6 @@ inline const PiecePlacement startingPiecePlacement = {
     ChessPiece::WhiteKing, ChessPiece::WhiteBishop, ChessPiece::WhiteKnight, ChessPiece::WhiteRook};
 
 inline const CastlingAvailability startingCastlingAvailability({true, true, true, true});
+
+inline const std::string shortCastleString = "O-O";
+inline const std::string longCastleString = "O-O-O";
