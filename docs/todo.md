@@ -7,5 +7,6 @@
 - better understand logger and config (singleton)
 - rename/make clearer intent of Piece::linearSquareIndexes & Piece::squareIndexes
 - move list notation for checkmate
+- issue with knight ambiguous move. Guess it it will always specify column and rank when only one is necessary (unlike bishop & rook?)
 - tests
   - draw.hpp

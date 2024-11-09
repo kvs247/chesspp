@@ -97,15 +97,16 @@ bool Game::processNextMove()
     const auto toPiece = piecePlacement[toIndex];
     const auto samePieceIndexes = getSamePieceIndexes(fromIndex, toIndex);
 
-    piecePlacement[toIndex] = piecePlacement[fromIndex];
-    piecePlacement[fromIndex] = ChessPiece::Empty;
-    activeColor = !activeColor;
-
     const auto castlingString = handleCastling(fromIndex, toIndex);
     const auto isEnPassantCapture = handleEnPassant(fromIndex, toIndex);
     const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
-    const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
 
+    const auto newToPiece = promotionPiece != ChessPiece::Empty ? promotionPiece : fromPiece;
+    piecePlacement[toIndex] = newToPiece;
+    piecePlacement[fromIndex] = ChessPiece::Empty;
+    activeColor = !activeColor;
+
+    const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
     moveList.push_back({fromIndex, fromPiece, toIndex, toPiece, samePieceIndexes, promotionPiece, castlingString,
                         isOpponentInCheck, isEnPassantCapture});
 
