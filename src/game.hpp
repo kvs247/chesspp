@@ -51,7 +51,6 @@ public:
   bool validateMove(const BoardIndex, const BoardIndex) const;
 
   // decide if public or private
-  std::vector<BoardIndex> getSamePieceIndexes(const BoardIndex, const BoardIndex) const;
   static bool isKingInCheck(const PieceColor, const PiecePlacement &);
   static bool isSquareUnderAttack(const BoardIndex, const PieceColor, const PiecePlacement &);
 
@@ -80,6 +79,7 @@ private:
   bool handleEnPassant(const BoardIndex, const BoardIndex);
   ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);
   std::string handleCastling(const BoardIndex, const BoardIndex);
+  std::vector<BoardIndex> getSamePieceIndexes(const BoardIndex, const BoardIndex) const;
 
   friend struct GameTester;
 };
@@ -114,6 +114,11 @@ public:
   std::string testHandleCastling(const BoardIndex fromIndex, const BoardIndex toIndex)
   {
     return game.handleCastling(fromIndex, toIndex);
+  }
+
+  std::vector<BoardIndex> testGetSamePieceIndexes(const BoardIndex fromIndex, const BoardIndex toIndex) const
+  {
+    return game.getSamePieceIndexes(fromIndex, toIndex);
   }
 
 private:

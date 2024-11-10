@@ -296,7 +296,38 @@ TEST(GameHandleCastling, ThrowsErrorOnEmptyPiece)
   ASSERT_THROW(gameTester.testHandleCastling(3, 2), std::invalid_argument);
 }
 
+TEST(GameGetSamePieceIndexes, WhiteKnight)
+{
+  Game game("1nbqkbn1/1ppp1pp1/r6r/p3p2p/4P3/1N1P4/PPP2PPP/RNBQKB1R w KQ - 1 6");
+  GameTester gameTester(game);
+  std::vector<BoardIndex> expected, actual;
+
+  // white knights
+  actual = gameTester.testGetSamePieceIndexes(57, 51);
+  expected = {41};
+  ASSERT_EQ(actual, expected);
+  
+  actual = gameTester.testGetSamePieceIndexes(41, 51);
+  expected = {57};
+  ASSERT_EQ(actual, expected);
+
+  // black rooks 
+  actual = gameTester.testGetSamePieceIndexes(16, 19);
+  expected = {23};
+  ASSERT_EQ(actual, expected);
+
+  actual = gameTester.testGetSamePieceIndexes(23, 19);
+  expected = {16};
+  ASSERT_EQ(actual, expected);
+
+  // white pawn
+  actual = gameTester.testGetSamePieceIndexes(43, 35);
+  expected = {};
+  ASSERT_EQ(actual, expected);
+}
+
 // check
+
 TEST(PawnCheck, BlackInCheck)
 {
   std::string fen = "8/8/3k4/4P3/8/8/8/8 w - - 0 1";

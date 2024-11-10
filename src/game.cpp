@@ -396,8 +396,6 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
   return res;
 };
 
-// still updating
-
 std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, const BoardIndex toIndex) const
 {
   std::vector<BoardIndex> res;
@@ -419,6 +417,8 @@ std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, co
 
   return res;
 }
+
+// still updating
 
 bool Game::isKingInCheck(const PieceColor color, const PiecePlacement &piecePlacement)
 {
