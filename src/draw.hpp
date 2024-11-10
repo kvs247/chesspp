@@ -114,8 +114,9 @@ std::vector<std::string> makeMoveListEntries(const Game &game)
 {
   std::vector<std::string> res;
 
-  for (auto &moveListItem : game.moveList)
+  for (auto it = game.moveList.cbegin(); it != game.moveList.cend(); ++it)
   {
+    const auto moveListItem = *it;
     std::stringstream item;
 
     const auto fromIndex = moveListItem.fromIndex;
@@ -186,7 +187,15 @@ std::vector<std::string> makeMoveListEntries(const Game &game)
 
     if (isOpponentInCheck)
     {
-      item << "+";
+      char c = '+';
+
+      const auto lastEntry = it == --game.moveList.cend();
+      if (lastEntry && game.isGameOver == true)
+      {
+        c = '#';
+      }
+
+      item << c;
     }
 
     res.push_back(item.str());

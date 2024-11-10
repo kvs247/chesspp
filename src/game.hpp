@@ -76,6 +76,7 @@ private:
   bool handleEnPassant(const BoardIndex, const BoardIndex);
   ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);
   std::string handleCastling(const BoardIndex, const BoardIndex);
+  bool handleGameOver();
   std::vector<BoardIndex> getSamePieceIndexes(const BoardIndex, const BoardIndex) const;
   static bool isSquareUnderAttack(const BoardIndex, const PieceColor, const PiecePlacement &);
 
@@ -123,6 +124,11 @@ public:
                            const PiecePlacement &piecePlacement)
   {
     return game.isSquareUnderAttack(index, defenderColor, piecePlacement);
+  }
+
+  bool testHandleGameOver()
+  {
+    return game.handleGameOver();
   }
 
 private:

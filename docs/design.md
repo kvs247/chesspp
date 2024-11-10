@@ -11,7 +11,7 @@
     - [x] king
     - [x] queen
   - endgame scenarios
-    - [ ]  checkmate
+    - [x]  checkmate
     - [ ]  resignation
     - [ ]  timeout
     - [ ]  draw
@@ -27,12 +27,12 @@
     - [x] check
 - [ ] display
   - [x] draw board & pieces
-  - [ ] moves played list
+  - [x] moves played list
     - [x] piece + to square
     - [x] capture
     - [x] ambiguous piece
     - [x] castle
-    - [ ] check/checkmate
+    - [x] check/checkmate
   - [ ] clock
   - [ ] help menu
 - [x] CPU opponent

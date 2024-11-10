@@ -318,6 +318,42 @@ TEST(GameHandleCastling, ThrowsErrorOnEmptyPiece)
   ASSERT_THROW(gameTester.testHandleCastling(3, 2), std::invalid_argument);
 }
 
+TEST(GameHandleGameOver, IsCheckmate)
+{
+  Game game1("3n4/r2P2q1/kQ6/7r/p2B4/P4R2/3K4/5R2 b - - 0 1");
+  GameTester gameTester1(game1);
+
+  ASSERT_TRUE(gameTester1.testHandleGameOver());
+
+  Game game2("2kq4/8/5r2/8/K1q5/R7/4q3/8 w - - 0 1");
+  GameTester gameTester2(game2);
+
+  ASSERT_TRUE(gameTester2.testHandleGameOver());
+
+  Game game3("8/8/3N1b1P/kQ4B1/n7/5K2/8/2R5 b - - 0 1");
+  GameTester gameTester3(game3);
+
+  ASSERT_TRUE(gameTester3.testHandleGameOver());
+}
+
+TEST(GameHandleGameOver, IsNotCheckmate)
+{
+  Game game1;
+  GameTester gameTester1(game1);
+
+  ASSERT_FALSE(gameTester1.testHandleGameOver());
+
+  Game game2("4rrk1/1bQ2ppp/5n2/3p2B1/p7/3P4/PPPN1PPP/R5K1 w - - 0 18");
+  GameTester gameTester2(game2);
+
+  ASSERT_FALSE(gameTester2.testHandleGameOver());
+
+  Game game3("r3kb1r/p1p3pp/Q1pp4/5pq1/3Nn3/2N5/PPP2PPP/R4RK1 b kq - 0 11");
+  GameTester gameTester3(game3);
+
+  ASSERT_FALSE(gameTester3.testHandleGameOver());
+}
+
 TEST(GameGetSamePieceIndexes, WhiteKnight)
 {
   Game game("1nbqkbn1/1ppp1pp1/r6r/p3p2p/4P3/1N1P4/PPP2PPP/RNBQKB1R w KQ - 1 6");

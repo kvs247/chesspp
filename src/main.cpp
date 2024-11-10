@@ -11,16 +11,12 @@ int main()
 {
   logger.log("");
   Game game(config.startingFen);
+  draw(game);
 
   while (!game.isGameOver)
   {
-    if (config.logFen)
-    {
-      logger.log(game.getFenStr());
-    }
 
     clearScreen();
-    draw(game);
 
     try
     {
@@ -39,6 +35,13 @@ int main()
       game.message = "Invalid input, please try again.";
       logger.log("ERROR invalid argument encountered: " + std::string(e.what()));
       continue;
+    }
+
+    draw(game);
+
+    if (config.logFen)
+    {
+      logger.log(game.getFenStr());
     }
   }
 

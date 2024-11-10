@@ -240,6 +240,11 @@ inline std::string castlingAvailabilityToString(const CastlingAvailability &cast
     result += "q";
   }
 
+  if (result.empty())
+  {
+    result = "-";
+  }
+
   return result;
 }
 

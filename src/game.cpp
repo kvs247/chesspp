@@ -2,6 +2,7 @@
 #include <array>
 #include <cctype>
 #include <chrono>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <optional>
@@ -106,9 +107,16 @@ bool Game::processNextMove()
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
 
+    if (handleGameOver())
+    {
+      logger.log("GAME OVER");
+    }
+
     const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
-    moveList.push_back({fromIndex, fromPiece, toIndex, toPiece, samePieceIndexes, promotionPiece, castlingString,
-                        isOpponentInCheck, isEnPassantCapture});
+    const MoveListItem moveListItem = {fromIndex,      fromPiece,         toIndex,
+                                       toPiece,        samePieceIndexes,  promotionPiece,
+                                       castlingString, isOpponentInCheck, isEnPassantCapture};
+    moveList.push_back(moveListItem);
 
     return true;
   }
@@ -267,10 +275,7 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
     }
   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(config.cpuMoveDelayMs));
-  logger.log("CHECKMATE");
-  isGameOver = true;
-  return {resFromIndex, resToIndex}; // getting here implies checkmate
+  throw std::runtime_error("generateCpuMove(): control reached end of function unexpectedly");
 };
 
 bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
@@ -396,6 +401,70 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
   return res;
 };
 
+bool Game::handleGameOver()
+{
+  const auto color = activeColor;
+  bool isCheckmate = false;
+  if (isKingInCheck(color, piecePlacement))
+  {
+    isCheckmate = true;
+    for (size_t i = 0; i < piecePlacement.size(); ++i)
+    {
+      if (!isCheckmate)
+      {
+        break;
+      }
+
+      const BoardIndex boardIndex = i;
+      const auto piece = piecePlacement[boardIndex];
+      if (piece != ChessPiece::Empty && pieceColor(piece) == color)
+      {
+        const auto moves = getPieceLegalMoves(boardIndex);
+        for (auto index : moves)
+        {
+          // might need all the other handlers here
+          auto tempPiecePlacement = piecePlacement;
+          tempPiecePlacement[index] = piece;
+          tempPiecePlacement[boardIndex] = ChessPiece::Empty;
+          if (!isKingInCheck(color, tempPiecePlacement))
+          {
+            isCheckmate = false;
+            break;
+          }
+        }
+      }
+    }
+  }
+  if (isCheckmate)
+  {
+    logger.log("CHECKMATE");
+    isGameOver = true;
+    return true;
+  }
+
+  // // stalemate
+  // size_t i;
+  // for (i = 0; i < piecePlacement.size(); ++i)
+  // {
+  //   const BoardIndex boardIndex = i;
+  //   const auto piece = piecePlacement[i];
+  //   if (piece != ChessPiece::Empty && pieceColor(piece) == activeColor)
+  //   {
+  //     const auto moves = getPieceLegalMoves(boardIndex);
+  //     if (moves.size())
+  //     {
+  //       continue;
+  //     }
+  //   }
+  // }
+  // if (i == piecePlacement.size())
+  // {
+
+  // }
+
+  return false;
+}
+
 std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, const BoardIndex toIndex) const
 {
   std::vector<BoardIndex> res;
@@ -421,8 +490,7 @@ std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, co
 bool Game::isKingInCheck(const PieceColor color, const PiecePlacement &piecePlacement)
 {
   const auto kingPiece = color == PieceColor::White ? ChessPiece::WhiteKing : ChessPiece::BlackKing;
-  const auto kingIter = std::find(piecePlacement.cbegin(), piecePlacement.cend(), kingPiece);
-  const auto kingIndex(kingIter - piecePlacement.cbegin());
+  const auto kingIndex = std::find(piecePlacement.cbegin(), piecePlacement.cend(), kingPiece) - piecePlacement.cbegin();
 
   return isSquareUnderAttack(kingIndex, color, piecePlacement);
 }
