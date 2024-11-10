@@ -251,6 +251,8 @@ std::vector<std::string> makeMoveListLines(const std::vector<std::string> &moveL
   return res;
 }
 
+void clearScreen() { cout << "\033[2J\033[H"; }
+
 void draw(const Game &game)
 {
   std::stringstream buffer;
@@ -281,9 +283,8 @@ void draw(const Game &game)
 
   buffer << makeMessage(game.message);
 
+  clearScreen();
   std::cout << buffer.str();
 
   writePgn(moveListEntries);
 }
-
-void clearScreen() { cout << "\033[2J\033[H"; }

@@ -22,10 +22,9 @@
       - [ ]  insufficient material
         - [ ]  king vs king
         - [ ]  king + minor piece vs king
-        - [ ]  lone king vs all the pieces
         - [ ]  king + two knights vs king
         - [ ]  king + minor piece vs king + minor piece
-        - [ ]  
+        - [ ]  lone king vs all the pieces (timeout vs insufficient material)
   - [ ] other
     - [x] castling
     - [x] pawn promotion

@@ -121,12 +121,9 @@ bool Game::processNextMove()
     moveList.push_back(moveListItem);
 
     return true;
-  }
-  else
-  {
-    return false;
   };
 
+  message = "Illegal move.";
   return false;
 }
 
@@ -452,7 +449,9 @@ bool Game::handleGameOver()
   }
   if (isCheckmate)
   {
-    logger.log("CHECKMATE");
+    std::string newMessage = !activeColor == PieceColor::White ? "white" : "black"; 
+    newMessage += " won by checkmate"; 
+    message = newMessage;
     isGameOver = true;
     return true;
   }
@@ -474,14 +473,14 @@ bool Game::handleGameOver()
   }
   if (isStalemate)
   {
-    logger.log("STALEMATE");
+    message = "stalemate";
     isGameOver = true;
     return true;
   }
 
   if (halfmoveClock == 100)
   {
-    logger.log("50 MOVE LIMIT REACHED");
+    message = "draw by 50 move-rule";
     isGameOver = true;
     return true;
   }

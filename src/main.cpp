@@ -16,19 +16,10 @@ int main()
   while (!game.isGameOver)
   {
 
-    clearScreen();
-
     try
     {
-
-      if (game.processNextMove())
-      {
-        game.message = "";
-      }
-      else
-      {
-        game.message = "Illegal move.";
-      }
+      game.processNextMove();
+      draw(game);
     }
     catch (std::invalid_argument &e)
     {
