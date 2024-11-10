@@ -45,6 +45,7 @@ public:
   PiecePlacement getPiecePlacement() const { return piecePlacement; };
   std::string getFenStr() const;
   std::optional<BoardIndex> getEnPassantIndex() const { return enPassantIndex; }
+  int getHalfMoveClock() { return halfmoveClock; };
 
   bool processNextMove();
   std::vector<BoardIndex> getPieceLegalMoves(const BoardIndex) const;
@@ -73,6 +74,7 @@ private:
   std::pair<BoardIndex, BoardIndex> getNextMove();
   std::pair<BoardIndex, BoardIndex> getUserMove(std::istream &, std::ostream &);
   std::pair<BoardIndex, BoardIndex> generateCpuMove(const PieceColor);
+  void updateHalfMoveClock(const ChessPiece, const ChessPiece);
   bool handleEnPassant(const BoardIndex, const BoardIndex);
   ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);
   std::string handleCastling(const BoardIndex, const BoardIndex);
@@ -100,6 +102,11 @@ public:
     return game.getPieceLegalMoves(index);
   };
 
+  void testUpdateHalfMoveClock(const ChessPiece fromPiece, const ChessPiece toPiece)
+  {
+    return game.updateHalfMoveClock(fromPiece, toPiece);
+  }
+
   bool testHandleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
   {
     return game.handleEnPassant(fromIndex, toIndex);
@@ -121,15 +128,12 @@ public:
   }
 
   bool testIsSquareUnderAttack(const BoardIndex index, const PieceColor defenderColor,
-                           const PiecePlacement &piecePlacement)
+                               const PiecePlacement &piecePlacement)
   {
     return game.isSquareUnderAttack(index, defenderColor, piecePlacement);
   }
 
-  bool testHandleGameOver()
-  {
-    return game.handleGameOver();
-  }
+  bool testHandleGameOver() { return game.handleGameOver(); }
 
 private:
   Game &game;

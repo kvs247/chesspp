@@ -16,10 +16,16 @@
     - [ ]  timeout
     - [ ]  draw
       - [x]  stalemate
-      - [ ]  insufficient material
-      - [ ]  50-move rule
+      - [x]  50-move rule
       - [ ]  repetition
       - [ ]  agreement
+      - [ ]  insufficient material
+        - [ ]  king vs king
+        - [ ]  king + minor piece vs king
+        - [ ]  lone king vs all the pieces
+        - [ ]  king + two knights vs king
+        - [ ]  king + minor piece vs king + minor piece
+        - [ ]  
   - [ ] other
     - [x] castling
     - [x] pawn promotion

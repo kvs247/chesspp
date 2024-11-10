@@ -101,6 +101,8 @@ bool Game::processNextMove()
     const auto castlingString = handleCastling(fromIndex, toIndex);
     const auto isEnPassantCapture = handleEnPassant(fromIndex, toIndex);
     const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
+    
+    updateHalfMoveClock(fromPiece, toPiece);
 
     const auto newToPiece = promotionPiece != ChessPiece::Empty ? promotionPiece : fromPiece;
     piecePlacement[toIndex] = newToPiece;
@@ -277,6 +279,20 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
 
   throw std::runtime_error("generateCpuMove(): control reached end of function unexpectedly");
 };
+
+void Game::updateHalfMoveClock(const ChessPiece fromPiece, const ChessPiece toPiece)
+{
+  const auto isCapture = toPiece != ChessPiece::Empty;
+  const auto isPawnMove = fromPiece == ChessPiece::BlackPawn || fromPiece == ChessPiece::WhitePawn;
+  if (isCapture || isPawnMove)
+  {
+    halfmoveClock = 0;
+  }
+  else
+  {
+    halfmoveClock += 1;
+  }
+}
 
 bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
 {
@@ -459,6 +475,13 @@ bool Game::handleGameOver()
   if (isStalemate)
   {
     logger.log("STALEMATE");
+    isGameOver = true;
+    return true;
+  }
+
+  if (halfmoveClock == 100)
+  {
+    logger.log("50 MOVE LIMIT REACHED");
     isGameOver = true;
     return true;
   }

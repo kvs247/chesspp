@@ -179,6 +179,30 @@ TEST(GameIsKingInCheck, WhiteKingIsInCheck)
 
 // private methods
 
+TEST(GameUpdateHalfMoveClock, CaptureResetsClock)
+{
+  Game game("r1bqkbnr/pppp1ppp/2n5/4p3/3NP3/8/PPPP1PPP/RNBQKB1R b KQkq - 3 3");
+  GameTester gameTester(game);
+
+  ASSERT_TRUE(game.getHalfMoveClock() != 0);
+
+  gameTester.testUpdateHalfMoveClock(ChessPiece::WhiteKnight, ChessPiece::BlackKnight);
+
+  ASSERT_TRUE(game.getHalfMoveClock() == 0);
+}
+
+TEST(GameUpdateHalfMoveClock, PawnMoveResetsClock)
+{
+  Game game("r1bqkbnr/pppppppp/8/3n1N2/8/8/PPPPPPPP/RNBQKB1R w KQkq - 6 4");
+  GameTester gameTester(game);
+
+  ASSERT_TRUE(game.getHalfMoveClock() != 0);
+
+  gameTester.testUpdateHalfMoveClock(ChessPiece::WhitePawn, ChessPiece::Empty);
+
+  ASSERT_TRUE(game.getHalfMoveClock() == 0);
+}
+
 TEST(GameHandleEnPassant, NullBehavior)
 {
   Game game;
