@@ -49,9 +49,9 @@ public:
   bool processNextMove();
   std::vector<BoardIndex> getPieceLegalMoves(const BoardIndex) const;
   bool validateMove(const BoardIndex, const BoardIndex) const;
+  static bool isKingInCheck(const PieceColor, const PiecePlacement &);
 
   // decide if public or private
-  static bool isKingInCheck(const PieceColor, const PiecePlacement &);
   static bool isSquareUnderAttack(const BoardIndex, const PieceColor, const PiecePlacement &);
 
   bool isGameOver = false;

@@ -155,6 +155,28 @@ TEST(GameValidMove, ValidMove)
   ASSERT_TRUE(game.validateMove(32, 24)); // white pawn
 }
 
+TEST(GameIsKingInCheck, KingIsNotInCheck)
+{
+  Game game("rnbq1bnr/ppp1kppp/3p4/4p3/4P3/3P4/PPP1KPPP/RNBQ1BNR w - - 0 4");
+
+  ASSERT_FALSE(game.isKingInCheck(PieceColor::White, game.getPiecePlacement()));
+  ASSERT_FALSE(game.isKingInCheck(PieceColor::Black, game.getPiecePlacement()));
+}
+
+TEST(GameIsKingInCheck, BlackKingIsInCheck)
+{
+  Game game("rnbq1bnr/ppp1kppp/3p4/4p1B1/4P3/3P4/PPP1KPPP/RN1Q1BNR b - - 1 4");
+
+  ASSERT_TRUE(game.isKingInCheck(PieceColor::Black, game.getPiecePlacement()));
+}
+
+TEST(GameIsKingInCheck, WhiteKingIsInCheck)
+{
+  Game game("rn1Bkbnr/ppp2ppp/3p4/4p3/4P1b1/3P4/PPP1KPPP/RN1Q1BNR w - - 1 6");
+
+  ASSERT_TRUE(game.isKingInCheck(PieceColor::White, game.getPiecePlacement()));
+}
+
 // private methods
 
 TEST(GameHandleEnPassant, NullBehavior)
@@ -306,12 +328,12 @@ TEST(GameGetSamePieceIndexes, WhiteKnight)
   actual = gameTester.testGetSamePieceIndexes(57, 51);
   expected = {41};
   ASSERT_EQ(actual, expected);
-  
+
   actual = gameTester.testGetSamePieceIndexes(41, 51);
   expected = {57};
   ASSERT_EQ(actual, expected);
 
-  // black rooks 
+  // black rooks
   actual = gameTester.testGetSamePieceIndexes(16, 19);
   expected = {23};
   ASSERT_EQ(actual, expected);

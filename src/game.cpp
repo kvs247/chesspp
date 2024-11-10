@@ -418,8 +418,6 @@ std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, co
   return res;
 }
 
-// still updating
-
 bool Game::isKingInCheck(const PieceColor color, const PiecePlacement &piecePlacement)
 {
   const auto kingPiece = color == PieceColor::White ? ChessPiece::WhiteKing : ChessPiece::BlackKing;
@@ -428,6 +426,8 @@ bool Game::isKingInCheck(const PieceColor color, const PiecePlacement &piecePlac
 
   return isSquareUnderAttack(kingIndex, color, piecePlacement);
 }
+
+// still updating
 
 bool Game::isSquareUnderAttack(const BoardIndex index,
                                const PieceColor color, // attacking color
