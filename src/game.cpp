@@ -427,19 +427,15 @@ bool Game::isKingInCheck(const PieceColor color, const PiecePlacement &piecePlac
   return isSquareUnderAttack(kingIndex, color, piecePlacement);
 }
 
-// still updating
-
-bool Game::isSquareUnderAttack(const BoardIndex index,
-                               const PieceColor color, // attacking color
+bool Game::isSquareUnderAttack(const BoardIndex index, const PieceColor defenderColor,
                                const PiecePlacement &piecePlacement)
 {
-  const auto isPieceInIndexesLambda =
-      [color, piecePlacement](const ChessPiece searchPiece, const std::vector<BoardIndex> &indexes)
+  const auto isPieceInIndexesLambda = [&](const ChessPiece searchPiece, const std::vector<BoardIndex> &indexes)
   {
     for (auto &idx : indexes)
     {
       const auto currentPiece = piecePlacement[idx];
-      if (currentPiece == ChessPiece::Empty || pieceColor(currentPiece) == color)
+      if (currentPiece == ChessPiece::Empty || pieceColor(currentPiece) == defenderColor)
       {
         continue;
       }
@@ -464,12 +460,12 @@ bool Game::isSquareUnderAttack(const BoardIndex index,
     return false;
   };
 
-  const bool isWhite = color == PieceColor::White;
+  const bool isWhite = defenderColor == PieceColor::White;
 
   // pawn
   const auto pawn = isWhite ? ChessPiece::BlackPawn : ChessPiece::WhitePawn;
   const std::vector<std::pair<int, int>> pawnOffsets =
-      (color == PieceColor::White)
+      (defenderColor == PieceColor::White)
           ? std::vector<std::pair<int, int>>{
                 {1, 1},
                 {-1, 1},
@@ -478,7 +474,7 @@ bool Game::isSquareUnderAttack(const BoardIndex index,
                 {1, -1},
                 {-1, -1},
             };
-  const std::vector<BoardIndex> pawnIndexes = Piece::squareIndexes(index, color, pawnOffsets, piecePlacement);
+  const std::vector<BoardIndex> pawnIndexes = Piece::squareIndexes(index, defenderColor, pawnOffsets, piecePlacement);
   if (isPieceInIndexesLambda(pawn, pawnIndexes))
   {
     return true;
@@ -489,7 +485,7 @@ bool Game::isSquareUnderAttack(const BoardIndex index,
   const std::vector<std::pair<int, int>> knightOffsets = {
       {1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
   };
-  const auto knightIndexes = Piece::squareIndexes(index, color, knightOffsets, piecePlacement);
+  const auto knightIndexes = Piece::squareIndexes(index, defenderColor, knightOffsets, piecePlacement);
   if (isPieceInIndexesLambda(knight, knightIndexes))
   {
     return true;
@@ -498,7 +494,7 @@ bool Game::isSquareUnderAttack(const BoardIndex index,
   // bishop/queen
   const auto bishop = isWhite ? ChessPiece::BlackBishop : ChessPiece::WhiteBishop;
   const std::vector<std::pair<int, int>> diagOffsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-  const auto diagIndexes = Piece::linearSquareIndexes(index, color, diagOffsets, piecePlacement);
+  const auto diagIndexes = Piece::linearSquareIndexes(index, defenderColor, diagOffsets, piecePlacement);
   if (isPieceInIndexesLambda(bishop, diagIndexes))
   {
     return true;
@@ -507,7 +503,7 @@ bool Game::isSquareUnderAttack(const BoardIndex index,
   // rook/queen
   const auto rook = isWhite ? ChessPiece::BlackRook : ChessPiece::WhiteRook;
   const std::vector<std::pair<int, int>> horizVertOffsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-  const auto horizVertIndexes = Piece::linearSquareIndexes(index, color, horizVertOffsets, piecePlacement);
+  const auto horizVertIndexes = Piece::linearSquareIndexes(index, defenderColor, horizVertOffsets, piecePlacement);
   if (isPieceInIndexesLambda(rook, horizVertIndexes))
   {
     return true;
@@ -518,7 +514,7 @@ bool Game::isSquareUnderAttack(const BoardIndex index,
   const std::vector<std::pair<int, int>> kingOffsets = {
       {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1},
   };
-  const auto kingIndexes = Piece::squareIndexes(index, color, kingOffsets, piecePlacement);
+  const auto kingIndexes = Piece::squareIndexes(index, defenderColor, kingOffsets, piecePlacement);
   if (isPieceInIndexesLambda(king, kingIndexes))
   {
     return true;

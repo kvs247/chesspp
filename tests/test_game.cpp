@@ -348,6 +348,112 @@ TEST(GameGetSamePieceIndexes, WhiteKnight)
   ASSERT_EQ(actual, expected);
 }
 
+TEST(GameIsSquareUnderAttack, Pawns)
+{
+  Game game("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
+  GameTester gameTester(game);
+  const auto piecePlacement = game.getPiecePlacement();
+
+  // white defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(33, PieceColor::White, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(34, PieceColor::White, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(35, PieceColor::White, piecePlacement));
+
+  // black defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(27, PieceColor::Black, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(28, PieceColor::Black, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(29, PieceColor::Black, piecePlacement));
+}
+
+TEST(GameIsSquareUnderAttack, Knights)
+{
+  Game game("r1bqkbnr/pppppppp/2n5/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2");
+  GameTester gameTester(game);
+  const auto piecePlacement = game.getPiecePlacement();
+
+  // white defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(35, PieceColor::White, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(28, PieceColor::White, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(36, PieceColor::White, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(27, PieceColor::White, piecePlacement));
+
+  // black defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(35, PieceColor::Black, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(28, PieceColor::Black, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(36, PieceColor::Black, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(27, PieceColor::Black, piecePlacement));
+}
+
+TEST(GameIsSquareUnderAttack, Bishops)
+{
+  Game game("rn1qkbnr/ppp1pppp/3pb3/8/8/3BP3/PPPP1PPP/RNBQK1NR w KQkq - 2 3");
+  GameTester gameTester(game);
+  const auto piecePlacement = game.getPiecePlacement();
+
+  // white defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(27, PieceColor::White, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(48, PieceColor::White, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(36, PieceColor::White, piecePlacement));
+
+  // black defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(36, PieceColor::Black, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(15, PieceColor::Black, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(28, PieceColor::Black, piecePlacement));
+}
+
+TEST(GameIsSquareUnderAttack, Rooks)
+{
+  Game game("1nbqkbnr/1ppppppp/8/r6P/p6R/8/PPPPPPP1/RNBQKBN1 w Qk - 2 5");
+  GameTester gameTester(game);
+  const auto piecePlacement = game.getPiecePlacement();
+
+  // white defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(26, PieceColor::White, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(29, PieceColor::White, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(33, PieceColor::White, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(34, PieceColor::White, piecePlacement));
+
+  // black defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(34, PieceColor::Black, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(37, PieceColor::Black, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(29, PieceColor::Black, piecePlacement));
+  ASSERT_FALSE(gameTester.testIsSquareUnderAttack(30, PieceColor::Black, piecePlacement));
+}
+
+TEST(GameIsSquareUnderAttack, Queens)
+{
+  Game game("rnb1kbnr/pppp1ppp/4p3/7Q/7q/4P3/PPPP1PPP/RNB1KBNR w KQkq - 2 3");
+  GameTester gameTester(game);
+  const auto piecePlacement = game.getPiecePlacement();
+
+  // white defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(31, PieceColor::White, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(53, PieceColor::White, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(3, PieceColor::White, piecePlacement));
+
+  // black defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(39, PieceColor::Black, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(13, PieceColor::Black, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(59, PieceColor::Black, piecePlacement));
+}
+
+TEST(GameIsSquareUnderAttack, Kings)
+{
+  Game game("rnbq1bnr/pppp1ppp/8/2k1p3/4P1K1/8/PPPP1PPP/RNBQ1BNR w - - 6 5");
+  GameTester gameTester(game);
+  const auto piecePlacement = game.getPiecePlacement();
+
+  // white defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(17, PieceColor::White, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(19, PieceColor::White, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(34, PieceColor::White, piecePlacement));
+
+  // black defending
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(45, PieceColor::Black, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(47, PieceColor::Black, piecePlacement));
+  ASSERT_TRUE(gameTester.testIsSquareUnderAttack(30, PieceColor::Black, piecePlacement));
+}
+
 // check
 
 TEST(PawnCheck, BlackInCheck)
