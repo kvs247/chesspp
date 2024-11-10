@@ -403,9 +403,8 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
 
 bool Game::handleGameOver()
 {
-  const auto color = activeColor;
   bool isCheckmate = false;
-  if (isKingInCheck(color, piecePlacement))
+  if (isKingInCheck(activeColor, piecePlacement))
   {
     isCheckmate = true;
     for (size_t i = 0; i < piecePlacement.size(); ++i)
@@ -417,7 +416,7 @@ bool Game::handleGameOver()
 
       const BoardIndex boardIndex = i;
       const auto piece = piecePlacement[boardIndex];
-      if (piece != ChessPiece::Empty && pieceColor(piece) == color)
+      if (piece != ChessPiece::Empty && pieceColor(piece) == activeColor)
       {
         const auto moves = getPieceLegalMoves(boardIndex);
         for (auto index : moves)
@@ -426,7 +425,7 @@ bool Game::handleGameOver()
           auto tempPiecePlacement = piecePlacement;
           tempPiecePlacement[index] = piece;
           tempPiecePlacement[boardIndex] = ChessPiece::Empty;
-          if (!isKingInCheck(color, tempPiecePlacement))
+          if (!isKingInCheck(activeColor, tempPiecePlacement))
           {
             isCheckmate = false;
             break;
@@ -442,25 +441,27 @@ bool Game::handleGameOver()
     return true;
   }
 
-  // // stalemate
-  // size_t i;
-  // for (i = 0; i < piecePlacement.size(); ++i)
-  // {
-  //   const BoardIndex boardIndex = i;
-  //   const auto piece = piecePlacement[i];
-  //   if (piece != ChessPiece::Empty && pieceColor(piece) == activeColor)
-  //   {
-  //     const auto moves = getPieceLegalMoves(boardIndex);
-  //     if (moves.size())
-  //     {
-  //       continue;
-  //     }
-  //   }
-  // }
-  // if (i == piecePlacement.size())
-  // {
-
-  // }
+  bool isStalemate = true;
+  for (size_t i = 0; i < piecePlacement.size(); ++i)
+  {
+    const BoardIndex boardIndex = i;
+    const auto piece = piecePlacement[i];
+    if (piece != ChessPiece::Empty && pieceColor(piece) == activeColor)
+    {
+      const auto moves = getPieceLegalMoves(boardIndex);
+      if (moves.size())
+      {
+        isStalemate = false;
+        break;
+      }
+    }
+  }
+  if (isStalemate)
+  {
+    logger.log("STALEMATE");
+    isGameOver = true;
+    return true;
+  }
 
   return false;
 }

@@ -15,7 +15,7 @@
     - [ ]  resignation
     - [ ]  timeout
     - [ ]  draw
-      - [ ]  stalemate
+      - [x]  stalemate
       - [ ]  insufficient material
       - [ ]  50-move rule
       - [ ]  repetition
