@@ -58,6 +58,7 @@ public:
   bool isGameOver = false;
   std::vector<MoveListItem> moveList;
   std::string message;
+  std::unordered_map<Position, int, PositionHash> positionCount;
 
 private:
   PiecePlacement piecePlacement;
@@ -66,8 +67,6 @@ private:
   std::optional<BoardIndex> enPassantIndex;
   int halfmoveClock;
   int fullmoveClock;
-
-  std::unordered_map<Position, int, PositionHash> positionCount;
 
   Pawn pawn;
   Knight knight;
@@ -84,6 +83,7 @@ private:
   ChessPiece handlePawnPromotion(const ChessPiece, const BoardIndex);
   std::string handleCastling(const BoardIndex, const BoardIndex);
   bool handleGameOver();
+  void incrementPositionCount();
   std::vector<BoardIndex> getSamePieceIndexes(const BoardIndex, const BoardIndex) const;
   static bool isSquareUnderAttack(const BoardIndex, const PieceColor, const PiecePlacement &);
 
@@ -139,6 +139,8 @@ public:
   }
 
   bool testHandleGameOver() { return game.handleGameOver(); }
+
+  void testIncrementPositionCount() { return game.incrementPositionCount(); }
 
 private:
   Game &game;

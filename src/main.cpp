@@ -15,7 +15,6 @@ int main()
 
   while (!game.isGameOver)
   {
-
     try
     {
       game.processNextMove();
@@ -35,6 +34,5 @@ int main()
       logger.log(game.getFenStr());
     }
   }
-
   return 0;
 }

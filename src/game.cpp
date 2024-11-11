@@ -76,10 +76,7 @@ std::string Game::getFenStr() const
 }
 
 // constructors
-Game::Game() : Game(State::newGameState())
-{
-  positionCount[{piecePlacement, castlingAvailability, enPassantIndex}] = 1;
-}
+Game::Game() : Game(State::newGameState()) { incrementPositionCount(); }
 
 Game::Game(const State &initialGameState)
     : piecePlacement(initialGameState.piecePlacement), activeColor(initialGameState.activeColor),
@@ -87,7 +84,7 @@ Game::Game(const State &initialGameState)
       halfmoveClock(initialGameState.halfmoveClock), fullmoveClock(initialGameState.fullmoveClock), pawn(*this),
       knight(*this), bishop(*this), rook(*this), queen(*this), king(*this)
 {
-  positionCount[{piecePlacement, castlingAvailability, enPassantIndex}] = 1;
+  incrementPositionCount();
 }
 
 Game::Game(const std::string &fen) : Game(State::fromFEN(fen)) {}
@@ -116,7 +113,7 @@ bool Game::processNextMove()
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
 
-    positionCount[{piecePlacement, castlingAvailability, enPassantIndex}] += 1;
+    incrementPositionCount();
 
     if (handleGameOver())
     {
@@ -509,6 +506,12 @@ bool Game::handleGameOver()
   }
 
   return false;
+}
+
+void Game::incrementPositionCount()
+{
+  Position pos{piecePlacement, castlingAvailability, enPassantIndex};
+  positionCount[pos] += 1;
 }
 
 std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, const BoardIndex toIndex) const

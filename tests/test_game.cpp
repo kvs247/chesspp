@@ -7,6 +7,7 @@
 #include "../src/config.hpp"
 #include "../src/constants.hpp"
 #include "../src/game.hpp"
+#include "../src/positionHash.hpp"
 
 // public methods
 
@@ -405,6 +406,18 @@ TEST(GameHandleGameOver, FiftyMoveRule)
 }
 
 // Repetition test
+
+TEST(GameIncrementPositionCount, UpdatesStartingPositionCount)
+{
+  Game game;
+  GameTester gameTester(game);
+  Position startingPos{game.getPiecePlacement(), game.getCastlingAvailability(), game.getEnPassantIndex()};
+  game.positionCount = {{startingPos, 1}}; // in test env, starting position has count 2 after initialization
+
+  gameTester.testIncrementPositionCount();
+
+  ASSERT_TRUE(game.positionCount[startingPos] == 2);
+}
 
 TEST(GameGetSamePieceIndexes, WhiteKnight)
 {
