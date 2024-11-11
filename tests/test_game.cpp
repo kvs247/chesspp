@@ -396,6 +396,16 @@ TEST(GameHandleGameOver, IsStalemate)
   ASSERT_TRUE(gameTester3.testHandleGameOver());
 }
 
+TEST(GameHandleGameOver, FiftyMoveRule)
+{
+  Game game("4k3/8/8/8/8/8/8/7K b - - 100 210");
+  GameTester gameTester(game);
+
+  ASSERT_TRUE(gameTester.testHandleGameOver());
+}
+
+// Repetition test
+
 TEST(GameGetSamePieceIndexes, WhiteKnight)
 {
   Game game("1nbqkbn1/1ppp1pp1/r6r/p3p2p/4P3/1N1P4/PPP2PPP/RNBQKB1R w KQ - 1 6");

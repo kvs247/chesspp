@@ -17,14 +17,14 @@
     - [ ]  draw
       - [x]  stalemate
       - [x]  50-move rule
-      - [ ]  repetition
+      - [x]  repetition
       - [ ]  agreement
       - [ ]  insufficient material
         - [ ]  king vs king
         - [ ]  king + minor piece vs king
         - [ ]  king + two knights vs king
         - [ ]  king + minor piece vs king + minor piece
-        - [ ]  lone king vs all the pieces (timeout vs insufficient material)
+        - [ ]  lone king vs all the pieces (timeout vs insufficient material) _STRECH_
   - [ ] other
     - [x] castling
     - [x] pawn promotion
@@ -38,11 +38,9 @@
     - [x] ambiguous piece
     - [x] castle
     - [x] check/checkmate
-  - [ ] clock
-  - [ ] help menu
+  - [ ] menu for help/draw or resign/pawn promotion
 - [x] CPU opponent
   - [x] random moves
-- [ ] time control
 - [x] logging
 
 ## Strech Features
@@ -51,3 +49,4 @@
 - [ ] Sophisticated CPU opponent (LLM)
 - [ ] OS portability
 - [ ] connect to network
+- [ ] time control

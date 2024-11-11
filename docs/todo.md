@@ -10,3 +10,4 @@
 - issue with knight ambiguous move. Guess it it will always specify column and rank when only one is necessary (unlike bishop & rook?)
 - tests
   - draw.hpp
+- rework Game::processMove() to take a fromIndex & toIndex. this will allow better testing (in particulate GameHandleGameOver)

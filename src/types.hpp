@@ -78,8 +78,6 @@ public:
     val = v;
   }
 
-  int get_val() const { return val; }
-
   operator int() const { return val; }
 
   RangedInt &operator=(int v)

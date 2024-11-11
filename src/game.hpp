@@ -1,10 +1,12 @@
 #pragma once
 
 #include <istream>
+#include <unordered_map>
 #include <utility>
 
 #include "constants.hpp"
 #include "piece.hpp"
+#include "positionHash.hpp"
 #include "types.hpp"
 
 class Game
@@ -40,12 +42,13 @@ public:
 
   Game();
   Game(const State &state);
-  Game(const std::string &fen) : Game(State::fromFEN(fen)) {};
+  Game(const std::string &fen);
 
-  PiecePlacement getPiecePlacement() const { return piecePlacement; };
   std::string getFenStr() const;
+  PiecePlacement getPiecePlacement() const { return piecePlacement; }
+  CastlingAvailability getCastlingAvailability() const { return castlingAvailability; }
   std::optional<BoardIndex> getEnPassantIndex() const { return enPassantIndex; }
-  int getHalfMoveClock() { return halfmoveClock; };
+  int getHalfMoveClock() { return halfmoveClock; }
 
   bool processNextMove();
   std::vector<BoardIndex> getPieceLegalMoves(const BoardIndex) const;
@@ -63,6 +66,8 @@ private:
   std::optional<BoardIndex> enPassantIndex;
   int halfmoveClock;
   int fullmoveClock;
+
+  std::unordered_map<Position, int, PositionHash> positionCount;
 
   Pawn pawn;
   Knight knight;

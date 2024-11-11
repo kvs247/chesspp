@@ -19,6 +19,7 @@
 #include "game.hpp"
 #include "logger.hpp"
 #include "piece.hpp"
+#include "positionHash.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 
@@ -75,7 +76,10 @@ std::string Game::getFenStr() const
 }
 
 // constructors
-Game::Game() : Game(State::newGameState()) {}
+Game::Game() : Game(State::newGameState())
+{
+  positionCount[{piecePlacement, castlingAvailability, enPassantIndex}] = 1;
+}
 
 Game::Game(const State &initialGameState)
     : piecePlacement(initialGameState.piecePlacement), activeColor(initialGameState.activeColor),
@@ -83,7 +87,10 @@ Game::Game(const State &initialGameState)
       halfmoveClock(initialGameState.halfmoveClock), fullmoveClock(initialGameState.fullmoveClock), pawn(*this),
       knight(*this), bishop(*this), rook(*this), queen(*this), king(*this)
 {
+  positionCount[{piecePlacement, castlingAvailability, enPassantIndex}] = 1;
 }
+
+Game::Game(const std::string &fen) : Game(State::fromFEN(fen)) {}
 
 // public methods
 
@@ -101,13 +108,15 @@ bool Game::processNextMove()
     const auto castlingString = handleCastling(fromIndex, toIndex);
     const auto isEnPassantCapture = handleEnPassant(fromIndex, toIndex);
     const auto promotionPiece = handlePawnPromotion(fromPiece, toIndex);
-    
+
     updateHalfMoveClock(fromPiece, toPiece);
 
     const auto newToPiece = promotionPiece != ChessPiece::Empty ? promotionPiece : fromPiece;
     piecePlacement[toIndex] = newToPiece;
     piecePlacement[fromIndex] = ChessPiece::Empty;
     activeColor = !activeColor;
+
+    positionCount[{piecePlacement, castlingAvailability, enPassantIndex}] += 1;
 
     if (handleGameOver())
     {
@@ -416,6 +425,7 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
 
 bool Game::handleGameOver()
 {
+  // checkmate
   bool isCheckmate = false;
   if (isKingInCheck(activeColor, piecePlacement))
   {
@@ -449,13 +459,14 @@ bool Game::handleGameOver()
   }
   if (isCheckmate)
   {
-    std::string newMessage = !activeColor == PieceColor::White ? "white" : "black"; 
-    newMessage += " won by checkmate"; 
+    std::string newMessage = !(activeColor == PieceColor::White) ? "white" : "black";
+    newMessage += " won by checkmate";
     message = newMessage;
     isGameOver = true;
     return true;
   }
 
+  // stalemate
   bool isStalemate = true;
   for (size_t i = 0; i < piecePlacement.size(); ++i)
   {
@@ -478,11 +489,23 @@ bool Game::handleGameOver()
     return true;
   }
 
+  // 50 move-rule
   if (halfmoveClock == 100)
   {
     message = "draw by 50 move-rule";
     isGameOver = true;
     return true;
+  }
+
+  // repetition
+  for (auto &p : positionCount)
+  {
+    if (p.second == 3)
+    {
+      message = "draw by repetition";
+      isGameOver = true;
+      return true;
+    }
   }
 
   return false;
