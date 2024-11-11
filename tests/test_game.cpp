@@ -407,6 +407,53 @@ TEST(GameHandleGameOver, FiftyMoveRule)
 
 // Repetition test
 
+TEST(GameHandleGameOver, KingVersusKingIsDraw)
+{
+  Game game("8/8/3k4/8/8/8/7K/8 b - - 0 1");
+  GameTester gameTester(game);
+
+  ASSERT_TRUE(gameTester.testHandleGameOver());
+}
+
+TEST(GameHandleGameOver, KingMinorPieceVersusKingIsDraw)
+{
+  Game gameWithKnight("8/8/8/8/8/8/5K2/3k1N2 b - - 0 1");
+  GameTester gameWithKnightTester(gameWithKnight);
+
+  ASSERT_TRUE(gameWithKnightTester.testHandleGameOver());
+
+  Game gameWithBishop("8/6K1/8/3k4/8/8/4b3/8 b - - 0 1");
+  GameTester gameWithBishopTester(gameWithBishop);
+
+  ASSERT_TRUE(gameWithBishopTester.testHandleGameOver());
+}
+
+TEST(GameHandleGameOver, KingTwoKnightsVersusKingIsDraw)
+{
+  Game game("8/3k2n1/2n5/8/8/3K4/8/8 w - - 0 1");
+  GameTester gameTester(game);
+
+  ASSERT_TRUE(gameTester.testHandleGameOver());
+}
+
+TEST(GameHanldeGameOver, KingMinorPieceVersusKingMinorPiece)
+{
+  Game gameWithTwoKnights("8/k7/6n1/8/7N/8/4K3/8 w - - 0 1");
+  GameTester gameWithTwoKnightsTester(gameWithTwoKnights);
+
+  ASSERT_TRUE(gameWithTwoKnightsTester.testHandleGameOver());
+
+  Game gameWithTwoBishops("8/8/2B5/k7/8/3b4/1K6/8 w - - 0 1");
+  GameTester gameWithTwoBishopsTester(gameWithTwoBishops);
+
+  ASSERT_TRUE(gameWithTwoBishopsTester.testHandleGameOver());
+
+  Game gameWithKnightBishop("n5k1/8/8/8/5K2/5B2/8/8 b - - 0 1");
+  GameTester gameWithKnightBishopTester(gameWithKnightBishop);
+
+  ASSERT_TRUE(gameWithKnightBishopTester.testHandleGameOver());
+}
+
 TEST(GameIncrementPositionCount, UpdatesStartingPositionCount)
 {
   Game game;

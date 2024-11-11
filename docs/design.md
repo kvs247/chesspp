@@ -20,10 +20,10 @@
       - [x]  repetition
       - [ ]  agreement
       - [ ]  insufficient material
-        - [ ]  king vs king
-        - [ ]  king + minor piece vs king
-        - [ ]  king + two knights vs king
-        - [ ]  king + minor piece vs king + minor piece
+        - [x]  king vs king
+        - [x]  king + minor piece vs king
+        - [x]  king + two knights vs king
+        - [x]  king + minor piece vs king + minor piece
         - [ ]  lone king vs all the pieces (timeout vs insufficient material) _STRECH_
   - [ ] other
     - [x] castling
@@ -41,12 +41,12 @@
   - [ ] menu for help/draw or resign/pawn promotion
 - [x] CPU opponent
   - [x] random moves
+- [ ] time control
 - [x] logging
 
 ## Strech Features
 
 - [ ] GUI
-- [ ] Sophisticated CPU opponent (LLM)
+- [ ] Sophisticated CPU opponent (LLM or lichess API)
 - [ ] OS portability
-- [ ] connect to network
-- [ ] time control
+- [ ] multiplayer over internet

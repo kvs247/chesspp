@@ -5,6 +5,7 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <optional>
 #include <random>
 #include <sstream>
@@ -503,6 +504,95 @@ bool Game::handleGameOver()
       isGameOver = true;
       return true;
     }
+  }
+
+  // insufficient material
+  using PieceVector = std::vector<ChessPiece>;
+  PieceVector whitePieces;
+  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(whitePieces),
+               [](ChessPiece piece) { return piece != ChessPiece::Empty && pieceColor(piece) == PieceColor::White; });
+
+  PieceVector blackPieces;
+  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(blackPieces),
+               [](ChessPiece piece) { return piece != ChessPiece::Empty && pieceColor(piece) == PieceColor::Black; });
+
+  auto isKingVersusKing = [&]() -> bool { return (whitePieces.size() == 1) && (blackPieces.size() == 1); };
+
+  auto isKingMinorPieceVersusKing = [&]() -> bool
+  {
+    auto test = [&](PieceVector v1, PieceVector v2) -> bool
+    {
+      if (v1.size() == 1 && v2.size() == 2)
+      {
+        char pieceA = std::tolower(chessPieceToChar(v2[0]));
+        char pieceB = std::tolower(chessPieceToChar(v2[1]));
+        if (pieceA == 'n' || pieceA == 'b' || pieceB == 'n' || pieceB == 'b')
+        {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    return test(whitePieces, blackPieces) || test(blackPieces, whitePieces);
+  };
+
+  auto isKingTwoKnightsVersusKing = [&]() -> bool
+  {
+    auto test = [&](PieceVector v1, PieceVector v2) -> bool
+    {
+      if (v1.size() == 1 && v2.size() == 3)
+      {
+        char pieceA = std::tolower(chessPieceToChar(v2[0]));
+        char pieceB = std::tolower(chessPieceToChar(v2[1]));
+        char pieceC = std::tolower(chessPieceToChar(v2[2]));
+        if (pieceA == 'k')
+        {
+          return pieceB == 'n' && pieceC == 'n';
+        }
+        if (pieceB == 'k')
+        {
+          return pieceA == 'n' && pieceC == 'n';
+        }
+        if (pieceC == 'k')
+        {
+          return pieceA == 'n' && pieceB == 'n';
+        }
+      }
+      return false;
+    };
+
+    return test(whitePieces, blackPieces) || test(blackPieces, whitePieces);
+  };
+
+  auto isKingMinorPieceVersusKingMinorPiece = [&]() -> bool
+  {
+    auto test = [&](PieceVector v1, PieceVector v2)
+    {
+      if (v1.size() == 2 && v2.size() == 2)
+      {
+        char piece1A = std::tolower(chessPieceToChar(v1[0]));
+        char piece1B = std::tolower(chessPieceToChar(v1[1]));
+        char piece2A = std::tolower(chessPieceToChar(v2[0]));
+        char piece2B = std::tolower(chessPieceToChar(v2[1]));
+
+        char nonKingPiece1 = piece1A != 'k' ? piece1A : piece1B;
+        char nonKingPiece2 = piece2A != 'k' ? piece2A : piece2B;
+
+        return (nonKingPiece1 == 'b' || nonKingPiece1 == 'n') && (nonKingPiece2 == 'b' || nonKingPiece2 == 'n');
+      }
+      return false;
+    };
+
+    return test(whitePieces, blackPieces) || test(blackPieces, whitePieces);
+  };
+
+  if (isKingVersusKing() || isKingMinorPieceVersusKing() || isKingTwoKnightsVersusKing() ||
+      isKingMinorPieceVersusKingMinorPiece())
+  {
+    message = "draw by insufficient material";
+    isGameOver = true;
+    return true;
   }
 
   return false;
