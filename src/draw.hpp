@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <sys/ioctl.h>
+#include <unistd.h>
 #include <vector>
 
 #include "config.hpp"
@@ -16,56 +18,60 @@
 using std::cout;
 
 const int BORDER_WIDTH = 3; // at least 2
-const int COL_MULT = 8;     // even
-const int ROW_MULT = 4;     // even
 const size_t MOVE_LIST_ITEM_WIDTH = 20;
 
-std::vector<std::string> makeGameBoardLines(const PiecePlacement &piecePlacement)
+winsize getWindowDimensions()
+{
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  return w;
+}
+
+std::vector<std::string> makeGameBoardLines(const PiecePlacement &piecePlacement, const int squareWidth,
+                                            const int squareHeight)
 {
   std::vector<std::string> res;
   char c;
-  size_t pieceIndex = 0;
-  for (int row = 0; row <= 8 * ROW_MULT; ++row)
+
+  for (int row = 0; row <= 8 * squareHeight; ++row)
   {
     std::stringstream line;
 
-    // ranks
+    const bool drawRank = row % squareHeight == squareHeight / 2;
+
     line << ' ';
-    if ((row + ROW_MULT / 2) % ROW_MULT == 0)
+    if (drawRank)
     {
-      line << std::to_string(8 - row / ROW_MULT) << std::string(BORDER_WIDTH - 2, ' ');
+      int rank = 8 - row / squareHeight;
+      line << std::to_string(rank) << std::string(BORDER_WIDTH - 2, ' ');
     }
     else
     {
       line << std::string(BORDER_WIDTH - 1, ' ');
     }
 
-    for (int col = 0; col <= 8 * COL_MULT; ++col)
+    for (int col = 0; col <= 8 * squareWidth; ++col)
     {
-      const bool drawRow = row % ROW_MULT == 0;
-      const bool drawCol = col % COL_MULT == 0;
-      const bool drawPiece = col % (COL_MULT / 2) == 0 && row % (ROW_MULT / 2) == 0;
+      const bool drawHorizLine = row % squareHeight == 0;
+      const bool drawVertLine = col % squareWidth == 0;
+      const bool drawPiece = col % (squareWidth / 2) == 0 && row % (squareHeight / 2) == 0;
 
-      if (drawRow && drawCol)
+      if (drawHorizLine && drawVertLine)
       {
         c = '+';
       }
-      // horizontal lines
-      else if (drawRow)
+      else if (drawHorizLine)
       {
         c = '-';
       }
-      // vertical lines
-      else if (drawCol)
+      else if (drawVertLine)
       {
         c = '|';
       }
-      // pieces
       else if (drawPiece)
       {
-        const char pieceChar = chessPieceToChar(piecePlacement[pieceIndex]);
-        c = pieceChar ? pieceChar : ' ';
-        ++pieceIndex;
+        int pieceIndex = row / squareHeight * 8 + col / squareWidth;
+        c = chessPieceToChar(piecePlacement[pieceIndex]) ?: ' ';
       }
       else
       {
@@ -79,11 +85,11 @@ std::vector<std::string> makeGameBoardLines(const PiecePlacement &piecePlacement
   // files
   std::stringstream line;
   line << std::string(BORDER_WIDTH / 2 - 1, '\n') << std::string(BORDER_WIDTH, ' ');
-  for (int i = 0; i <= 8 * COL_MULT + 2; i++)
+  for (int i = 0; i <= 8 * squareWidth + 2; i++)
   {
-    if ((i + COL_MULT / 2) % COL_MULT == 0)
+    if ((i + squareWidth / 2) % squareWidth == 0)
     {
-      const char c = i / COL_MULT + 'A';
+      const char c = i / squareWidth + 'A';
       line << c;
     }
     else
@@ -94,7 +100,7 @@ std::vector<std::string> makeGameBoardLines(const PiecePlacement &piecePlacement
   return res;
 }
 
-std::string makeMessage(const std::string message)
+std::string makeMessage(const std::string message, const int windowWidth)
 {
   std::stringstream res("\n\n");
   const auto messageSize = message.size();
@@ -103,10 +109,7 @@ std::string makeMessage(const std::string message)
     return res.str();
   }
 
-  const int boardWidth = 8 * COL_MULT / 2;
-  const int msgOffest = messageSize / 2 + messageSize % 2;
-  const int numSpace = BORDER_WIDTH + boardWidth - msgOffest;
-  res << std::string(numSpace, ' ') << '~' << message << ((messageSize % 2 == 0) ? ' ' : '~') << "\n\n";
+  res << std::string(windowWidth / 2 - (message.size() / 2), ' ') << message << "\n\n";
   return res.str();
 }
 
@@ -255,11 +258,17 @@ void clearScreen() { cout << "\033[2J\033[H"; }
 
 void draw(const Game &game)
 {
+  const auto [windowHeight, windowWidth, windowXPixel, windowYPixel] = getWindowDimensions();
+  // squareWidth must be divisible by 4 so that squareHeight = (squareWidth / 2) is even
+  int squareWidth = ((windowWidth / 2) - BORDER_WIDTH) / 8 & ~3;
+  squareWidth = std::max(squareWidth, 4);
+  int squareHeight = squareWidth / 2 & ~1;
+
   std::stringstream buffer;
 
   const auto piecePlacement = game.getPiecePlacement();
 
-  const auto gameBoardLines = makeGameBoardLines(piecePlacement);
+  const auto gameBoardLines = makeGameBoardLines(piecePlacement, squareWidth, squareHeight);
   const auto moveListEntries = makeMoveListEntries(game);
   const auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3);
 
@@ -281,7 +290,7 @@ void draw(const Game &game)
     buffer << "\n";
   }
 
-  buffer << makeMessage(game.message);
+  buffer << makeMessage(game.message, windowWidth);
 
   clearScreen();
   std::cout << buffer.str();
