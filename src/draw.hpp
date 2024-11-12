@@ -218,40 +218,39 @@ size_t numDigits(size_t x)
   return res;
 }
 
-std::vector<std::string> makeMoveListLines(const std::vector<std::string> &moveListEntries, const size_t moveListLength)
+std::vector<std::string> makeMoveListLines(const std::vector<std::string> &moveListEntries, const size_t moveListLength,
+                                           const int moveListWidth, const int moveListHeight)
 {
-  std::vector<std::string> res;
-  size_t counter = 1;
-  size_t moveListEntriesIdx = 0;
+  const size_t maxNumEntries = (moveListWidth / MOVE_LIST_ITEM_WIDTH) * (moveListHeight - 2);
 
-  while (moveListEntriesIdx < moveListEntries.size())
+  auto formatMoveEntry = [&](const size_t moveNum, const size_t moveListIndex) -> std::string
   {
-    std::stringstream line;
-    size_t n = 0;
-
-    while (moveListEntriesIdx + moveListLength * n * 2 < moveListEntries.size())
+    std::stringstream entry;
+    entry << moveNum << ". " << moveListEntries[moveListIndex];
+    if (moveListIndex + 1 < moveListEntries.size())
     {
-      std::stringstream entry;
-      size_t j = moveListEntriesIdx + moveListLength * n * 2;
-      const size_t index = counter + moveListLength * n;
-
-      entry << index << ". " << moveListEntries[j];
-      if (j + 1 < moveListEntries.size())
-      {
-        entry << " " << moveListEntries[j + 1];
-      }
-
-      entry << std::string(MOVE_LIST_ITEM_WIDTH - entry.str().size(), ' ');
-      line << entry.str();
-      ++n;
+      entry << " " << moveListEntries[moveListIndex + 1];
     }
 
-    moveListEntriesIdx += 2;
-    ++counter;
-    res.push_back(line.str());
+    std::string res = entry.str();
+    res += std::string(MOVE_LIST_ITEM_WIDTH - res.size(), ' ');
+    return res;
+  };
+
+  std::vector<std::string> lines(moveListLength);
+  for (size_t i = 0; i < std::min(maxNumEntries, (moveListEntries.size() + 1) / 2); ++i)
+  {
+    const size_t moveListIndex = i * 2;
+    if (i == maxNumEntries - 1)
+    {
+      lines[i % moveListLength] += "...";
+      break;
+    }
+
+    lines[i % moveListLength] += formatMoveEntry(i + 1, moveListIndex);
   }
 
-  return res;
+  return lines;
 }
 
 void clearScreen() { cout << "\033[2J\033[H"; }
@@ -263,6 +262,9 @@ void draw(const Game &game)
   int squareWidth = ((windowWidth / 2) - BORDER_WIDTH) / 8 & ~3;
   squareWidth = std::max(squareWidth, 4);
   int squareHeight = squareWidth / 2 & ~1;
+  int boardWidth = BORDER_WIDTH + 8 * squareWidth + 1 + 1; // ... + last column + space between board & move list
+  int moveListWidth = windowWidth - boardWidth;
+  int boardHeight = 8 * squareHeight + 1;
 
   std::stringstream buffer;
 
@@ -270,7 +272,7 @@ void draw(const Game &game)
 
   const auto gameBoardLines = makeGameBoardLines(piecePlacement, squareWidth, squareHeight);
   const auto moveListEntries = makeMoveListEntries(game);
-  const auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3);
+  const auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3, moveListWidth, boardHeight);
 
   size_t j = 0;
   for (size_t i = 0; i < gameBoardLines.size(); ++i)
