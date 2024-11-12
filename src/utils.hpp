@@ -61,8 +61,13 @@ inline ChessPiece charToChessPiece(const char c)
   return pieceMap.at(c);
 }
 
-inline PieceColor pieceColor(const ChessPiece piece)
+inline PieceColor getPieceColor(const ChessPiece piece)
 {
+  if (piece == ChessPiece::Empty)
+  {
+    throw std::invalid_argument("pieceColor: input is an empty piece");
+  }
+
   const char cChar = chessPieceToChar(piece);
   return ((std::tolower(cChar) == cChar) ? PieceColor::Black : PieceColor::White);
 }

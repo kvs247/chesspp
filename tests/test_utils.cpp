@@ -56,11 +56,13 @@ TEST(CharToChessPieceTest, InvalidInput)
 
 TEST(PieceColorTest, ValidInput)
 {
-  ASSERT_EQ(pieceColor(ChessPiece::BlackQueen), PieceColor::Black);
-  ASSERT_EQ(pieceColor(ChessPiece::BlackKing), PieceColor::Black);
-  ASSERT_EQ(pieceColor(ChessPiece::WhiteQueen), PieceColor::White);
-  ASSERT_EQ(pieceColor(ChessPiece::WhiteKing), PieceColor::White);
+  ASSERT_EQ(getPieceColor(ChessPiece::BlackQueen), PieceColor::Black);
+  ASSERT_EQ(getPieceColor(ChessPiece::BlackKing), PieceColor::Black);
+  ASSERT_EQ(getPieceColor(ChessPiece::WhiteQueen), PieceColor::White);
+  ASSERT_EQ(getPieceColor(ChessPiece::WhiteKing), PieceColor::White);
 }
+
+TEST(PieceColorTest, InvalidInput) { ASSERT_THROW(getPieceColor(ChessPiece::Empty), std::invalid_argument); }
 
 TEST(AlgebraicToIndexTest, ValidInput)
 {

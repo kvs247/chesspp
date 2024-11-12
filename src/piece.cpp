@@ -42,7 +42,7 @@ std::vector<BoardIndex> Piece::linearSquareIndexes(const BoardIndex index, const
 
       if (targetPiece != ChessPiece::Empty)
       {
-        if (pieceColor(targetPiece) != color)
+        if (getPieceColor(targetPiece) != color)
         {
           res.push_back(targetIndex);
         }
@@ -79,7 +79,7 @@ std::vector<BoardIndex> Piece::squareIndexes(const BoardIndex index, const Piece
     targetIndex = fileRankToIndex({targetFile, targetRank});
     const auto targetPiece = piecePlacement[targetIndex];
 
-    if (targetPiece != ChessPiece::Empty && color == pieceColor(targetPiece))
+    if (targetPiece != ChessPiece::Empty && color == getPieceColor(targetPiece))
     {
       continue;
     }
@@ -95,7 +95,7 @@ std::vector<BoardIndex> Piece::filterSelfCheckMoves(const PiecePlacement &pieceP
 {
   const auto isKingInCheckLambda = [piecePlacement, index](const BoardIndex toIndex)
   {
-    const auto color = pieceColor(piecePlacement[index]);
+    const auto color = getPieceColor(piecePlacement[index]);
     auto newPiecePlacement = piecePlacement;
     newPiecePlacement[toIndex] = newPiecePlacement[index];
     newPiecePlacement[index] = ChessPiece::Empty;
@@ -116,7 +116,7 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
 
   const auto piece = game.piecePlacement[index];
   auto targetPiece = ChessPiece::Empty;
-  const auto color = pieceColor(piece);
+  const auto color = getPieceColor(piece);
   const auto [file, rank] = indexToFileRank(index);
   BoardIndex targetIndex;
 
@@ -148,7 +148,7 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
       break;
     targetIndex = fileRankToIndex({file + offset, rank + sign});
     targetPiece = game.piecePlacement[targetIndex];
-    if (targetPiece != ChessPiece::Empty && pieceColor(targetPiece) != color)
+    if (targetPiece != ChessPiece::Empty && getPieceColor(targetPiece) != color)
       potentialIndexes.push_back(targetIndex);
     // en passant
     if (game.enPassantIndex == targetIndex)
@@ -164,7 +164,7 @@ Knight::Knight(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Knight::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = pieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {
       {1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
   };
@@ -180,7 +180,7 @@ Bishop::Bishop(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Bishop::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = pieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
   const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
@@ -194,7 +194,7 @@ Rook::Rook(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Rook::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = pieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
   const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
@@ -208,7 +208,7 @@ Queen::Queen(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Queen::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = pieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1},  {0, -1},
                                                     {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
@@ -223,7 +223,7 @@ King::King(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> King::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = pieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1},  {0, -1},
                                                     {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 

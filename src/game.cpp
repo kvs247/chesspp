@@ -99,7 +99,7 @@ bool Game::processNextMove()
   if (validateMove(fromIndex, toIndex))
   {
     const auto fromPiece = piecePlacement[fromIndex];
-    const auto fromColor = pieceColor(fromPiece);
+    const auto fromColor = getPieceColor(fromPiece);
     const auto toPiece = piecePlacement[toIndex];
     const auto samePieceIndexes = getSamePieceIndexes(fromIndex, toIndex);
 
@@ -184,7 +184,7 @@ bool Game::validateMove(const BoardIndex fromIndex, const BoardIndex toIndex) co
     return false;
   }
 
-  const auto fromColor = pieceColor(fromPiece);
+  const auto fromColor = getPieceColor(fromPiece);
   if (!config.disableTurnOrder && fromColor != activeColor)
   {
     return false;
@@ -248,7 +248,7 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
   for (size_t i = 0; i < piecePlacement.size(); ++i)
   {
     auto piece = piecePlacement[i];
-    if (piece != ChessPiece::Empty && pieceColor(piecePlacement[i]) == cpuColor)
+    if (piece != ChessPiece::Empty && getPieceColor(piecePlacement[i]) == cpuColor)
     {
       cpuPiecesIdxs.push_back(i);
     }
@@ -306,7 +306,7 @@ bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
     throw std::invalid_argument("handleEnPassant(): no piece at given index");
   }
 
-  const auto fromColor = pieceColor(fromPiece);
+  const auto fromColor = getPieceColor(fromPiece);
 
   // capture
   if (toIndex == enPassantIndex)
@@ -437,7 +437,7 @@ bool Game::handleGameOver()
 
       const BoardIndex boardIndex = i;
       const auto piece = piecePlacement[boardIndex];
-      if (piece != ChessPiece::Empty && pieceColor(piece) == activeColor)
+      if (piece != ChessPiece::Empty && getPieceColor(piece) == activeColor)
       {
         const auto moves = getPieceLegalMoves(boardIndex);
         for (auto index : moves)
@@ -470,7 +470,7 @@ bool Game::handleGameOver()
   {
     const BoardIndex boardIndex = i;
     const auto piece = piecePlacement[i];
-    if (piece != ChessPiece::Empty && pieceColor(piece) == activeColor)
+    if (piece != ChessPiece::Empty && getPieceColor(piece) == activeColor)
     {
       const auto moves = getPieceLegalMoves(boardIndex);
       if (moves.size())
@@ -510,11 +510,11 @@ bool Game::handleGameOver()
   using PieceVector = std::vector<ChessPiece>;
   PieceVector whitePieces;
   std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(whitePieces),
-               [](ChessPiece piece) { return piece != ChessPiece::Empty && pieceColor(piece) == PieceColor::White; });
+               [](ChessPiece piece) { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::White; });
 
   PieceVector blackPieces;
   std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(blackPieces),
-               [](ChessPiece piece) { return piece != ChessPiece::Empty && pieceColor(piece) == PieceColor::Black; });
+               [](ChessPiece piece) { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::Black; });
 
   auto isKingVersusKing = [&]() -> bool { return (whitePieces.size() == 1) && (blackPieces.size() == 1); };
 
@@ -642,7 +642,7 @@ bool Game::isSquareUnderAttack(const BoardIndex index, const PieceColor defender
     for (auto &idx : indexes)
     {
       const auto currentPiece = piecePlacement[idx];
-      if (currentPiece == ChessPiece::Empty || pieceColor(currentPiece) == defenderColor)
+      if (currentPiece == ChessPiece::Empty || getPieceColor(currentPiece) == defenderColor)
       {
         continue;
       }
