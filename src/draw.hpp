@@ -113,6 +113,39 @@ std::string makeMessage(const std::string message, const int windowWidth)
   return res.str();
 }
 
+std::string handleAmbiguousMove(BoardIndex fromIndex, std::vector<BoardIndex> otherIndexes)
+{
+  const auto [pieceFile, pieceRank] = indexToFileRank(fromIndex);
+  bool isSameFile = false;
+  bool isSameRank = false;
+
+  for (auto &otherIdx : otherIndexes)
+  {
+    const auto [otherFile, otherRank] = indexToFileRank(otherIdx);
+    if (otherFile == pieceFile)
+    {
+      isSameFile = true;
+    }
+    if (otherRank == pieceRank)
+    {
+      isSameRank = true;
+    }
+  }
+
+  std::string res;
+  const auto pieceSquare = indexToAlgebraic(fromIndex);
+  if (isSameRank)
+  {
+    res += pieceSquare[0];
+  }
+  if (isSameFile)
+  {
+    res += pieceSquare[1];
+  }
+
+  return res;
+}
+
 std::vector<std::string> makeMoveListEntries(const Game &game)
 {
   std::vector<std::string> res;
@@ -142,32 +175,7 @@ std::vector<std::string> makeMoveListEntries(const Game &game)
       item << piece;
       if (!moveListItem.samePieceIndexes.empty())
       {
-        const auto [pieceFile, pieceRank] = indexToFileRank(fromIndex);
-        bool isDiffFile = false;
-        bool isDiffRank = false;
-
-        for (auto &idx : moveListItem.samePieceIndexes)
-        {
-          const auto [file, rank] = indexToFileRank(idx);
-          if (file != pieceFile)
-          {
-            isDiffFile = true;
-          }
-          if (rank != pieceRank)
-          {
-            isDiffRank = true;
-          }
-        }
-
-        const auto pieceSquare = indexToAlgebraic(fromIndex);
-        if (isDiffFile)
-        {
-          item << pieceSquare[0];
-        }
-        if (isDiffRank)
-        {
-          item << pieceSquare[1];
-        }
+        item << handleAmbiguousMove(fromIndex, moveListItem.samePieceIndexes);
       }
     }
 
