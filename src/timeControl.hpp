@@ -1,5 +1,3 @@
-#include "game.hpp"
-
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
@@ -8,98 +6,103 @@
 #include <sstream>
 #include <thread>
 
+#include "game.hpp"
+
 struct TimeControl
 {
-  std::chrono::seconds initialTime;
-  std::chrono::seconds increment;
-  std::chrono::steady_clock::time_point lastMoveTime;
-  std::chrono::seconds remainingTime;
-  std::atomic<bool> isRunning;
+  std::chrono::milliseconds remainingTimeMs;
+  std::chrono::steady_clock::time_point lastUpdateTimePoint;
+  bool isRunning;
 
-  TimeControl(int initalMinutes = 10, int incrementSeconds = 0)
-      : initialTime(initalMinutes * 60), increment(incrementSeconds), remainingTime(initalMinutes * 60),
-        isRunning(false)
-  {
-  }
-
-  void startTimer()
-  {
-    lastMoveTime = std::chrono::steady_clock::now();
-    isRunning = true;
-  }
-
-  void stopTimer()
-  {
-    if (isRunning)
-    {
-      auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - lastMoveTime);
-      remainingTime -= elapsed;
-      remainingTime += increment;
-      isRunning = false;
-    }
-  }
+  TimeControl(int initalMinutes = 10) : remainingTimeMs(initalMinutes * 60 * 1000), isRunning(false) {}
 
   std::string getTimeString() const
   {
-    int minutes = remainingTime.count() / 60;
-    int seconds = remainingTime.count() % 60;
+    const auto totalSeconds = std::chrono::duration_cast<std::chrono::seconds>(remainingTimeMs).count();
+    const int minutes = totalSeconds / 60;
+    const int seconds = totalSeconds % 60;
+    const int milliseconds = remainingTimeMs.count() % 1000;
 
     std::stringstream ss;
-    ss << std::setfill('0') << std::setw(2) << minutes << ":" << std::setfill('0') << std::setw(2) << seconds;
+    ss << std::setfill('0') << std::setw(2) << minutes << ":" << std::setfill('0') << std::setw(2) << seconds << "."
+       << std::setfill('0') << std::setw(3) << milliseconds;
     return ss.str();
   };
-
-  bool hasTimeLeft() const { return remainingTime.count() > 0; };
-
-  void updateDisplay()
-  {
-    if (isRunning)
-    {
-      auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - lastMoveTime);
-      auto currentTime = remainingTime - elapsed;
-      if (currentTime.count() <= 0)
-      {
-        remainingTime = std::chrono::seconds(0);
-        isRunning = false;
-      }
-    }
-  }
 };
 
 class ChessTimer
 {
 private:
   Game &game;
-  TimeControl &whiteTime;
-  TimeControl &blackTime;
-  std::atomic<bool> running;
+  TimeControl &whiteTimeControl;
+  TimeControl &blackTimeControl;
+  std::chrono::milliseconds bonusTimeMs;
+  std::atomic<bool> isRunning;
   std::thread timerThread;
   std::mutex mtx;
   std::condition_variable cv;
 
+  void updateTimeControl(TimeControl &timeControl)
+  {
+    if (timeControl.isRunning)
+    {
+      const auto now = std::chrono::steady_clock::now();
+      const auto elapsedTime = now - timeControl.lastUpdateTimePoint;
+      const auto elapsedTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime);
+
+      timeControl.remainingTimeMs -= elapsedTimeMs;
+      timeControl.lastUpdateTimePoint = now;
+
+      if (timeControl.remainingTimeMs <= std::chrono::milliseconds(0))
+      {
+        timeControl.remainingTimeMs = std::chrono::milliseconds(0);
+        timeControl.isRunning = false;
+      }
+    }
+  }
+
 public:
-  ChessTimer(Game &g, TimeControl &wt, TimeControl &bt) : game(g), whiteTime(wt), blackTime(bt), running(true) {}
+  ChessTimer(Game &g, TimeControl &wtc, TimeControl &btc, int btMs = 0)
+      : game(g), whiteTimeControl(wtc), blackTimeControl(btc), bonusTimeMs(btMs), isRunning(true)
+  {
+  }
+
+  void startPlayerTimer(TimeControl &timeControl)
+  {
+    std::lock_guard<std::mutex> lock(mtx);
+    timeControl.lastUpdateTimePoint = std::chrono::steady_clock::now();
+    timeControl.isRunning = true;
+  }
+
+  void stopPlayerTimer(TimeControl &timeControl)
+  {
+    std::lock_guard<std::mutex> lock(mtx);
+    updateTimeControl(timeControl);
+    timeControl.isRunning = false;
+    timeControl.remainingTimeMs += bonusTimeMs;
+  }
 
   void start()
   {
     timerThread = std::thread(
         [this]()
         {
-          while (running)
+          while (isRunning)
           {
+            logger.log("black: ", blackTimeControl.getTimeString(), " white: ", whiteTimeControl.getTimeString());
             {
-              std::lock_guard<std::mutex> lock(mtx);
-              whiteTime.updateDisplay();
-              blackTime.updateDisplay();
-              logger.log("white: ", whiteTime.getTimeString(), " black: ", blackTime.getTimeString());
+              std::lock_guard<std::mutex> lock(mtx); // ensure player switch cannot occur while updating TimeControl's
 
-              if (whiteTime.isRunning && !whiteTime.hasTimeLeft())
+              updateTimeControl(whiteTimeControl);
+              updateTimeControl(blackTimeControl);
+
+              if (whiteTimeControl.isRunning && whiteTimeControl.remainingTimeMs <= std::chrono::milliseconds(0))
               {
                 game.isGameOver = true;
                 game.message = "Black wins on time";
                 break;
               }
-              if (blackTime.isRunning && !blackTime.hasTimeLeft())
+              if (blackTimeControl.isRunning && blackTimeControl.remainingTimeMs <= std::chrono::milliseconds(0))
               {
                 game.isGameOver = true;
                 game.message = "White wins on time";
@@ -109,17 +112,15 @@ public:
               // draw(game);
             }
 
-            // wait for 1 second or util the timer is stopped
             std::unique_lock<std::mutex> lock(mtx);
-            cv.wait_for(lock, std::chrono::seconds(1), [this]() { return !running; });
-
+            cv.wait_for(lock, std::chrono::milliseconds(100), [this]() { return !isRunning; });
           }
         });
   }
 
   void stop()
   {
-    running = false;
+    isRunning = false;
     cv.notify_one();
     if (timerThread.joinable())
     {

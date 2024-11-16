@@ -13,14 +13,13 @@ int main()
   logger.log("");
   Game game(config.startingFen);
 
-  TimeControl whiteTime(10, 0);
-  TimeControl blackTime(10, 0);
+  TimeControl whiteTime(10);
+  TimeControl blackTime(10);
 
   // create and start the timer thread
   ChessTimer timer(game, whiteTime, blackTime);
   timer.start();
-
-  whiteTime.startTimer();
+  timer.startPlayerTimer(whiteTime);
 
   draw(game);
 
@@ -29,18 +28,17 @@ int main()
     try
     {
       const bool isWhiteMove = game.isWhiteMove();
-
       game.processNextMove();
 
       if (isWhiteMove)
       {
-        whiteTime.stopTimer();
-        blackTime.startTimer();
+        timer.stopPlayerTimer(whiteTime);
+        timer.startPlayerTimer(blackTime);
       }
       else
       {
-        blackTime.stopTimer();
-        whiteTime.startTimer();
+        timer.stopPlayerTimer(blackTime);
+        timer.startPlayerTimer(whiteTime);
       }
 
       draw(game);
@@ -59,8 +57,6 @@ int main()
   }
 
   timer.stop();
-  whiteTime.stopTimer();
-  blackTime.stopTimer();
   draw(game);
 
   return 0;
