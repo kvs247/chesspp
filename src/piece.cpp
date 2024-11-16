@@ -145,7 +145,9 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
   {
     const int targetFile = file + offset; // not FileRankIndex since we are testing if on board
     if (targetFile < 1 || 8 < targetFile)
-      break;
+    {
+      continue;
+    }
     targetIndex = fileRankToIndex({file + offset, rank + sign});
     targetPiece = game.piecePlacement[targetIndex];
     if (targetPiece != ChessPiece::Empty && getPieceColor(targetPiece) != color)
