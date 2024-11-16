@@ -1,5 +1,6 @@
 # To-Do
 
+- create `isPieceWhite` util
 - tests
   - draw.hpp
     - test ambiguous move handling

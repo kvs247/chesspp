@@ -92,6 +92,8 @@ Game::Game(const std::string &fen) : Game(State::fromFEN(fen)) {}
 
 // public methods
 
+bool Game::isWhiteMove() const { return activeColor == PieceColor::White; }
+
 bool Game::processNextMove()
 {
   const auto [fromIndex, toIndex] = getNextMove();
@@ -509,12 +511,12 @@ bool Game::handleGameOver()
   // insufficient material
   using PieceVector = std::vector<ChessPiece>;
   PieceVector whitePieces;
-  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(whitePieces),
-               [](ChessPiece piece) { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::White; });
+  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(whitePieces), [](ChessPiece piece)
+               { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::White; });
 
   PieceVector blackPieces;
-  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(blackPieces),
-               [](ChessPiece piece) { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::Black; });
+  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(blackPieces), [](ChessPiece piece)
+               { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::Black; });
 
   auto isKingVersusKing = [&]() -> bool { return (whitePieces.size() == 1) && (blackPieces.size() == 1); };
 

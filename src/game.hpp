@@ -50,6 +50,7 @@ public:
   std::optional<BoardIndex> getEnPassantIndex() const { return enPassantIndex; }
   int getHalfMoveClock() { return halfmoveClock; }
 
+  bool isWhiteMove() const;
   bool processNextMove();
   std::vector<BoardIndex> getPieceLegalMoves(const BoardIndex) const;
   bool validateMove(const BoardIndex, const BoardIndex) const;
