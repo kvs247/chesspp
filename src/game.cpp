@@ -21,12 +21,13 @@
 #include "logger.hpp"
 #include "piece.hpp"
 #include "positionHash.hpp"
+#include "timeControl.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 
-Game::State Game::State::fromFEN(const std::string &fen)
+Game::GameState Game::GameState::fromFEN(const std::string &fen)
 {
-  State res{};
+  GameState res{};
   size_t pos = 0;
   std::string token;
   std::string fen_copy = fen;
@@ -77,18 +78,20 @@ std::string Game::getFenStr() const
 }
 
 // constructors
-Game::Game() : Game(State::newGameState()) { incrementPositionCount(); }
+Game::Game() : Game(GameState::newGameState()) {}
 
-Game::Game(const State &initialGameState)
+Game::Game(const std::string &fen) : Game(GameState::fromFEN(fen)) {}
+
+Game::Game(const GameState &initialGameState)
     : piecePlacement(initialGameState.piecePlacement), activeColor(initialGameState.activeColor),
       castlingAvailability(initialGameState.castlingAvailability), enPassantIndex(initialGameState.enPassantIndex),
       halfmoveClock(initialGameState.halfmoveClock), fullmoveClock(initialGameState.fullmoveClock), pawn(*this),
       knight(*this), bishop(*this), rook(*this), queen(*this), king(*this)
 {
   incrementPositionCount();
+  timer.start();
+  timer.startPlayerTimer(whiteTime);
 }
-
-Game::Game(const std::string &fen) : Game(State::fromFEN(fen)) {}
 
 // public methods
 
@@ -128,6 +131,17 @@ bool Game::processNextMove()
                                        toPiece,        samePieceIndexes,  promotionPiece,
                                        castlingString, isOpponentInCheck, isEnPassantCapture};
     moveList.push_back(moveListItem);
+
+    if (isWhiteMove())
+    {
+      timer.stopPlayerTimer(blackTime);
+      timer.startPlayerTimer(whiteTime);
+    }
+    else
+    {
+      timer.stopPlayerTimer(whiteTime);
+      timer.startPlayerTimer(blackTime);
+    }
 
     return true;
   };
@@ -462,6 +476,20 @@ bool Game::handleGameOver()
     std::string newMessage = !(activeColor == PieceColor::White) ? "white" : "black";
     newMessage += " won by checkmate";
     message = newMessage;
+    isGameOver = true;
+    return true;
+  }
+
+  // timeout
+  if (whiteTime.isOutOfTime())
+  {
+    message = "black won on time";
+    isGameOver = true;
+    return true;
+  }
+  if (blackTime.isOutOfTime())
+  {
+    message = "white won on time";
     isGameOver = true;
     return true;
   }

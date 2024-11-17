@@ -11,6 +11,8 @@
 #include "game.hpp"
 #include "timeControl.hpp"
 
+// TimeControl
+
 TimeControl::TimeControl() : remainingTimeMs(config.timeControl * 60 * 1000), isRunning(false) {}
 
 std::string TimeControl::getTimeString() const
@@ -25,6 +27,10 @@ std::string TimeControl::getTimeString() const
      << std::setfill('0') << std::setw(3) << milliseconds;
   return ss.str();
 };
+
+bool TimeControl::isOutOfTime() const { return remainingTimeMs == std::chrono::milliseconds(0); };
+
+// ChessTimer
 
 void ChessTimer::updateTimeControl(TimeControl &timeControl)
 {
@@ -75,21 +81,6 @@ void ChessTimer::start()
 
             updateTimeControl(game.whiteTime);
             updateTimeControl(game.blackTime);
-
-            if (game.whiteTime.isRunning && game.whiteTime.remainingTimeMs <= std::chrono::milliseconds(0))
-            {
-              game.isGameOver = true;
-              game.message = "Black wins on time";
-              break;
-            }
-            if (game.blackTime.isRunning && game.blackTime.remainingTimeMs <= std::chrono::milliseconds(0))
-            {
-              game.isGameOver = true;
-              game.message = "White wins on time";
-              break;
-            }
-
-            // draw(game);
           }
 
           std::unique_lock<std::mutex> lock(mtx);

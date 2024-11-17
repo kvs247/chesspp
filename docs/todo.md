@@ -1,6 +1,7 @@
 # To-Do
 
 - create `isPieceWhite` util
+- move all `Game` class members to `State` type
 - tests
   - draw.hpp
     - test ambiguous move handling

@@ -13,9 +13,9 @@
 
 TEST(GameStateInitialization, FromDefaultFen)
 {
-  const auto defaultState = Game::State::newGameState();
+  const auto defaultState = Game::GameState::newGameState();
   std::string defaultFen = startingFenString;
-  const auto defaultFenState = Game::State::fromFEN(defaultFen);
+  const auto defaultFenState = Game::GameState::fromFEN(defaultFen);
 
   ASSERT_EQ(defaultState, defaultFenState);
 }
@@ -44,10 +44,10 @@ TEST(GameStateInitialization, FromMidGameFen)
   const BoardIndex enPassantIndex = 45;
   const int halfmoveClock = 0;
   const int fullmoveClock = 7;
-  const Game::State expected{piecePlacement, activeColor,   castlingAvailability,
-                             enPassantIndex, halfmoveClock, fullmoveClock};
+  const Game::GameState expected{piecePlacement, activeColor,   castlingAvailability,
+                                 enPassantIndex, halfmoveClock, fullmoveClock};
   std::string fen = "r1b1kbr1/ppppqppp/2n2n2/8/4pP2/1PN1P3/PBPPQ1PP/2KR1BNR b q f3 0 7";
-  const auto actual = Game::State::fromFEN(fen);
+  const auto actual = Game::GameState::fromFEN(fen);
 
   ASSERT_EQ(actual, expected);
 }

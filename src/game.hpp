@@ -22,7 +22,7 @@ class Game
   friend class ChessTimer;
 
 public:
-  struct State
+  struct GameState
   {
     PiecePlacement piecePlacement = startingPiecePlacement;
     PieceColor activeColor = PieceColor::White;
@@ -31,10 +31,10 @@ public:
     int halfmoveClock = 0;
     int fullmoveClock = 1;
 
-    static State newGameState() { return {}; };
-    static State fromFEN(const std::string &fen);
+    static GameState newGameState() { return {}; };
+    static GameState fromFEN(const std::string &fen);
 
-    bool operator==(const State &other) const
+    bool operator==(const GameState &other) const
     {
       return (piecePlacement == other.piecePlacement && activeColor == other.activeColor &&
               castlingAvailability == other.castlingAvailability && enPassantIndex == other.enPassantIndex &&
@@ -43,8 +43,8 @@ public:
   };
 
   Game();
-  Game(const State &state);
   Game(const std::string &fen);
+  Game(const GameState &state);
 
   std::string getFenStr() const;
   PiecePlacement getPiecePlacement() const { return piecePlacement; }
@@ -62,6 +62,8 @@ public:
   std::vector<MoveListItem> moveList;
   std::string message;
   std::unordered_map<Position, int, PositionHash> positionCount;
+
+  ChessTimer timer{*this};
 
   // make private
   TimeControl whiteTime;

@@ -14,7 +14,9 @@ struct TimeControl
   bool isRunning;
 
   TimeControl();
+
   std::string getTimeString() const;
+  bool isOutOfTime() const;
 };
 
 class ChessTimer

@@ -13,29 +13,13 @@ int main()
   logger.log("");
   Game game(config.startingFen);
 
-  ChessTimer timer(game);
-  timer.start();
-  timer.startPlayerTimer(game.whiteTime);
-
   draw(game);
 
   while (!game.isGameOver)
   {
     try
     {
-      const bool isWhiteMove = game.isWhiteMove();
       game.processNextMove();
-
-      if (isWhiteMove)
-      {
-        timer.stopPlayerTimer(game.whiteTime);
-        timer.startPlayerTimer(game.blackTime);
-      }
-      else
-      {
-        timer.stopPlayerTimer(game.blackTime);
-        timer.startPlayerTimer(game.whiteTime);
-      }
 
       draw(game);
     }
@@ -52,7 +36,6 @@ int main()
     }
   }
 
-  timer.stop();
   draw(game);
 
   return 0;
