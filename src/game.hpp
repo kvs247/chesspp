@@ -7,6 +7,7 @@
 #include "constants.hpp"
 #include "piece.hpp"
 #include "positionHash.hpp"
+#include "timeControl.hpp"
 #include "types.hpp"
 
 class Game
@@ -18,6 +19,7 @@ class Game
   friend class Rook;
   friend class Queen;
   friend class King;
+  friend class ChessTimer;
 
 public:
   struct State
@@ -61,6 +63,10 @@ public:
   std::string message;
   std::unordered_map<Position, int, PositionHash> positionCount;
 
+  // make private
+  TimeControl whiteTime;
+  TimeControl blackTime;
+
 private:
   PiecePlacement piecePlacement;
   PieceColor activeColor;
@@ -75,6 +81,7 @@ private:
   Rook rook;
   Queen queen;
   King king;
+
 
   std::pair<BoardIndex, BoardIndex> getNextMove();
   std::pair<BoardIndex, BoardIndex> getUserMove(std::istream &, std::ostream &);

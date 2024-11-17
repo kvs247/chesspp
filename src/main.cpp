@@ -13,13 +13,9 @@ int main()
   logger.log("");
   Game game(config.startingFen);
 
-  TimeControl whiteTime(10);
-  TimeControl blackTime(10);
-
-  // create and start the timer thread
-  ChessTimer timer(game, whiteTime, blackTime);
+  ChessTimer timer(game);
   timer.start();
-  timer.startPlayerTimer(whiteTime);
+  timer.startPlayerTimer(game.whiteTime);
 
   draw(game);
 
@@ -32,13 +28,13 @@ int main()
 
       if (isWhiteMove)
       {
-        timer.stopPlayerTimer(whiteTime);
-        timer.startPlayerTimer(blackTime);
+        timer.stopPlayerTimer(game.whiteTime);
+        timer.startPlayerTimer(game.blackTime);
       }
       else
       {
-        timer.stopPlayerTimer(blackTime);
-        timer.startPlayerTimer(whiteTime);
+        timer.stopPlayerTimer(game.blackTime);
+        timer.startPlayerTimer(game.whiteTime);
       }
 
       draw(game);

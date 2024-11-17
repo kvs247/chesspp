@@ -22,6 +22,8 @@ struct Config
   bool logFen = false;
   bool showMoveList = true;
   std::string startingFen = startingFenString;
+  int timeControl = 10;
+  int incrementTime = 0;
 };
 
 enum class ConfigKey
@@ -33,6 +35,8 @@ enum class ConfigKey
   CPU_MOVE_DELAY_MS,
   SHOW_MOVE_LIST,
   STARTING_FEN,
+  TIME_CONTROL,
+  INCREMENT_TIME,
   UNKNOWN,
 };
 
@@ -50,6 +54,8 @@ inline ConfigKey stringToConfigKey(const std::string key)
       {"CPU_MOVE_DELAY_MS", ConfigKey::CPU_MOVE_DELAY_MS},
       {"SHOW_MOVE_LIST", ConfigKey::SHOW_MOVE_LIST},
       {"STARTING_FEN", ConfigKey::STARTING_FEN},
+      {"TIME_CONTROL", ConfigKey::TIME_CONTROL},
+      {"INCREMENT_TIME", ConfigKey::INCREMENT_TIME},
   };
   const auto it = configKeyMap.find(key);
   return it != configKeyMap.cend() ? it->second : ConfigKey::UNKNOWN;
@@ -99,6 +105,12 @@ inline Config loadConfig()
       break;
     case ConfigKey::STARTING_FEN:
       config.startingFen = value.empty() ? startingFenString : value;
+      break;
+    case ConfigKey::TIME_CONTROL:
+      config.timeControl = parseInt(value);
+      break;
+    case ConfigKey::INCREMENT_TIME:
+      config.incrementTime = parseInt(value);
       break;
     default:
       throw std::invalid_argument("unknown config key encountered");
