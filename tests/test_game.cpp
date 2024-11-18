@@ -52,19 +52,6 @@ TEST(GameStateInitialization, FromMidGameFen)
   ASSERT_EQ(actual, expected);
 }
 
-TEST(GameGetUserMove, ReadMove)
-{
-  std::istringstream is("e2 e4 a6");
-  std::ostringstream os;
-  Game defaultGame;
-  GameTester game{defaultGame};
-  const auto actual = game.testGetUserMove(is, os);
-
-  const std::pair<BoardIndex, BoardIndex> expected{52, 36};
-
-  ASSERT_EQ(actual, expected);
-}
-
 TEST(GameGetPieceLegalMoves, InvokesCorrectPieceClass)
 {
   std::string fen = "rnbqkb1r/ppp2ppp/5n2/3pp3/P4P2/2P5/1P1PP1PP/RNBQKBNR w KQkq d6 0 4";

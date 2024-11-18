@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "constants.hpp"
+#include "moveInput.hpp"
 #include "piece.hpp"
 #include "positionHash.hpp"
 #include "timeControl.hpp"
@@ -20,6 +21,7 @@ class Game
   friend class Queen;
   friend class King;
   friend class ChessTimer;
+  friend class MoveInput;
 
 public:
   struct GameState
@@ -84,9 +86,8 @@ private:
   Queen queen;
   King king;
 
+  MoveInput moveInput = MoveInput{*this};
 
-  std::pair<BoardIndex, BoardIndex> getNextMove();
-  std::pair<BoardIndex, BoardIndex> getUserMove(std::istream &, std::ostream &);
   std::pair<BoardIndex, BoardIndex> generateCpuMove(const PieceColor);
   void updateHalfMoveClock(const ChessPiece, const ChessPiece);
   bool handleEnPassant(const BoardIndex, const BoardIndex);
@@ -106,11 +107,6 @@ public:
   GameTester(Game &g) : game(g) {}
 
   PiecePlacement testGetPiecePlacement() const { return game.getPiecePlacement(); }
-
-  std::pair<BoardIndex, BoardIndex> testGetUserMove(std::istream &is, std::ostream &os)
-  {
-    return game.getUserMove(is, os);
-  };
 
   std::vector<BoardIndex> testGetPieceLegalMoves(const BoardIndex index) const
   {

@@ -99,7 +99,17 @@ bool Game::isWhiteMove() const { return activeColor == PieceColor::White; }
 
 bool Game::processNextMove()
 {
-  const auto [fromIndex, toIndex] = getNextMove();
+  BoardIndex fromIndex, toIndex;
+  const auto inputResult = moveInput.handleGetInput();
+  if (inputResult.has_value())
+  {
+    std::tie(fromIndex, toIndex) = inputResult.value();
+  }
+  else
+  {
+    handleGameOver();
+    return false;
+  }
 
   if (validateMove(fromIndex, toIndex))
   {
@@ -216,45 +226,6 @@ bool Game::validateMove(const BoardIndex fromIndex, const BoardIndex toIndex) co
 }
 
 // private methods
-
-std::pair<BoardIndex, BoardIndex> Game::getNextMove()
-{
-  BoardIndex fromIndex, toIndex;
-
-  if (config.blackIsCpu && activeColor == PieceColor::Black)
-  {
-    std::tie(fromIndex, toIndex) = generateCpuMove(PieceColor::Black);
-  }
-  else if (config.whiteIsCpu && activeColor == PieceColor::White)
-  {
-    std::tie(fromIndex, toIndex) = generateCpuMove(PieceColor::White);
-  }
-  else
-  {
-    std::tie(fromIndex, toIndex) = getUserMove(std::cin, std::cout);
-  }
-
-  return {fromIndex, toIndex};
-};
-
-std::pair<BoardIndex, BoardIndex> Game::getUserMove(std::istream &is, std::ostream &os)
-{
-  BoardIndex fromIndex, toIndex;
-
-  std::string fromAlgebraic, toAlgebraic;
-
-  os << "from square: ";
-  is >> fromAlgebraic;
-  os << "\n";
-  fromIndex = algebraicToIndex(fromAlgebraic);
-
-  os << "to square: ";
-  is >> toAlgebraic;
-  os << "\n";
-  toIndex = algebraicToIndex(toAlgebraic);
-
-  return {fromIndex, toIndex};
-}
 
 std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColor)
 {
