@@ -11,20 +11,44 @@
 #include "game.hpp"
 #include "timeControl.hpp"
 
+const bool DEBUG = false;
+
 // TimeControl
 
 TimeControl::TimeControl() : remainingTimeMs(config.timeControl * 60 * 1000), isRunning(false) {}
 
-std::string TimeControl::getTimeString() const
+struct TimeData TimeControl::getTimeData() const
 {
   const auto totalSeconds = std::chrono::duration_cast<std::chrono::seconds>(remainingTimeMs).count();
   const int minutes = totalSeconds / 60;
   const int seconds = totalSeconds % 60;
   const int milliseconds = remainingTimeMs.count() % 1000;
 
+  return {minutes, seconds, milliseconds};
+};
+
+std::string TimeControl::getFormattedTimeString() const
+{
+  const auto timeData = getTimeData();
   std::stringstream ss;
-  ss << std::setfill('0') << std::setw(2) << minutes << ":" << std::setfill('0') << std::setw(2) << seconds << "."
-     << std::setfill('0') << std::setw(3) << milliseconds;
+
+  ss << timeData.minutes << ":";
+  ss << std::setfill('0') << std::setw(2) << timeData.seconds;
+
+  if (60 * timeData.minutes + timeData.seconds < 20)
+  {
+    ss << "." << timeData.milliseconds / 100;
+  }
+
+  return ss.str();
+};
+
+std::string TimeControl::getAbsoluteTimeString() const
+{
+  const auto timeData = getTimeData();
+  std::stringstream ss;
+  ss << std::setfill('0') << std::setw(2) << timeData.minutes << ":" << std::setfill('0') << std::setw(2)
+     << timeData.seconds << "." << std::setfill('0') << std::setw(3) << timeData.milliseconds;
   return ss.str();
 };
 
@@ -75,7 +99,12 @@ void ChessTimer::start()
       {
         while (isRunning)
         {
-          logger.log("black: ", game.blackTime.getTimeString(), " white: ", game.whiteTime.getTimeString());
+          if (DEBUG)
+          {
+            logger.log("black: ", game.blackTime.getAbsoluteTimeString(),
+                       " white: ", game.whiteTime.getAbsoluteTimeString());
+          }
+
           {
             std::lock_guard<std::mutex> lock(mtx); // ensure player switch cannot occur while updating TimeControl's
 

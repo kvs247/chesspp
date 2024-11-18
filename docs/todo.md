@@ -2,6 +2,7 @@
 
 - create `isPieceWhite` util
 - move all `Game` class members to `State` type
+- captured pieces in player info display
 - tests
   - draw.hpp
     - test ambiguous move handling

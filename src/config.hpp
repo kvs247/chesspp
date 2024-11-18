@@ -17,6 +17,8 @@ struct Config
 {
   bool whiteIsCpu = false;
   bool blackIsCpu = false;
+  std::string whiteUsername = "White";
+  std::string blackUsername = "Black";
   int cpuMoveDelayMs = 1000;
   bool disableTurnOrder = false;
   bool logFen = false;
@@ -30,6 +32,8 @@ enum class ConfigKey
 {
   WHITE_IS_CPU,
   BLACK_IS_CPU,
+  WHITE_USERNAME,
+  BLACK_USERNAME,
   DISABLE_TURN_ORDER,
   LOG_FEN,
   CPU_MOVE_DELAY_MS,
@@ -49,6 +53,8 @@ inline ConfigKey stringToConfigKey(const std::string key)
   static const std::map<std::string, ConfigKey> configKeyMap = {
       {"WHITE_IS_CPU", ConfigKey::WHITE_IS_CPU},
       {"BLACK_IS_CPU", ConfigKey::BLACK_IS_CPU},
+      {"WHITE_USERNAME", ConfigKey::WHITE_USERNAME},
+      {"BLACK_USERNAME", ConfigKey::BLACK_USERNAME},
       {"DISABLE_TURN_ORDER", ConfigKey::DISABLE_TURN_ORDER},
       {"LOG_FEN", ConfigKey::LOG_FEN},
       {"CPU_MOVE_DELAY_MS", ConfigKey::CPU_MOVE_DELAY_MS},
@@ -91,6 +97,12 @@ inline Config loadConfig()
     case ConfigKey::BLACK_IS_CPU:
       config.blackIsCpu = parseBoolean(value);
       break;
+    case ConfigKey::WHITE_USERNAME:
+      config.whiteUsername = value.empty() ? "White" : value;
+      break;
+    case ConfigKey::BLACK_USERNAME:
+      config.blackUsername = value.empty() ? "Black" : value;
+      break;
     case ConfigKey::DISABLE_TURN_ORDER:
       config.disableTurnOrder = parseBoolean(value);
       break;
@@ -115,6 +127,15 @@ inline Config loadConfig()
     default:
       throw std::invalid_argument("unknown config key encountered");
     }
+  }
+
+  if (config.whiteIsCpu)
+  {
+    config.whiteUsername += " (CPU)";
+  }
+  if (config.blackIsCpu)
+  {
+    config.blackUsername += " (CPU)";
   }
 
   return config;

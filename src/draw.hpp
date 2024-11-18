@@ -261,6 +261,25 @@ std::vector<std::string> makeMoveListLines(const std::vector<std::string> &moveL
   return lines;
 }
 
+std::string makeInfoString(const std::string username, const std::string timeString, const int boardWidth)
+{
+  std::stringstream ss;
+  const int numChars = username.length() + timeString.length();
+  const int gapSize = boardWidth - numChars - BORDER_WIDTH - 1;
+  ss << std::string(BORDER_WIDTH, ' ') << username << std::string(gapSize, ' ') << timeString << " \n";
+  return ss.str();
+};
+
+std::string makeBlackInfoString(const Game &game, const int boardWidth)
+{
+  return makeInfoString(config.blackUsername, game.blackTime.getFormattedTimeString(), boardWidth);
+};
+
+std::string makeWhiteInfoString(const Game &game, const int boardWidth)
+{
+  return makeInfoString(config.whiteUsername, game.whiteTime.getFormattedTimeString(), boardWidth);
+}
+
 void clearScreen() { cout << "\033[2J\033[H"; }
 
 void draw(const Game &game)
@@ -274,13 +293,15 @@ void draw(const Game &game)
   int moveListWidth = windowWidth - boardWidth;
   int boardHeight = 8 * squareHeight + 1;
 
-  std::stringstream buffer;
-
   const auto piecePlacement = game.getPiecePlacement();
 
   const auto gameBoardLines = makeGameBoardLines(piecePlacement, squareWidth, squareHeight);
   const auto moveListEntries = makeMoveListEntries(game);
   const auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3, moveListWidth, boardHeight);
+
+  std::stringstream buffer;
+
+  buffer << makeBlackInfoString(game, boardWidth);
 
   size_t j = 0;
   for (size_t i = 0; i < gameBoardLines.size(); ++i)
@@ -299,6 +320,8 @@ void draw(const Game &game)
     }
     buffer << "\n";
   }
+
+  buffer << makeWhiteInfoString(game, boardWidth);
 
   buffer << makeMessage(game.message, windowWidth);
 

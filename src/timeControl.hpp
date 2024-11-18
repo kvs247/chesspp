@@ -7,6 +7,12 @@
 #include <string>
 #include <thread>
 
+struct TimeData {
+  int minutes;
+  int seconds;
+  int milliseconds;
+};
+
 struct TimeControl
 {
   std::chrono::milliseconds remainingTimeMs;
@@ -15,7 +21,9 @@ struct TimeControl
 
   TimeControl();
 
-  std::string getTimeString() const;
+  TimeData getTimeData() const;
+  std::string getFormattedTimeString() const;
+  std::string getAbsoluteTimeString() const;
   bool isOutOfTime() const;
 };
 
