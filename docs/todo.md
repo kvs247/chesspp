@@ -4,7 +4,7 @@
 - move all `Game` class members to `State` type
 - captured pieces in player info display
 - tests
-  - draw.hpp
+  - render.hpp
     - test ambiguous move handling
 - refactors
   - game over logic

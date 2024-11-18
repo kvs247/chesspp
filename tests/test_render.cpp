@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include "../src/draw.hpp"
+#include "../src/render.hpp"
 #include "../src/types.hpp"
 
 TEST(HandleAmbiguousMove, FourRooks)
@@ -17,7 +17,7 @@ TEST(HandleAmbiguousMove, FourRooks)
 
 TEST(HandleAmbiguousMove, ThreeQueens)
 {
-    const BoardIndex fromIndex = 43;
+  const BoardIndex fromIndex = 43;
   const std::vector<BoardIndex> otherIndexes = {59, 45};
 
   const std::string expected = "d3";

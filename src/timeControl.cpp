@@ -9,6 +9,7 @@
 
 #include "config.hpp"
 #include "game.hpp"
+#include "render.hpp"
 #include "timeControl.hpp"
 
 const bool DEBUG = false;
@@ -99,6 +100,8 @@ void ChessTimer::start()
       {
         while (isRunning)
         {
+          draw(game);
+
           if (DEBUG)
           {
             logger.log("black: ", game.blackTime.getAbsoluteTimeString(),

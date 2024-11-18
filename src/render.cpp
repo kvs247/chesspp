@@ -1,5 +1,3 @@
-#pragma once
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -12,6 +10,7 @@
 #include "constants.hpp"
 #include "game.hpp"
 #include "pgn.hpp"
+#include "render.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 
@@ -110,6 +109,7 @@ std::string makeMessage(const std::string message, const int windowWidth)
   }
 
   res << std::string(windowWidth / 2 - (message.size() / 2), ' ') << message << "\n\n";
+
   return res.str();
 }
 

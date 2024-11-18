@@ -1,10 +1,11 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "config.hpp"
 #include "constants.hpp"
-#include "draw.hpp"
 #include "game.hpp"
 #include "logger.hpp"
+#include "render.hpp"
 #include "timeControl.hpp"
 #include "utils.hpp"
 
