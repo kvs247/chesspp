@@ -99,16 +99,20 @@ std::vector<std::string> makeGameBoardLines(const PiecePlacement &piecePlacement
   return res;
 }
 
-std::string makeMessage(const std::string message, const int windowWidth)
+std::string makeMessage(const Game &game, const int windowWidth)
 {
   std::stringstream res("\n\n");
-  const auto messageSize = message.size();
+
+  const auto userInputSize = game.userInput.size();
+  res << std::string(windowWidth / 2 - (userInputSize / 2), ' ') << game.userInput << "\n";
+
+  const auto messageSize = game.message.size();
   if (!messageSize)
   {
     return res.str();
   }
 
-  res << std::string(windowWidth / 2 - (message.size() / 2), ' ') << message << "\n\n";
+  res << std::string(windowWidth / 2 - (messageSize / 2), ' ') << game.message << "\n\n";
 
   return res.str();
 }
@@ -323,7 +327,7 @@ void draw(const Game &game)
 
   buffer << makeWhiteInfoString(game, boardWidth);
 
-  buffer << makeMessage(game.message, windowWidth);
+  buffer << makeMessage(game, windowWidth) << "\n";
 
   clearScreen();
   std::cout << buffer.str();

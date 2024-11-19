@@ -5,12 +5,15 @@
 #include "constants.hpp"
 #include "game.hpp"
 #include "logger.hpp"
+#include "moveInput.hpp"
 #include "render.hpp"
 #include "timeControl.hpp"
 #include "utils.hpp"
 
 int main()
 {
+  MoveInput::enableRawMode();
+
   logger.log("");
   Game game(config.startingFen);
 
@@ -38,6 +41,8 @@ int main()
   }
 
   draw(game);
+
+  MoveInput::disableRawMode();
 
   return 0;
 }

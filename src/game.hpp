@@ -1,6 +1,7 @@
 #pragma once
 
 #include <istream>
+#include <string>
 #include <unordered_map>
 #include <utility>
 
@@ -70,6 +71,8 @@ public:
   // make private
   TimeControl whiteTime;
   TimeControl blackTime;
+
+  std::string userInput;
 
 private:
   PiecePlacement piecePlacement;

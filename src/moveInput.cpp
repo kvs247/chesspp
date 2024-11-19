@@ -1,10 +1,12 @@
 #include <atomic>
+#include <cctype>
 #include <condition_variable>
 #include <exception>
 #include <future>
 #include <iostream>
 #include <mutex>
 #include <optional>
+#include <string>
 #include <thread>
 #include <utility>
 
@@ -12,60 +14,73 @@
 #include "game.hpp"
 #include "moveInput.hpp"
 
+#include <termios.h>
+#include <unistd.h>
+
 MoveInput::MoveInput(Game &g) : game(g) {}
 
-std::pair<BoardIndex, BoardIndex> getUserMove(std::istream &is, std::ostream &os, const std::atomic<bool> &cancelInput)
+void MoveInput::enableRawMode()
 {
-  BoardIndex fromIndex, toIndex;
-  std::string fromAlgebraic, toAlgebraic;
+  logger.log("set raw mode");
+  tcgetattr(STDIN_FILENO, &originalTermios);
+  struct termios rawTermios = originalTermios;
 
-  auto getInput = [&](const std::string &prompt) -> std::optional<std::string>
+  rawTermios.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+  rawTermios.c_iflag &= ~(IXON | ICRNL | BRKINT | INPCK | ISTRIP);
+  rawTermios.c_cflag |= (CS8);
+  rawTermios.c_cc[VMIN] = 0;
+  rawTermios.c_cc[VTIME] = 1;
+
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawTermios);
+
+  // hide cursor
+  write(STDOUT_FILENO, "\033[?25l", 6);
+};
+
+void MoveInput::disableRawMode()
+{
+  logger.log("reset termios");
+  // show cursor
+  write(STDOUT_FILENO, "\033[?25h", 6);
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios);
+};
+
+std::optional<std::string> MoveInput::collectUserInput(const std::string prompt)
+{
+  std::string input;
+  char c;
+
+  while (!cancelInput)
   {
-    os << prompt;
-
-    std::promise<std::string> inputPromise;
-    auto inputFuture = inputPromise.get_future();
-
-    auto ioThread = std::thread(
-        [&]()
-        {
-          std::string temp;
-          is >> temp;
-          inputPromise.set_value(temp);
-        });
-
-    // wait for input or cancel
-    while (!cancelInput)
+    if (read(STDIN_FILENO, &c, 1) == 1)
     {
-      auto status = inputFuture.wait_for(std::chrono::milliseconds(100));
-      if (status == std::future_status::ready)
+      if ((c == '\r' || c == '\n') && input.length() == 2)
       {
-        ioThread.join();
-        return inputFuture.get();
+        return input;
+      }
+      else if (c == 127) // backspace
+      {
+        if (!input.empty())
+        {
+          input.pop_back();
+        }
+      }
+      else if (c == ' ') {}
+      else if (c == 'q')
+      {
+        MoveInput::disableRawMode();
+        std::exit(0);
+      }
+      else if (isalnum(c) && input.length() < 2)
+      {
+        input += c;
       }
     }
-
-    // this implies cancellation
-    ioThread.detach();
-    return std::nullopt;
-  };
-
-  auto fromInput = getInput("from square: ");
-  if (!fromInput)
-  {
-    throw std::runtime_error("input cancelled");
+    game.userInput = prompt + input;
   }
-  fromIndex = algebraicToIndex(fromInput.value());
-
-  auto toInput = getInput("to square:");
-  if (!toInput)
-  {
-    throw std::runtime_error("input cancelled");
-  }
-  toIndex = algebraicToIndex(toInput.value());
-
-  return {fromIndex, toIndex};
-}
+  // return input;
+  return std::nullopt;
+};
 
 std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
 {
@@ -100,7 +115,27 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
           }
           try
           {
-            std::tie(fromIdx, toIdx) = getUserMove(std::cin, std::cout, cancelInput);
+            const auto userFromSquare = collectUserInput("Enter From Square: ");
+            if (userFromSquare.has_value())
+            {
+              fromIdx = algebraicToIndex(userFromSquare.value());
+            }
+            else
+            {
+              return;
+            }
+
+            const auto userToSquare = collectUserInput("Enter To Square: ");
+            if (userToSquare.has_value())
+            {
+              toIdx = algebraicToIndex(userToSquare.value());
+            }
+            else
+            {
+              return;
+            }
+
+            game.userInput = "";
           }
           catch (const std::runtime_error &e)
           {
@@ -174,3 +209,5 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
 
   return success ? std::optional<std::pair<BoardIndex, BoardIndex>>(result) : std::nullopt;
 };
+
+struct termios MoveInput::originalTermios;
