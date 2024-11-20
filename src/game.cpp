@@ -452,13 +452,13 @@ bool Game::handleGameOver()
   }
 
   // timeout
-  if (whiteTime.isOutOfTime())
+  if (whiteTime.isEnabled && whiteTime.isOutOfTime())
   {
     message = "black won on time";
     isGameOver = true;
     return true;
   }
-  if (blackTime.isOutOfTime())
+  if (blackTime.isEnabled && blackTime.isOutOfTime())
   {
     message = "white won on time";
     isGameOver = true;

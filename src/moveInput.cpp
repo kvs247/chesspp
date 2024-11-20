@@ -21,7 +21,6 @@ MoveInput::MoveInput(Game &g) : game(g) {}
 
 void MoveInput::enableRawMode()
 {
-  logger.log("set raw mode");
   tcgetattr(STDIN_FILENO, &originalTermios);
   struct termios rawTermios = originalTermios;
 
@@ -39,7 +38,6 @@ void MoveInput::enableRawMode()
 
 void MoveInput::disableRawMode()
 {
-  logger.log("reset termios");
   // show cursor
   write(STDOUT_FILENO, "\033[?25h", 6);
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios);
@@ -166,7 +164,7 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
               break;
             }
 
-            if (timeControl.isOutOfTime())
+            if (timeControl.isEnabled && timeControl.isOutOfTime())
             {
               shared.outOfTime = true;
               cancelInput = true; // Set to true to cancel input

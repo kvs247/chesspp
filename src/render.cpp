@@ -265,9 +265,10 @@ std::vector<std::string> makeMoveListLines(const std::vector<std::string> &moveL
   return lines;
 }
 
-std::string makeInfoString(const std::string username, const std::string timeString, const int boardWidth)
+std::string makeInfoString(const std::string username, const TimeControl timeControl, const int boardWidth)
 {
   std::stringstream ss;
+  std::string timeString = timeControl.isEnabled ? timeControl.getFormattedTimeString() : "";
   const int numChars = username.length() + timeString.length();
   const int gapSize = boardWidth - numChars - BORDER_WIDTH - 1;
   ss << std::string(BORDER_WIDTH, ' ') << username << std::string(gapSize, ' ') << timeString << " \n";
@@ -276,12 +277,12 @@ std::string makeInfoString(const std::string username, const std::string timeStr
 
 std::string makeBlackInfoString(const Game &game, const int boardWidth)
 {
-  return makeInfoString(config.blackUsername, game.blackTime.getFormattedTimeString(), boardWidth);
+  return makeInfoString(config.blackUsername, game.blackTime, boardWidth);
 };
 
 std::string makeWhiteInfoString(const Game &game, const int boardWidth)
 {
-  return makeInfoString(config.whiteUsername, game.whiteTime.getFormattedTimeString(), boardWidth);
+  return makeInfoString(config.whiteUsername, game.whiteTime, boardWidth);
 }
 
 void clearScreen() { cout << "\033[2J\033[H"; }

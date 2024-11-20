@@ -16,7 +16,13 @@ const bool DEBUG = false;
 
 // TimeControl
 
-TimeControl::TimeControl() : remainingTimeMs(config.timeControl * 60 * 1000), isRunning(false) {}
+TimeControl::TimeControl(int minutes) : remainingTimeMs(minutes * 60 * 1000), isRunning(false), isEnabled(false)
+{
+  if (minutes > 0)
+  {
+    isEnabled = true;
+  }
+}
 
 struct TimeData TimeControl::getTimeData() const
 {
@@ -80,6 +86,11 @@ ChessTimer::ChessTimer(Game &g) : game(g), incrementMs(config.incrementTime * 10
 
 void ChessTimer::startPlayerTimer(TimeControl &timeControl)
 {
+  if (!timeControl.isEnabled)
+  {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mtx);
   timeControl.lastUpdateTimePoint = std::chrono::steady_clock::now();
   timeControl.isRunning = true;
@@ -87,6 +98,11 @@ void ChessTimer::startPlayerTimer(TimeControl &timeControl)
 
 void ChessTimer::stopPlayerTimer(TimeControl &timeControl)
 {
+  if (!timeControl.isEnabled)
+  {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mtx);
   updateTimeControl(timeControl);
   timeControl.isRunning = false;

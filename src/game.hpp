@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "config.hpp"
 #include "constants.hpp"
 #include "moveInput.hpp"
 #include "piece.hpp"
@@ -69,8 +70,8 @@ public:
   ChessTimer timer{*this};
 
   // make private
-  TimeControl whiteTime;
-  TimeControl blackTime;
+  TimeControl whiteTime{config.timeControl};
+  TimeControl blackTime{config.timeControl};
 
   std::string userInput;
 

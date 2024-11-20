@@ -18,8 +18,10 @@ struct TimeControl
   std::chrono::milliseconds remainingTimeMs;
   std::chrono::steady_clock::time_point lastUpdateTimePoint;
   bool isRunning;
+  bool isEnabled;
 
-  TimeControl();
+  TimeControl() = delete;
+  TimeControl(int);
 
   TimeData getTimeData() const;
   std::string getFormattedTimeString() const;
