@@ -13,6 +13,7 @@
 #include "timeControl.hpp"
 
 const bool DEBUG = false;
+const int CLOCK_DURATION_S = 17;
 
 // TimeControl
 
@@ -132,7 +133,7 @@ void ChessTimer::start()
           }
 
           std::unique_lock<std::mutex> lock(mtx);
-          cv.wait_for(lock, std::chrono::milliseconds(100), [this]() { return !isRunning; });
+          cv.wait_for(lock, std::chrono::milliseconds(CLOCK_DURATION_S), [this]() { return !isRunning; });
         }
       });
 }
