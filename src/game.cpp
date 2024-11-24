@@ -8,6 +8,7 @@
 #include <iterator>
 #include <optional>
 #include <random>
+#include <set>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -451,16 +452,62 @@ bool Game::handleGameOver()
     return true;
   }
 
+  // setup for insufficient material
+  using PieceVector = std::vector<ChessPiece>;
+  PieceVector whitePieces;
+  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(whitePieces), [](ChessPiece piece)
+               { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::White; });
+
+  PieceVector blackPieces;
+  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(blackPieces), [](ChessPiece piece)
+               { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::Black; });
+
   // timeout
+  const auto canCheckmate = [&](PieceVector pieces)
+  {
+    if (pieces.size() > 3)
+    {
+      return true;
+    }
+
+    std::set<char> piecesSet;
+    for (const auto &p : pieces)
+    {
+      piecesSet.insert(std::tolower(chessPieceToChar(p)));
+    }
+
+    if ((piecesSet == std::set<char>{'k'}) || (piecesSet == std::set<char>{'k', 'n'}) ||
+        (piecesSet == std::set<char>{'k', 'b'}) || (piecesSet == std::set<char>{'k', 'n', 'n'}))
+    {
+      return false;
+    }
+
+    return true;
+  };
+
   if (whiteTime.isEnabled && whiteTime.isOutOfTime())
   {
-    message = "black won on time";
+    if (canCheckmate(blackPieces))
+    {
+      message = "black won on time";
+    }
+    else
+    {
+      message = "draw by timeout vs insufficient material";
+    }
     isGameOver = true;
     return true;
   }
   if (blackTime.isEnabled && blackTime.isOutOfTime())
   {
-    message = "white won on time";
+    if (canCheckmate(whitePieces))
+    {
+      message = "white won on time";
+    }
+    else
+    {
+      message = "draw by timeout vs insufficient material";
+    }
     isGameOver = true;
     return true;
   }
@@ -508,15 +555,6 @@ bool Game::handleGameOver()
   }
 
   // insufficient material
-  using PieceVector = std::vector<ChessPiece>;
-  PieceVector whitePieces;
-  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(whitePieces), [](ChessPiece piece)
-               { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::White; });
-
-  PieceVector blackPieces;
-  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(blackPieces), [](ChessPiece piece)
-               { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::Black; });
-
   auto isKingVersusKing = [&]() -> bool { return (whitePieces.size() == 1) && (blackPieces.size() == 1); };
 
   auto isKingMinorPieceVersusKing = [&]() -> bool

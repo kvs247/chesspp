@@ -13,18 +13,18 @@
   - endgame scenarios
     - [x]  checkmate
     - [ ]  resignation
-    - [ ]  timeout
+    - [x]  timeout
     - [ ]  draw
       - [x]  stalemate
       - [x]  50-move rule
       - [x]  repetition
       - [ ]  agreement
-      - [ ]  insufficient material
+      - [x]  insufficient material
         - [x]  king vs king
         - [x]  king + minor piece vs king
         - [x]  king + two knights vs king
         - [x]  king + minor piece vs king + minor piece
-        - [ ]  lone king vs all the pieces (timeout vs insufficient material) _STRECH_
+        - [x]  timeout vs insufficient material
   - [ ] other
     - [x] castling
     - [x] pawn promotion
@@ -41,7 +41,7 @@
   - [ ] menu for help/draw or resign/pawn promotion
 - [x] CPU opponent
   - [x] random moves
-- [ ] time control
+- [x] time control
 - [x] logging
 
 ## Strech Features
