@@ -285,6 +285,34 @@ std::string makeWhiteInfoString(const Game &game, const int boardWidth)
   return makeInfoString(config.whiteUsername, game.whiteTime, boardWidth);
 }
 
+void addInformationModal(std::vector<std::string> &outputLines, const int boardHeight,
+                         const unsigned short windowHeight, const unsigned short windowWidth)
+{
+  const int modalWidth = windowWidth / 2;
+  const int modalHeight = windowHeight / 2;
+
+  const int modalHeightStart = boardHeight / 2 - modalHeight / 2;
+  const int modalHeightEnd = boardHeight / 2 + modalHeight / 2;
+  const int modalWidthStart = windowWidth / 2 - modalWidth / 2;
+  const int modalWidthEnd = windowWidth / 2 + modalWidth / 2;
+
+  int i = 0;
+  for (auto &line : outputLines)
+  {
+    if (i < modalHeightStart || i > modalHeightEnd)
+    {
+      ++i;
+      continue;
+    }
+
+    const std::string prefix = modalWidthStart < line.length() ? line.substr(0, modalWidthStart - 1) : "";
+    const std::string suffix = modalWidthEnd < line.length() ? line.substr(modalWidthEnd, line.length()) : "";
+    line = prefix + std::string(modalWidth, '~') + suffix;
+
+    ++i;
+  }
+}
+
 void clearScreen() { cout << "\033[2J\033[H"; }
 
 void draw(const Game &game)
@@ -304,31 +332,48 @@ void draw(const Game &game)
   const auto moveListEntries = makeMoveListEntries(game);
   const auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3, moveListWidth, boardHeight);
 
-  std::stringstream buffer;
+  // std::stringstream buffer;
+  std::vector<std::string> outputLines;
+  outputLines.reserve(windowHeight);
 
-  buffer << makeBlackInfoString(game, boardWidth);
+  // buffer << makeBlackInfoString(game, boardWidth);
+  outputLines.push_back(makeBlackInfoString(game, boardWidth));
 
   size_t j = 0;
   for (size_t i = 0; i < gameBoardLines.size(); ++i)
   {
-    buffer << gameBoardLines[i];
+    // buffer << gameBoardLines[i];
+    std::string line = gameBoardLines[i];
     if (config.showMoveList)
     {
       if (i != 0 && i <= gameBoardLines.size() - 3)
       {
         if (j < moveListLines.size())
         {
-          buffer << "  " << moveListLines[j];
+          // buffer << "  " << moveListLines[j];
+          line += "  ";
+          line += moveListLines[j];
           ++j;
         }
       }
     }
-    buffer << "\n";
+    // buffer << "\n";
+    outputLines.push_back(line);
   }
 
-  buffer << makeWhiteInfoString(game, boardWidth);
+  // buffer << makeWhiteInfoString(game, boardWidth);
+  outputLines.push_back(makeWhiteInfoString(game, boardWidth));
 
-  buffer << makeMessage(game, windowWidth) << "\n";
+  // buffer << makeMessage(game, windowWidth) << "\n";
+  outputLines.push_back(makeMessage(game, windowWidth));
+
+  addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
+
+  std::stringstream buffer;
+  for (auto &l : outputLines)
+  {
+    buffer << l << "\n";
+  }
 
   clearScreen();
   std::cout << buffer.str();
