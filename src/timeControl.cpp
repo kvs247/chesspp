@@ -13,7 +13,7 @@
 #include "timeControl.hpp"
 
 const bool DEBUG = false;
-const int CLOCK_DURATION_S = 17;
+const int CLOCK_DURATION_MS = 17; // 58 fps
 
 // TimeControl
 
@@ -115,9 +115,16 @@ void ChessTimer::start()
   timerThread = std::thread(
       [this]()
       {
+        auto lastFrame = std::chrono::steady_clock::now();
         while (isRunning)
         {
-          draw(game);
+          const auto now = std::chrono::steady_clock::now();
+          const auto nextFrame = lastFrame + std::chrono::milliseconds(CLOCK_DURATION_MS);
+          if (now - lastFrame >= std::chrono::milliseconds(CLOCK_DURATION_MS))
+          {
+            draw(game);
+            lastFrame = now;
+          }
 
           if (DEBUG)
           {
@@ -133,7 +140,7 @@ void ChessTimer::start()
           }
 
           std::unique_lock<std::mutex> lock(mtx);
-          cv.wait_for(lock, std::chrono::milliseconds(CLOCK_DURATION_S), [this]() { return !isRunning; });
+          cv.wait_until(lock, nextFrame, [this]() { return !isRunning; });
         }
       });
 }

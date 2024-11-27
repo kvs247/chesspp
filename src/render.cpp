@@ -313,7 +313,27 @@ void addInformationModal(std::vector<std::string> &outputLines, const int boardH
   }
 }
 
-void clearScreen() { cout << "\033[2J\033[H"; }
+void initScreen()
+{
+  // enter alternate screen buffer (for full-screen terminal applications)
+  std::cout << "\033[?1049h";
+  // clear terminal
+  std::cout << "\033[2J";
+  // hide cursor
+  std::cout << "\033[?25l";
+}
+
+void cleanupScreen()
+{
+  const auto window = getWindowDimensions();
+
+  // move cursor to bottom of content
+  std::cout << "\033[" << (window.ws_row + 1) << ";1H";
+  // show cursor
+  std::cout << "\033[?25h";
+
+  std::cout << std::flush;
+}
 
 void draw(const Game &game)
 {
@@ -367,16 +387,25 @@ void draw(const Game &game)
   // buffer << makeMessage(game, windowWidth) << "\n";
   outputLines.push_back(makeMessage(game, windowWidth));
 
-  addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
+  // addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
 
-  std::stringstream buffer;
-  for (auto &l : outputLines)
-  {
-    buffer << l << "\n";
-  }
-
-  clearScreen();
-  std::cout << buffer.str();
+  render(outputLines);
 
   writePgn(moveListEntries);
+}
+
+void render(const std::vector<std::string> &lines)
+{
+  std::stringstream frame;
+
+  frame << "\033[H"; // reset cursor
+
+  // position and write each line
+  for (size_t i = 0; i < lines.size(); ++i)
+  {
+    frame << "\033[" << (i + 1) << ";1H";
+    frame << lines[i] << "\033[K";
+  }
+
+  std::cout << frame.str() << std::flush;
 }

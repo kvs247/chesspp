@@ -12,6 +12,7 @@
 
 int main()
 {
+  initScreen();
   MoveInput::enableRawMode();
 
   logger.log("");
@@ -42,6 +43,7 @@ int main()
 
   draw(game);
 
+  cleanupScreen();
   MoveInput::disableRawMode();
 
   return 0;

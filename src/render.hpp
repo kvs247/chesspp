@@ -26,6 +26,10 @@ std::string makeInfoString(const std::string, const std::string, const int);
 
 std::string makeBlackInfoString(const Game &, const int);
 
-void clearScreen();
+void initScreen();
+
+void cleanupScreen();
 
 void draw(const Game &);
+
+void render(const std::vector<std::string> &lines);
