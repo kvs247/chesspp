@@ -291,15 +291,18 @@ void addInformationModal(std::vector<std::string> &outputLines, const int boardH
   const int modalWidth = windowWidth / 2;
   const int modalHeight = windowHeight / 2;
 
-  const int modalHeightStart = boardHeight / 2 - modalHeight / 2;
-  const int modalHeightEnd = boardHeight / 2 + modalHeight / 2;
-  const int modalWidthStart = windowWidth / 2 - modalWidth / 2;
-  const int modalWidthEnd = windowWidth / 2 + modalWidth / 2;
+  const size_t modalHeightStart = boardHeight / 2 - modalHeight / 2;
+  const size_t modalHeightEnd = boardHeight / 2 + modalHeight / 2;
+  const size_t modalWidthStart = windowWidth / 2 - modalWidth / 2;
+  const size_t modalWidthEnd = windowWidth / 2 + modalWidth / 2;
 
-  int i = 0;
+  const auto modalLines = makeInformationModalLines(modalHeight, modalWidth);
+
+  size_t i = 0;
+  size_t modalLinesIndex = 0;
   for (auto &line : outputLines)
   {
-    if (i < modalHeightStart || i > modalHeightEnd)
+    if (i < modalHeightStart || i > modalHeightEnd || modalLinesIndex == modalLines.size())
     {
       ++i;
       continue;
@@ -307,10 +310,45 @@ void addInformationModal(std::vector<std::string> &outputLines, const int boardH
 
     const std::string prefix = modalWidthStart < line.length() ? line.substr(0, modalWidthStart - 1) : "";
     const std::string suffix = modalWidthEnd < line.length() ? line.substr(modalWidthEnd, line.length()) : "";
-    line = prefix + std::string(modalWidth, '~') + suffix;
+    line = prefix + modalLines[modalLinesIndex++] + suffix;
 
     ++i;
   }
+}
+
+std::vector<std::string> makeInformationModalLines(const int height, const int width)
+{
+  const int horizPad = 4;
+  const int vertPad = 2;
+
+  std::vector<std::string> res;
+  const auto emptyLine = std::string(width, ' ');
+  for (int i = 0; i < height; ++i)
+  {
+    std::string line;
+
+    // padding
+    if (i < vertPad || i > height - vertPad - 1)
+    {
+      line = std::string(width, ' ');
+    }
+    // border
+    else if (i == vertPad || i == height - vertPad - 1)
+    {
+      line = std::string(horizPad, ' ') + "+" + std::string(width - 2 * horizPad - 2, '-') + "+" +
+             std::string(horizPad, ' ');
+    }
+    // content
+    else
+    {
+      line = std::string(horizPad, ' ') + "|" + std::string(width - 2 * horizPad - 2, ' ') + "|" +
+             std::string(horizPad, ' ');
+    }
+
+    res.push_back(line);
+  }
+
+  return res;
 }
 
 void initScreen()
@@ -352,17 +390,14 @@ void draw(const Game &game)
   const auto moveListEntries = makeMoveListEntries(game);
   const auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3, moveListWidth, boardHeight);
 
-  // std::stringstream buffer;
   std::vector<std::string> outputLines;
   outputLines.reserve(windowHeight);
 
-  // buffer << makeBlackInfoString(game, boardWidth);
   outputLines.push_back(makeBlackInfoString(game, boardWidth));
 
   size_t j = 0;
   for (size_t i = 0; i < gameBoardLines.size(); ++i)
   {
-    // buffer << gameBoardLines[i];
     std::string line = gameBoardLines[i];
     if (config.showMoveList)
     {
@@ -370,24 +405,20 @@ void draw(const Game &game)
       {
         if (j < moveListLines.size())
         {
-          // buffer << "  " << moveListLines[j];
           line += "  ";
           line += moveListLines[j];
           ++j;
         }
       }
     }
-    // buffer << "\n";
     outputLines.push_back(line);
   }
 
-  // buffer << makeWhiteInfoString(game, boardWidth);
   outputLines.push_back(makeWhiteInfoString(game, boardWidth));
 
-  // buffer << makeMessage(game, windowWidth) << "\n";
   outputLines.push_back(makeMessage(game, windowWidth));
 
-  // addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
+  addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
 
   render(outputLines);
 

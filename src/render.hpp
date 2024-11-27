@@ -11,7 +11,7 @@ winsize getWindowDimensions();
 
 std::vector<std::string> makeGameBoardLines(const PiecePlacement &, const int, const int);
 
-std::string makeMessage(const std::string, const int);
+std::string makeMessage(const Game &game, const int windowWidth);
 
 std::string handleAmbiguousMove(BoardIndex, std::vector<BoardIndex>);
 
@@ -22,9 +22,11 @@ size_t numDigits(size_t);
 std::vector<std::string> makeMoveListLines(const std::vector<std::string> &, const size_t moveListLength, const int,
                                            const int);
 
-std::string makeInfoString(const std::string, const std::string, const int);
+std::string makeInfoString(const std::string username, const TimeControl timeControl, const int boardWidth);
 
 std::string makeBlackInfoString(const Game &, const int);
+
+std::vector<std::string> makeInformationModalLines(const int height, const int width);
 
 void initScreen();
 
