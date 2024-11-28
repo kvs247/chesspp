@@ -1,10 +1,12 @@
 #pragma once
 
+#include <stddef.h>
 #include <string>
 #include <sys/ioctl.h>
 #include <vector>
 
 #include "game.hpp"
+#include "timeControl.hpp"
 #include "types.hpp"
 
 winsize getWindowDimensions();

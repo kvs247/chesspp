@@ -1,4 +1,5 @@
-#include <fstream>
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -7,14 +8,11 @@
 #include <vector>
 
 #include "config.hpp"
-#include "constants.hpp"
 #include "game.hpp"
 #include "pgn.hpp"
 #include "render.hpp"
 #include "types.hpp"
 #include "utils.hpp"
-
-using std::cout;
 
 const int BORDER_WIDTH = 3; // at least 2
 const size_t MOVE_LIST_ITEM_WIDTH = 20;

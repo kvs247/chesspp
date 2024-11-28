@@ -1,6 +1,9 @@
 #pragma once
 
+#include <array>
 #include <optional>
+#include <stddef.h>
+#include <string>
 
 #include "types.hpp"
 #include "utils.hpp"

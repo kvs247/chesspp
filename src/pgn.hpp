@@ -1,7 +1,8 @@
 #pragma once
 
-#include <exception>
 #include <fstream>
+#include <stddef.h>
+#include <stdexcept>
 #include <string>
 #include <vector>
 

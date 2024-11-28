@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "logger.hpp"
-
 enum class PieceColor : char
 {
   White = 'w',

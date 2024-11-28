@@ -7,10 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "game.hpp"
 #include "types.hpp"
-
-#include <termios.h>
 
 class Game;
 

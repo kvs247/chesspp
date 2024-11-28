@@ -1,21 +1,25 @@
+#include <algorithm>
 #include <atomic>
 #include <cctype>
+#include <chrono>
 #include <condition_variable>
-#include <exception>
-#include <future>
-#include <iostream>
+#include <cstdint>
+#include <cstdlib>
 #include <mutex>
 #include <optional>
+#include <stdexcept>
 #include <string>
+#include <termios.h>
 #include <thread>
+#include <tuple>
+#include <unistd.h>
 #include <utility>
 
 #include "config.hpp"
 #include "game.hpp"
 #include "moveInput.hpp"
-
-#include <termios.h>
-#include <unistd.h>
+#include "timeControl.hpp"
+#include "utils.hpp"
 
 MoveInput::MoveInput(Game &g) : game(g) {}
 

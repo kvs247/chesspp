@@ -2,14 +2,13 @@
 #include <array>
 #include <cctype>
 #include <chrono>
-#include <exception>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <optional>
 #include <random>
 #include <set>
-#include <sstream>
+#include <stdexcept>
+#include <stdlib.h>
 #include <string>
 #include <thread>
 #include <tuple>
@@ -20,6 +19,7 @@
 #include "constants.hpp"
 #include "game.hpp"
 #include "logger.hpp"
+#include "moveInput.hpp"
 #include "piece.hpp"
 #include "positionHash.hpp"
 #include "timeControl.hpp"

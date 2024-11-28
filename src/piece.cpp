@@ -2,13 +2,12 @@
 
 #include <algorithm>
 #include <array>
-#include <iostream>
 #include <iterator>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "game.hpp"
-#include "logger.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 

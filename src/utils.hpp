@@ -1,14 +1,13 @@
 #pragma once
 
-#include <array>
 #include <cctype>
 #include <optional>
 #include <set>
+#include <stddef.h>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
 
-#include "logger.hpp"
 #include "types.hpp"
 
 struct FileRank

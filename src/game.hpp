@@ -1,9 +1,12 @@
 #pragma once
 
-#include <istream>
+#include <algorithm>
+#include <array>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "config.hpp"
 #include "constants.hpp"

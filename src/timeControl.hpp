@@ -7,6 +7,8 @@
 #include <string>
 #include <thread>
 
+class Game;
+
 struct TimeData {
   int minutes;
   int seconds;

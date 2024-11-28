@@ -3,12 +3,14 @@
 #include <condition_variable>
 #include <iomanip>
 #include <mutex>
+#include <ratio>
 #include <sstream>
 #include <string>
 #include <thread>
 
 #include "config.hpp"
 #include "game.hpp"
+#include "logger.hpp"
 #include "render.hpp"
 #include "timeControl.hpp"
 
