@@ -11,7 +11,6 @@
 #include "config.hpp"
 #include "game.hpp"
 #include "logger.hpp"
-#include "render.hpp"
 #include "timeControl.hpp"
 
 const bool DEBUG = false;
@@ -124,7 +123,7 @@ void ChessTimer::start()
           const auto nextFrame = lastFrame + std::chrono::milliseconds(CLOCK_DURATION_MS);
           if (now - lastFrame >= std::chrono::milliseconds(CLOCK_DURATION_MS))
           {
-            draw(game);
+            game.renderer.draw(game);
             lastFrame = now;
           }
 

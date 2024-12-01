@@ -7,25 +7,30 @@
 #include <unistd.h>
 #include <vector>
 
-#include "config.hpp"
-#include "game.hpp"
-#include "pgn.hpp"
-#include "render.hpp"
-#include "types.hpp"
-#include "utils.hpp"
+#include "../config.hpp"
+#include "../game.hpp"
+#include "../logger.hpp"
+#include "../pgn.hpp"
+#include "../types.hpp"
+#include "../utils.hpp"
+#include "renderer.hpp"
 
 const int BORDER_WIDTH = 3; // at least 2
 const size_t MOVE_LIST_ITEM_WIDTH = 20;
 
-winsize getWindowDimensions()
+Renderer::Renderer() { initScreen(); }
+
+Renderer::~Renderer() { cleanupScreen(); }
+
+winsize Renderer::getWindowDimensions()
 {
   struct winsize w;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
   return w;
 }
 
-std::vector<std::string> makeGameBoardLines(const PiecePlacement &piecePlacement, const int squareWidth,
-                                            const int squareHeight)
+std::vector<std::string> Renderer::makeGameBoardLines(const PiecePlacement &piecePlacement, const int squareWidth,
+                                                      const int squareHeight)
 {
   std::vector<std::string> res;
   char c;
@@ -97,7 +102,7 @@ std::vector<std::string> makeGameBoardLines(const PiecePlacement &piecePlacement
   return res;
 }
 
-std::string makeMessage(const Game &game, const int windowWidth)
+std::string Renderer::makeMessage(const Game &game, const int windowWidth)
 {
   std::stringstream res("\n\n");
 
@@ -115,7 +120,7 @@ std::string makeMessage(const Game &game, const int windowWidth)
   return res.str();
 }
 
-std::string handleAmbiguousMove(BoardIndex fromIndex, std::vector<BoardIndex> otherIndexes)
+std::string Renderer::handleAmbiguousMove(BoardIndex fromIndex, std::vector<BoardIndex> otherIndexes)
 {
   const auto [pieceFile, pieceRank] = indexToFileRank(fromIndex);
   bool isSameFile = false;
@@ -148,7 +153,7 @@ std::string handleAmbiguousMove(BoardIndex fromIndex, std::vector<BoardIndex> ot
   return res;
 }
 
-std::vector<std::string> makeMoveListEntries(const Game &game)
+std::vector<std::string> Renderer::makeMoveListEntries(const Game &game)
 {
   std::vector<std::string> res;
 
@@ -217,7 +222,7 @@ std::vector<std::string> makeMoveListEntries(const Game &game)
   return res;
 }
 
-size_t numDigits(size_t x)
+size_t Renderer::numDigits(size_t x)
 {
   size_t res = 1;
   while (x / 10 != x)
@@ -228,8 +233,9 @@ size_t numDigits(size_t x)
   return res;
 }
 
-std::vector<std::string> makeMoveListLines(const std::vector<std::string> &moveListEntries, const size_t moveListLength,
-                                           const int moveListWidth, const int moveListHeight)
+std::vector<std::string> Renderer::makeMoveListLines(const std::vector<std::string> &moveListEntries,
+                                                     const size_t moveListLength, const int moveListWidth,
+                                                     const int moveListHeight)
 {
   const size_t maxNumEntries = (moveListWidth / MOVE_LIST_ITEM_WIDTH) * (moveListHeight - 2);
 
@@ -263,7 +269,7 @@ std::vector<std::string> makeMoveListLines(const std::vector<std::string> &moveL
   return lines;
 }
 
-std::string makeInfoString(const std::string username, const TimeControl timeControl, const int boardWidth)
+std::string Renderer::makeInfoString(const std::string username, const TimeControl timeControl, const int boardWidth)
 {
   std::stringstream ss;
   std::string timeString = timeControl.isEnabled ? timeControl.getFormattedTimeString() : "";
@@ -273,18 +279,18 @@ std::string makeInfoString(const std::string username, const TimeControl timeCon
   return ss.str();
 };
 
-std::string makeBlackInfoString(const Game &game, const int boardWidth)
+std::string Renderer::makeBlackInfoString(const Game &game, const int boardWidth)
 {
   return makeInfoString(config.blackUsername, game.blackTime, boardWidth);
 };
 
-std::string makeWhiteInfoString(const Game &game, const int boardWidth)
+std::string Renderer::makeWhiteInfoString(const Game &game, const int boardWidth)
 {
   return makeInfoString(config.whiteUsername, game.whiteTime, boardWidth);
 }
 
-void addInformationModal(std::vector<std::string> &outputLines, const int boardHeight,
-                         const unsigned short windowHeight, const unsigned short windowWidth)
+void Renderer::addInformationModal(std::vector<std::string> &outputLines, const int boardHeight,
+                                   const unsigned short windowHeight, const unsigned short windowWidth)
 {
   const int modalWidth = windowWidth / 2;
   const int modalHeight = windowHeight / 2;
@@ -314,7 +320,7 @@ void addInformationModal(std::vector<std::string> &outputLines, const int boardH
   }
 }
 
-std::vector<std::string> makeInformationModalLines(const int height, const int width)
+std::vector<std::string> Renderer::makeInformationModalLines(const int height, const int width)
 {
   const int horizPad = 4;
   const int vertPad = 2;
@@ -349,8 +355,9 @@ std::vector<std::string> makeInformationModalLines(const int height, const int w
   return res;
 }
 
-void initScreen()
+void Renderer::initScreen()
 {
+  logger.log("initScreen()");
   // enter alternate screen buffer (for full-screen terminal applications)
   std::cout << "\033[?1049h";
   // clear terminal
@@ -359,8 +366,10 @@ void initScreen()
   std::cout << "\033[?25l";
 }
 
-void cleanupScreen()
+void Renderer::cleanupScreen()
 {
+  logger.log("cleanupScreen()");
+
   const auto window = getWindowDimensions();
 
   // move cursor to bottom of content
@@ -371,7 +380,7 @@ void cleanupScreen()
   std::cout << std::flush;
 }
 
-void draw(const Game &game)
+void Renderer::draw(const Game &game)
 {
   const auto [windowHeight, windowWidth, windowXPixel, windowYPixel] = getWindowDimensions();
   // squareWidth must be divisible by 4 so that squareHeight = (squareWidth / 2) is even
@@ -423,7 +432,7 @@ void draw(const Game &game)
   writePgn(moveListEntries);
 }
 
-void render(const std::vector<std::string> &lines)
+void Renderer::render(const std::vector<std::string> &lines)
 {
   std::stringstream frame;
 

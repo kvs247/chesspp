@@ -6,19 +6,15 @@
 #include "game.hpp"
 #include "logger.hpp"
 #include "moveInput.hpp"
-#include "render.hpp"
 #include "timeControl.hpp"
 #include "utils.hpp"
 
 int main()
 {
-  initScreen();
   MoveInput::enableRawMode();
 
   logger.log("");
   Game game(config.startingFen);
-
-  draw(game);
 
   while (!game.isGameOver)
   {
@@ -26,7 +22,7 @@ int main()
     {
       game.processNextMove();
 
-      draw(game);
+      game.renderer.draw(game);
     }
     catch (std::invalid_argument &e)
     {
@@ -41,9 +37,8 @@ int main()
     }
   }
 
-  draw(game);
+  game.renderer.draw(game);
 
-  cleanupScreen();
   MoveInput::disableRawMode();
 
   return 0;
