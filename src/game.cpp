@@ -84,7 +84,7 @@ Game::Game() : Game(GameState::newGameState()) {}
 Game::Game(const std::string &fen) : Game(GameState::fromFEN(fen)) {}
 
 Game::Game(const GameState &initialGameState)
-    : piecePlacement(initialGameState.piecePlacement), activeColor(initialGameState.activeColor),
+    : renderer(*this), piecePlacement(initialGameState.piecePlacement), activeColor(initialGameState.activeColor),
       castlingAvailability(initialGameState.castlingAvailability), enPassantIndex(initialGameState.enPassantIndex),
       halfmoveClock(initialGameState.halfmoveClock), fullmoveClock(initialGameState.fullmoveClock), pawn(*this),
       knight(*this), bishop(*this), rook(*this), queen(*this), king(*this)

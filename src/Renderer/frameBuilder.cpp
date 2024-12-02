@@ -9,6 +9,8 @@
 const int BORDER_WIDTH = 3; // at least 2
 const size_t MOVE_LIST_ITEM_WIDTH = 20;
 
+FrameBuilder::FrameBuilder(Game &g) : game(g) {}
+
 std::vector<std::string> FrameBuilder::makeGameBoardLines(const PiecePlacement &piecePlacement, const int squareWidth,
                                                       const int squareHeight)
 {
@@ -82,7 +84,7 @@ std::vector<std::string> FrameBuilder::makeGameBoardLines(const PiecePlacement &
   return res;
 }
 
-std::string FrameBuilder::makeMessage(const Game &game, const int windowWidth)
+std::string FrameBuilder::makeMessage(const int windowWidth)
 {
   std::stringstream res("\n\n");
 
@@ -133,7 +135,7 @@ std::string FrameBuilder::handleAmbiguousMove(BoardIndex fromIndex, std::vector<
   return res;
 }
 
-std::vector<std::string> FrameBuilder::makeMoveListEntries(const Game &game)
+std::vector<std::string> FrameBuilder::makeMoveListEntries()
 {
   std::vector<std::string> res;
 
@@ -248,12 +250,12 @@ std::string FrameBuilder::makeInfoString(const std::string username, const TimeC
   return ss.str();
 };
 
-std::string FrameBuilder::makeBlackInfoString(const Game &game, const int boardWidth)
+std::string FrameBuilder::makeBlackInfoString(const int boardWidth)
 {
   return makeInfoString(config.blackUsername, game.blackTime, boardWidth);
 };
 
-std::string FrameBuilder::makeWhiteInfoString(const Game &game, const int boardWidth)
+std::string FrameBuilder::makeWhiteInfoString(const int boardWidth)
 {
   return makeInfoString(config.whiteUsername, game.whiteTime, boardWidth);
 }

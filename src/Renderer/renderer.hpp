@@ -9,7 +9,8 @@
 #include "../game.hpp"
 #include "../timeControl.hpp"
 #include "../types.hpp"
-#include "frameBuilder.hpp"
+
+class FrameBuilder;
 
 class Renderer
 {
@@ -18,10 +19,12 @@ public:
   void cleanupScreen();
   void draw(const Game &);
 
-  Renderer();
+  Renderer() = delete;
+  Renderer(Game &);
   ~Renderer();
 
 private:
+  Game &game;
   std::unique_ptr<FrameBuilder> frameBuilder;
 
   void render(const std::vector<std::string> &);

@@ -20,10 +20,10 @@
 const int BORDER_WIDTH = 3; // at least 2
 const size_t MOVE_LIST_ITEM_WIDTH = 20;
 
-Renderer::Renderer()
+Renderer::Renderer(Game &g) : game(g)
 {
   initScreen();
-  frameBuilder = std::make_unique<FrameBuilder>();
+  frameBuilder = std::make_unique<FrameBuilder>(game);
 }
 
 Renderer::~Renderer()
@@ -77,14 +77,14 @@ void Renderer::draw(const Game &game)
   const auto piecePlacement = game.getPiecePlacement();
 
   const auto gameBoardLines = frameBuilder->makeGameBoardLines(piecePlacement, squareWidth, squareHeight);
-  const auto moveListEntries = frameBuilder->makeMoveListEntries(game);
+  const auto moveListEntries = frameBuilder->makeMoveListEntries();
   const auto moveListLines = frameBuilder->makeMoveListLines(moveListEntries, gameBoardLines.size() - 3, moveListWidth,
                                                             boardHeight);
 
   std::vector<std::string> outputLines;
   outputLines.reserve(windowHeight);
 
-  outputLines.push_back(frameBuilder->makeBlackInfoString(game, boardWidth));
+  outputLines.push_back(frameBuilder->makeBlackInfoString(boardWidth));
 
   size_t j = 0;
   for (size_t i = 0; i < gameBoardLines.size(); ++i)
@@ -105,9 +105,9 @@ void Renderer::draw(const Game &game)
     outputLines.push_back(line);
   }
 
-  outputLines.push_back(frameBuilder->makeWhiteInfoString(game, boardWidth));
+  outputLines.push_back(frameBuilder->makeWhiteInfoString(boardWidth));
 
-  outputLines.push_back(frameBuilder->makeMessage(game, windowWidth));
+  outputLines.push_back(frameBuilder->makeMessage(windowWidth));
 
   frameBuilder->addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
 

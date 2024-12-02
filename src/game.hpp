@@ -28,7 +28,6 @@ class Game
   friend class King;
   friend class ChessTimer;
   friend class MoveInput;
-  friend class Renderer;
 
 public:
   struct GameState
