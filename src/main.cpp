@@ -22,7 +22,7 @@ int main()
     {
       game.processNextMove();
 
-      game.renderer.draw(game);
+      game.renderer.renderFrame();
     }
     catch (std::invalid_argument &e)
     {
@@ -37,7 +37,7 @@ int main()
     }
   }
 
-  game.renderer.draw(game);
+  game.renderer.renderFrame();
 
   MoveInput::disableRawMode();
 

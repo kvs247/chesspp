@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "Renderer/renderer.hpp"
+#include "renderer/renderer.hpp"
 #include "config.hpp"
 #include "constants.hpp"
 #include "moveInput.hpp"
@@ -28,6 +28,7 @@ class Game
   friend class King;
   friend class ChessTimer;
   friend class MoveInput;
+  friend class FrameBuilder;
 
 public:
   struct GameState

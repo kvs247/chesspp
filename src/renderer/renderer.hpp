@@ -15,18 +15,15 @@ class FrameBuilder;
 class Renderer
 {
 public:
-  void initScreen();
-  void cleanupScreen();
-  void draw(const Game &);
-
   Renderer() = delete;
   Renderer(Game &);
   ~Renderer();
 
+  void initScreen();
+  void cleanupScreen();
+  void renderFrame();
+
 private:
   Game &game;
   std::unique_ptr<FrameBuilder> frameBuilder;
-
-  void render(const std::vector<std::string> &);
-  winsize getWindowDimensions();
 };

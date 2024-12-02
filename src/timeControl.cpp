@@ -123,7 +123,7 @@ void ChessTimer::start()
           const auto nextFrame = lastFrame + std::chrono::milliseconds(CLOCK_DURATION_MS);
           if (now - lastFrame >= std::chrono::milliseconds(CLOCK_DURATION_MS))
           {
-            game.renderer.draw(game);
+            game.renderer.renderFrame();
             lastFrame = now;
           }
 

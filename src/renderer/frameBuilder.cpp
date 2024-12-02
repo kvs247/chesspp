@@ -1,18 +1,75 @@
 #include <sstream>
 #include <string>
+#include <sys/ioctl.h>
+#include <unistd.h>
 #include <vector>
 
-#include "frameBuilder.hpp"
-#include "../utils.hpp"
 #include "../game.hpp"
-
-const int BORDER_WIDTH = 3; // at least 2
-const size_t MOVE_LIST_ITEM_WIDTH = 20;
+#include "../pgn.hpp"
+#include "../utils.hpp"
+#include "config.hpp"
+#include "frameBuilder.hpp"
 
 FrameBuilder::FrameBuilder(Game &g) : game(g) {}
 
-std::vector<std::string> FrameBuilder::makeGameBoardLines(const PiecePlacement &piecePlacement, const int squareWidth,
-                                                      const int squareHeight)
+std::vector<std::string> FrameBuilder::buildFrame()
+{
+  const auto [windowHeight, windowWidth, windowXPixel, windowYPixel] = getWindowDimensions();
+  // squareWidth must be divisible by 4 so that squareHeight = (squareWidth / 2) is even
+  int squareWidth = ((windowWidth / 2) - BORDER_WIDTH) / 8 & ~3;
+  squareWidth = std::max(squareWidth, 4);
+  int squareHeight = squareWidth / 2 & ~1;
+  int boardWidth = BORDER_WIDTH + 8 * squareWidth + 1 + 1; // ... + last column + space between board & move list
+  int moveListWidth = windowWidth - boardWidth;
+  int boardHeight = 8 * squareHeight + 1;
+
+  const auto gameBoardLines = makeGameBoardLines(squareWidth, squareHeight);
+  const auto moveListEntries = makeMoveListEntries();
+  const auto moveListLines = makeMoveListLines(moveListEntries, gameBoardLines.size() - 3, moveListWidth, boardHeight);
+
+  writePgn(moveListEntries);
+
+  std::vector<std::string> outputLines;
+  outputLines.reserve(windowHeight);
+
+  outputLines.push_back(makeBlackInfoString(boardWidth));
+
+  size_t j = 0;
+  for (size_t i = 0; i < gameBoardLines.size(); ++i)
+  {
+    std::string line = gameBoardLines[i];
+    if (config.showMoveList)
+    {
+      if (i != 0 && i <= gameBoardLines.size() - 3)
+      {
+        if (j < moveListLines.size())
+        {
+          line += "  ";
+          line += moveListLines[j];
+          ++j;
+        }
+      }
+    }
+    outputLines.push_back(line);
+  }
+
+  outputLines.push_back(makeWhiteInfoString(boardWidth));
+
+  outputLines.push_back(makeMessage(windowWidth));
+
+  addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
+
+  return outputLines;
+}
+
+winsize FrameBuilder::getWindowDimensions()
+{
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  return w;
+}
+
+std::vector<std::string> FrameBuilder::makeGameBoardLines(const int squareWidth, const int squareHeight)
 {
   std::vector<std::string> res;
   char c;
@@ -55,7 +112,7 @@ std::vector<std::string> FrameBuilder::makeGameBoardLines(const PiecePlacement &
       else if (drawPiece)
       {
         int pieceIndex = row / squareHeight * 8 + col / squareWidth;
-        c = chessPieceToChar(piecePlacement[pieceIndex]) ?: ' ';
+        c = chessPieceToChar(game.piecePlacement[pieceIndex]) ?: ' ';
       }
       else
       {
@@ -80,57 +137,6 @@ std::vector<std::string> FrameBuilder::makeGameBoardLines(const PiecePlacement &
       line << ' ';
   }
   res.push_back(line.str());
-
-  return res;
-}
-
-std::string FrameBuilder::makeMessage(const int windowWidth)
-{
-  std::stringstream res("\n\n");
-
-  const auto userInputSize = game.userInput.size();
-  res << std::string(windowWidth / 2 - (userInputSize / 2), ' ') << game.userInput << "\n";
-
-  const auto messageSize = game.message.size();
-  if (!messageSize)
-  {
-    return res.str();
-  }
-
-  res << std::string(windowWidth / 2 - (messageSize / 2), ' ') << game.message << "\n\n";
-
-  return res.str();
-}
-
-std::string FrameBuilder::handleAmbiguousMove(BoardIndex fromIndex, std::vector<BoardIndex> otherIndexes)
-{
-  const auto [pieceFile, pieceRank] = indexToFileRank(fromIndex);
-  bool isSameFile = false;
-  bool isSameRank = false;
-
-  for (auto &otherIdx : otherIndexes)
-  {
-    const auto [otherFile, otherRank] = indexToFileRank(otherIdx);
-    if (otherFile == pieceFile)
-    {
-      isSameFile = true;
-    }
-    if (otherRank == pieceRank)
-    {
-      isSameRank = true;
-    }
-  }
-
-  std::string res;
-  const auto pieceSquare = indexToAlgebraic(fromIndex);
-  if (isSameRank)
-  {
-    res += pieceSquare[0];
-  }
-  if (isSameFile)
-  {
-    res += pieceSquare[1];
-  }
 
   return res;
 }
@@ -204,9 +210,42 @@ std::vector<std::string> FrameBuilder::makeMoveListEntries()
   return res;
 }
 
+std::string FrameBuilder::handleAmbiguousMove(BoardIndex fromIndex, std::vector<BoardIndex> otherIndexes)
+{
+  const auto [pieceFile, pieceRank] = indexToFileRank(fromIndex);
+  bool isSameFile = false;
+  bool isSameRank = false;
+
+  for (auto &otherIdx : otherIndexes)
+  {
+    const auto [otherFile, otherRank] = indexToFileRank(otherIdx);
+    if (otherFile == pieceFile)
+    {
+      isSameFile = true;
+    }
+    if (otherRank == pieceRank)
+    {
+      isSameRank = true;
+    }
+  }
+
+  std::string res;
+  const auto pieceSquare = indexToAlgebraic(fromIndex);
+  if (isSameRank)
+  {
+    res += pieceSquare[0];
+  }
+  if (isSameFile)
+  {
+    res += pieceSquare[1];
+  }
+
+  return res;
+}
+
 std::vector<std::string> FrameBuilder::makeMoveListLines(const std::vector<std::string> &moveListEntries,
-                                                     const size_t moveListLength, const int moveListWidth,
-                                                     const int moveListHeight)
+                                                         const size_t moveListLength, const int moveListWidth,
+                                                         const int moveListHeight)
 {
   const size_t maxNumEntries = (moveListWidth / MOVE_LIST_ITEM_WIDTH) * (moveListHeight - 2);
 
@@ -240,7 +279,8 @@ std::vector<std::string> FrameBuilder::makeMoveListLines(const std::vector<std::
   return lines;
 }
 
-std::string FrameBuilder::makeInfoString(const std::string username, const TimeControl timeControl, const int boardWidth)
+std::string FrameBuilder::makeInfoString(const std::string username, const TimeControl timeControl,
+                                         const int boardWidth)
 {
   std::stringstream ss;
   std::string timeString = timeControl.isEnabled ? timeControl.getFormattedTimeString() : "";
@@ -260,35 +300,22 @@ std::string FrameBuilder::makeWhiteInfoString(const int boardWidth)
   return makeInfoString(config.whiteUsername, game.whiteTime, boardWidth);
 }
 
-void FrameBuilder::addInformationModal(std::vector<std::string> &outputLines, const int boardHeight,
-                                   const unsigned short windowHeight, const unsigned short windowWidth)
+std::string FrameBuilder::makeMessage(const int windowWidth)
 {
-  const int modalWidth = windowWidth / 2;
-  const int modalHeight = windowHeight / 2;
+  std::stringstream res("\n\n");
 
-  const size_t modalHeightStart = boardHeight / 2 - modalHeight / 2;
-  const size_t modalHeightEnd = boardHeight / 2 + modalHeight / 2;
-  const size_t modalWidthStart = windowWidth / 2 - modalWidth / 2;
-  const size_t modalWidthEnd = windowWidth / 2 + modalWidth / 2;
+  const auto userInputSize = game.userInput.size();
+  res << std::string(windowWidth / 2 - (userInputSize / 2), ' ') << game.userInput << "\n";
 
-  const auto modalLines = makeInformationModalLines(modalHeight, modalWidth);
-
-  size_t i = 0;
-  size_t modalLinesIndex = 0;
-  for (auto &line : outputLines)
+  const auto messageSize = game.message.size();
+  if (!messageSize)
   {
-    if (i < modalHeightStart || i > modalHeightEnd || modalLinesIndex == modalLines.size())
-    {
-      ++i;
-      continue;
-    }
-
-    const std::string prefix = modalWidthStart < line.length() ? line.substr(0, modalWidthStart - 1) : "";
-    const std::string suffix = modalWidthEnd < line.length() ? line.substr(modalWidthEnd, line.length()) : "";
-    line = prefix + modalLines[modalLinesIndex++] + suffix;
-
-    ++i;
+    return res.str();
   }
+
+  res << std::string(windowWidth / 2 - (messageSize / 2), ' ') << game.message << "\n\n";
+
+  return res.str();
 }
 
 std::vector<std::string> FrameBuilder::makeInformationModalLines(const int height, const int width)
@@ -324,4 +351,35 @@ std::vector<std::string> FrameBuilder::makeInformationModalLines(const int heigh
   }
 
   return res;
+}
+
+void FrameBuilder::addInformationModal(std::vector<std::string> &outputLines, const int boardHeight,
+                                       const unsigned short windowHeight, const unsigned short windowWidth)
+{
+  const int modalWidth = windowWidth / 2;
+  const int modalHeight = windowHeight / 2;
+
+  const size_t modalHeightStart = boardHeight / 2 - modalHeight / 2;
+  const size_t modalHeightEnd = boardHeight / 2 + modalHeight / 2;
+  const size_t modalWidthStart = windowWidth / 2 - modalWidth / 2;
+  const size_t modalWidthEnd = windowWidth / 2 + modalWidth / 2;
+
+  const auto modalLines = makeInformationModalLines(modalHeight, modalWidth);
+
+  size_t i = 0;
+  size_t modalLinesIndex = 0;
+  for (auto &line : outputLines)
+  {
+    if (i < modalHeightStart || i > modalHeightEnd || modalLinesIndex == modalLines.size())
+    {
+      ++i;
+      continue;
+    }
+
+    const std::string prefix = modalWidthStart < line.length() ? line.substr(0, modalWidthStart - 1) : "";
+    const std::string suffix = modalWidthEnd < line.length() ? line.substr(modalWidthEnd, line.length()) : "";
+    line = prefix + modalLines[modalLinesIndex++] + suffix;
+
+    ++i;
+  }
 }
