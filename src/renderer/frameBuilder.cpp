@@ -318,10 +318,15 @@ std::string FrameBuilder::makeMessage(const int windowWidth)
   return res.str();
 }
 
-std::vector<std::string> FrameBuilder::makeInformationModalLines(const int height, const int width)
+std::vector<std::string> FrameBuilder::makeInformationModalLines(const int height, const int width,
+                                                                 const std::vector<std::string> &lines)
 {
-  const int horizPad = 4;
+  const int horizPadSize = 4;
   const int vertPad = 2;
+
+  const std::string horizPad = std::string(horizPadSize, ' ');
+
+  size_t linesIndex = 0;
 
   std::vector<std::string> res;
   const auto emptyLine = std::string(width, ' ');
@@ -337,14 +342,19 @@ std::vector<std::string> FrameBuilder::makeInformationModalLines(const int heigh
     // border
     else if (i == vertPad || i == height - vertPad - 1)
     {
-      line = std::string(horizPad, ' ') + "+" + std::string(width - 2 * horizPad - 2, '-') + "+" +
-             std::string(horizPad, ' ');
+      line = horizPad + "+" + std::string(width - 2 * horizPadSize - 2, '-') + "+" + horizPad;
     }
     // content
+    else if (linesIndex < lines.size())
+    {
+      const auto lineLength = lines[linesIndex].size();
+      const int spaceSize = (width / 2) - (lineLength / 2) - (horizPadSize + 1);
+      const std::string space = std::string(spaceSize, ' '); 
+      line = horizPad + "|" + space + lines[linesIndex++] + space + (lineLength % 2 ? "" : " ") + "|" + horizPad;
+    }
     else
     {
-      line = std::string(horizPad, ' ') + "|" + std::string(width - 2 * horizPad - 2, ' ') + "|" +
-             std::string(horizPad, ' ');
+      line = horizPad + "|" + std::string(width - 2 * horizPadSize - 2, ' ') + "|" + horizPad;
     }
 
     res.push_back(line);
@@ -364,7 +374,9 @@ void FrameBuilder::addInformationModal(std::vector<std::string> &outputLines, co
   const size_t modalWidthStart = windowWidth / 2 - modalWidth / 2;
   const size_t modalWidthEnd = windowWidth / 2 + modalWidth / 2;
 
-  const auto modalLines = makeInformationModalLines(modalHeight, modalWidth);
+  const auto content = makePawnPromotionLines(modalHeight, modalWidth);
+
+  const auto modalLines = makeInformationModalLines(modalHeight, modalWidth, content);
 
   size_t i = 0;
   size_t modalLinesIndex = 0;
@@ -382,4 +394,19 @@ void FrameBuilder::addInformationModal(std::vector<std::string> &outputLines, co
 
     ++i;
   }
+}
+
+std::vector<std::string> FrameBuilder::makePawnPromotionLines(const size_t height, const size_t width)
+{
+  std::vector<std::string> lines{"Choose promotion piece:", "Queen", "Rook", "Bishop", "Knight"};
+  std::vector<std::string> res;
+
+  std::stringstream ss;
+  for (const auto &s : lines)
+  {
+    res.push_back(s);
+    res.push_back("");
+  }
+
+  return res;
 }
