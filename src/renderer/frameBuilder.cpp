@@ -112,7 +112,7 @@ std::vector<std::string> FrameBuilder::makeGameBoardLines(const int squareWidth,
       else if (drawPiece)
       {
         int pieceIndex = row / squareHeight * 8 + col / squareWidth;
-        c = chessPieceToChar(game.piecePlacement[pieceIndex]) ?: ' ';
+        c = chessPieceToChar(game.state.piecePlacement[pieceIndex]) ?: ' ';
       }
       else
       {
@@ -349,7 +349,7 @@ std::vector<std::string> FrameBuilder::makeInformationModalLines(const int heigh
     {
       const auto lineLength = lines[linesIndex].size();
       const int spaceSize = (width / 2) - (lineLength / 2) - (horizPadSize + 1);
-      const std::string space = std::string(spaceSize, ' '); 
+      const std::string space = std::string(spaceSize, ' ');
       line = horizPad + "|" + space + lines[linesIndex++] + space + (lineLength % 2 ? "" : " ") + "|" + horizPad;
     }
     else
@@ -374,7 +374,7 @@ void FrameBuilder::addInformationModal(std::vector<std::string> &outputLines, co
   const size_t modalWidthStart = windowWidth / 2 - modalWidth / 2;
   const size_t modalWidthEnd = windowWidth / 2 + modalWidth / 2;
 
-  const auto content = makePawnPromotionLines(modalHeight, modalWidth);
+  const auto content = makePawnPromotionLines();
 
   const auto modalLines = makeInformationModalLines(modalHeight, modalWidth, content);
 
@@ -396,7 +396,7 @@ void FrameBuilder::addInformationModal(std::vector<std::string> &outputLines, co
   }
 }
 
-std::vector<std::string> FrameBuilder::makePawnPromotionLines(const size_t height, const size_t width)
+std::vector<std::string> FrameBuilder::makePawnPromotionLines()
 {
   std::vector<std::string> lines{"Choose promotion piece:", "Queen", "Rook", "Bishop", "Knight"};
   std::vector<std::string> res;

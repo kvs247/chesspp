@@ -71,9 +71,9 @@ Game::GameState Game::GameState::fromFEN(const std::string &fen)
 std::string Game::getFenStr() const
 {
   std::ostringstream fen;
-  fen << piecePlacementArrayToString(piecePlacement) << " " << colorToChar(activeColor) << " "
-      << castlingAvailabilityToString(castlingAvailability) << " " << indexToAlgebraic(enPassantIndex) << " "
-      << std::to_string(halfmoveClock) << " " << std::to_string(fullmoveClock);
+  fen << piecePlacementArrayToString(state.piecePlacement) << " " << colorToChar(state.activeColor) << " "
+      << castlingAvailabilityToString(state.castlingAvailability) << " " << indexToAlgebraic(state.enPassantIndex)
+      << " " << std::to_string(state.halfmoveClock) << " " << std::to_string(state.fullmoveClock);
 
   return fen.str();
 }
@@ -83,11 +83,10 @@ Game::Game() : Game(GameState::newGameState()) {}
 
 Game::Game(const std::string &fen) : Game(GameState::fromFEN(fen)) {}
 
-Game::Game(const GameState &initialGameState)
-    : renderer(*this), piecePlacement(initialGameState.piecePlacement), activeColor(initialGameState.activeColor),
-      castlingAvailability(initialGameState.castlingAvailability), enPassantIndex(initialGameState.enPassantIndex),
-      halfmoveClock(initialGameState.halfmoveClock), fullmoveClock(initialGameState.fullmoveClock), pawn(*this),
-      knight(*this), bishop(*this), rook(*this), queen(*this), king(*this)
+Game::Game(const GameState &gs)
+    : renderer(*this), state({gs.piecePlacement, gs.activeColor, gs.castlingAvailability, gs.enPassantIndex,
+                              gs.halfmoveClock, gs.fullmoveClock}),
+      pawn(*this), knight(*this), bishop(*this), rook(*this), queen(*this), king(*this)
 {
   incrementPositionCount();
   timer.start();
@@ -96,7 +95,7 @@ Game::Game(const GameState &initialGameState)
 
 // public methods
 
-bool Game::isWhiteMove() const { return activeColor == PieceColor::White; }
+bool Game::isWhiteMove() const { return state.activeColor == PieceColor::White; }
 
 bool Game::processNextMove()
 {
@@ -114,9 +113,9 @@ bool Game::processNextMove()
 
   if (validateMove(fromIndex, toIndex))
   {
-    const auto fromPiece = piecePlacement[fromIndex];
+    const auto fromPiece = state.piecePlacement[fromIndex];
     const auto fromColor = getPieceColor(fromPiece);
-    const auto toPiece = piecePlacement[toIndex];
+    const auto toPiece = state.piecePlacement[toIndex];
     const auto samePieceIndexes = getSamePieceIndexes(fromIndex, toIndex);
 
     const auto castlingString = handleCastling(fromIndex, toIndex);
@@ -126,9 +125,9 @@ bool Game::processNextMove()
     updateHalfMoveClock(fromPiece, toPiece);
 
     const auto newToPiece = promotionPiece != ChessPiece::Empty ? promotionPiece : fromPiece;
-    piecePlacement[toIndex] = newToPiece;
-    piecePlacement[fromIndex] = ChessPiece::Empty;
-    activeColor = !activeColor;
+    state.piecePlacement[toIndex] = newToPiece;
+    state.piecePlacement[fromIndex] = ChessPiece::Empty;
+    state.activeColor = !state.activeColor;
 
     incrementPositionCount();
 
@@ -137,7 +136,7 @@ bool Game::processNextMove()
       logger.log("GAME OVER");
     }
 
-    const auto isOpponentInCheck = isKingInCheck(!fromColor, piecePlacement);
+    const auto isOpponentInCheck = isKingInCheck(!fromColor, state.piecePlacement);
     const MoveListItem moveListItem = {fromIndex,      fromPiece,         toIndex,
                                        toPiece,        samePieceIndexes,  promotionPiece,
                                        castlingString, isOpponentInCheck, isEnPassantCapture};
@@ -163,7 +162,7 @@ bool Game::processNextMove()
 
 std::vector<BoardIndex> Game::getPieceLegalMoves(const BoardIndex index) const
 {
-  const auto piece = piecePlacement[index];
+  const auto piece = state.piecePlacement[index];
   if (piece == ChessPiece::Empty)
   {
     throw std::invalid_argument("getPieceLegalMove(): no piece at given index");
@@ -205,14 +204,14 @@ std::vector<BoardIndex> Game::getPieceLegalMoves(const BoardIndex index) const
 
 bool Game::validateMove(const BoardIndex fromIndex, const BoardIndex toIndex) const
 {
-  const auto fromPiece = piecePlacement[fromIndex];
+  const auto fromPiece = state.piecePlacement[fromIndex];
   if (fromPiece == ChessPiece::Empty)
   {
     return false;
   }
 
   const auto fromColor = getPieceColor(fromPiece);
-  if (!config.disableTurnOrder && fromColor != activeColor)
+  if (!config.disableTurnOrder && fromColor != state.activeColor)
   {
     return false;
   }
@@ -233,10 +232,10 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
   std::vector<int> cpuPiecesIdxs;
   cpuPiecesIdxs.reserve(32);
 
-  for (size_t i = 0; i < piecePlacement.size(); ++i)
+  for (size_t i = 0; i < state.piecePlacement.size(); ++i)
   {
-    auto piece = piecePlacement[i];
-    if (piece != ChessPiece::Empty && getPieceColor(piecePlacement[i]) == cpuColor)
+    auto piece = state.piecePlacement[i];
+    if (piece != ChessPiece::Empty && getPieceColor(state.piecePlacement[i]) == cpuColor)
     {
       cpuPiecesIdxs.push_back(i);
     }
@@ -278,17 +277,17 @@ void Game::updateHalfMoveClock(const ChessPiece fromPiece, const ChessPiece toPi
   const auto isPawnMove = fromPiece == ChessPiece::BlackPawn || fromPiece == ChessPiece::WhitePawn;
   if (isCapture || isPawnMove)
   {
-    halfmoveClock = 0;
+    state.halfmoveClock = 0;
   }
   else
   {
-    halfmoveClock += 1;
+    state.halfmoveClock += 1;
   }
 }
 
 bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
 {
-  const auto fromPiece = piecePlacement[fromIndex];
+  const auto fromPiece = state.piecePlacement[fromIndex];
   if (fromPiece == ChessPiece::Empty)
   {
     throw std::invalid_argument("handleEnPassant(): no piece at given index");
@@ -297,9 +296,9 @@ bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
   const auto fromColor = getPieceColor(fromPiece);
 
   // capture
-  if (toIndex == enPassantIndex)
+  if (toIndex == state.enPassantIndex)
   {
-    piecePlacement[toIndex + (fromColor == PieceColor::White ? +8 : -8)] = ChessPiece::Empty;
+    state.piecePlacement[toIndex + (fromColor == PieceColor::White ? +8 : -8)] = ChessPiece::Empty;
     return true;
   }
 
@@ -307,11 +306,11 @@ bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
   const bool isPawn = (fromPiece == ChessPiece::BlackPawn || fromPiece == ChessPiece::WhitePawn);
   if (isPawn && abs(fromIndex - toIndex) == 16)
   {
-    enPassantIndex = fromIndex + (fromColor == PieceColor::White ? -8 : +8);
+    state.enPassantIndex = fromIndex + (fromColor == PieceColor::White ? -8 : +8);
   }
   else
   {
-    enPassantIndex.reset();
+    state.enPassantIndex.reset();
   }
 
   return false;
@@ -323,13 +322,13 @@ ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardInde
   if (fromPiece == ChessPiece::WhitePawn && rank == 8)
   {
     const ChessPiece promotedPiece = ChessPiece::WhiteQueen;
-    piecePlacement[toIndex] = promotedPiece;
+    state.piecePlacement[toIndex] = promotedPiece;
     return promotedPiece;
   }
   if (fromPiece == ChessPiece::BlackPawn && rank == 1)
   {
     const ChessPiece promotedPiece = ChessPiece::BlackQueen;
-    piecePlacement[toIndex] = promotedPiece;
+    state.piecePlacement[toIndex] = promotedPiece;
     return promotedPiece;
   }
 
@@ -338,7 +337,7 @@ ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardInde
 
 std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex toIndex)
 {
-  const auto piece = piecePlacement[fromIndex];
+  const auto piece = state.piecePlacement[fromIndex];
   if (piece == ChessPiece::Empty)
   {
     throw std::invalid_argument("handleCastling(): no piece at given index");
@@ -348,62 +347,62 @@ std::string Game::handleCastling(const BoardIndex fromIndex, const BoardIndex to
 
   if (piece == ChessPiece::WhiteKing)
   {
-    castlingAvailability.whiteShort = false;
-    castlingAvailability.whiteLong = false;
+    state.castlingAvailability.whiteShort = false;
+    state.castlingAvailability.whiteLong = false;
 
     if (fromIndex == 60 && toIndex == 62)
     {
-      piecePlacement[63] = ChessPiece::Empty;
-      piecePlacement[61] = ChessPiece::WhiteRook;
+      state.piecePlacement[63] = ChessPiece::Empty;
+      state.piecePlacement[61] = ChessPiece::WhiteRook;
       res = shortCastleString;
     }
 
     if (fromIndex == 60 && toIndex == 58)
     {
-      piecePlacement[56] = ChessPiece::Empty;
-      piecePlacement[59] = ChessPiece::WhiteRook;
+      state.piecePlacement[56] = ChessPiece::Empty;
+      state.piecePlacement[59] = ChessPiece::WhiteRook;
       res = longCastleString;
     }
   }
 
   if (piece == ChessPiece::BlackKing)
   {
-    castlingAvailability.blackShort = false;
-    castlingAvailability.blackLong = false;
+    state.castlingAvailability.blackShort = false;
+    state.castlingAvailability.blackLong = false;
 
     if (fromIndex == 4 && toIndex == 6)
     {
-      piecePlacement[7] = ChessPiece::Empty;
-      piecePlacement[5] = ChessPiece::BlackRook;
+      state.piecePlacement[7] = ChessPiece::Empty;
+      state.piecePlacement[5] = ChessPiece::BlackRook;
       res = shortCastleString;
     }
 
     if (fromIndex == 4 && toIndex == 2)
     {
-      piecePlacement[0] = ChessPiece::Empty;
-      piecePlacement[3] = ChessPiece::BlackRook;
+      state.piecePlacement[0] = ChessPiece::Empty;
+      state.piecePlacement[3] = ChessPiece::BlackRook;
       res = longCastleString;
     }
   }
 
   if (fromIndex == 63 && piece == ChessPiece::WhiteRook)
   {
-    castlingAvailability.whiteShort = false;
+    state.castlingAvailability.whiteShort = false;
   }
 
   if (fromIndex == 56 && piece == ChessPiece::WhiteRook)
   {
-    castlingAvailability.whiteLong = false;
+    state.castlingAvailability.whiteLong = false;
   }
 
   if (fromIndex == 7 && piece == ChessPiece::BlackRook)
   {
-    castlingAvailability.blackShort = false;
+    state.castlingAvailability.blackShort = false;
   }
 
   if (fromIndex == 0 && piece == ChessPiece::BlackRook)
   {
-    castlingAvailability.blackLong = false;
+    state.castlingAvailability.blackLong = false;
   }
 
   return res;
@@ -413,10 +412,10 @@ bool Game::handleGameOver()
 {
   // checkmate
   bool isCheckmate = false;
-  if (isKingInCheck(activeColor, piecePlacement))
+  if (isKingInCheck(state.activeColor, state.piecePlacement))
   {
     isCheckmate = true;
-    for (size_t i = 0; i < piecePlacement.size(); ++i)
+    for (size_t i = 0; i < state.piecePlacement.size(); ++i)
     {
       if (!isCheckmate)
       {
@@ -424,17 +423,17 @@ bool Game::handleGameOver()
       }
 
       const BoardIndex boardIndex = i;
-      const auto piece = piecePlacement[boardIndex];
-      if (piece != ChessPiece::Empty && getPieceColor(piece) == activeColor)
+      const auto piece = state.piecePlacement[boardIndex];
+      if (piece != ChessPiece::Empty && getPieceColor(piece) == state.activeColor)
       {
         const auto moves = getPieceLegalMoves(boardIndex);
         for (auto index : moves)
         {
           // might need all the other handlers here
-          auto tempPiecePlacement = piecePlacement;
+          auto tempPiecePlacement = state.piecePlacement;
           tempPiecePlacement[index] = piece;
           tempPiecePlacement[boardIndex] = ChessPiece::Empty;
-          if (!isKingInCheck(activeColor, tempPiecePlacement))
+          if (!isKingInCheck(state.activeColor, tempPiecePlacement))
           {
             isCheckmate = false;
             break;
@@ -445,7 +444,7 @@ bool Game::handleGameOver()
   }
   if (isCheckmate)
   {
-    std::string newMessage = !(activeColor == PieceColor::White) ? "white" : "black";
+    std::string newMessage = !(state.activeColor == PieceColor::White) ? "white" : "black";
     newMessage += " won by checkmate";
     message = newMessage;
     isGameOver = true;
@@ -455,11 +454,13 @@ bool Game::handleGameOver()
   // setup for insufficient material
   using PieceVector = std::vector<ChessPiece>;
   PieceVector whitePieces;
-  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(whitePieces), [](ChessPiece piece)
+  std::copy_if(state.piecePlacement.cbegin(), state.piecePlacement.cend(), std::back_inserter(whitePieces),
+               [](ChessPiece piece)
                { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::White; });
 
   PieceVector blackPieces;
-  std::copy_if(piecePlacement.cbegin(), piecePlacement.cend(), std::back_inserter(blackPieces), [](ChessPiece piece)
+  std::copy_if(state.piecePlacement.cbegin(), state.piecePlacement.cend(), std::back_inserter(blackPieces),
+               [](ChessPiece piece)
                { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::Black; });
 
   // timeout
@@ -514,11 +515,11 @@ bool Game::handleGameOver()
 
   // stalemate
   bool isStalemate = true;
-  for (size_t i = 0; i < piecePlacement.size(); ++i)
+  for (size_t i = 0; i < state.piecePlacement.size(); ++i)
   {
     const BoardIndex boardIndex = i;
-    const auto piece = piecePlacement[i];
-    if (piece != ChessPiece::Empty && getPieceColor(piece) == activeColor)
+    const auto piece = state.piecePlacement[i];
+    if (piece != ChessPiece::Empty && getPieceColor(piece) == state.activeColor)
     {
       const auto moves = getPieceLegalMoves(boardIndex);
       if (moves.size())
@@ -536,7 +537,7 @@ bool Game::handleGameOver()
   }
 
   // 50 move-rule
-  if (halfmoveClock == 100)
+  if (state.halfmoveClock == 100)
   {
     message = "draw by 50 move-rule";
     isGameOver = true;
@@ -639,19 +640,19 @@ bool Game::handleGameOver()
 
 void Game::incrementPositionCount()
 {
-  Position pos{piecePlacement, castlingAvailability, enPassantIndex};
+  Position pos{state.piecePlacement, state.castlingAvailability, state.enPassantIndex};
   positionCount[pos] += 1;
 }
 
 std::vector<BoardIndex> Game::getSamePieceIndexes(const BoardIndex fromIndex, const BoardIndex toIndex) const
 {
   std::vector<BoardIndex> res;
-  const auto fromPiece = piecePlacement[fromIndex];
+  const auto fromPiece = state.piecePlacement[fromIndex];
 
-  for (size_t i = 0; i < piecePlacement.size(); ++i)
+  for (size_t i = 0; i < state.piecePlacement.size(); ++i)
   {
     const BoardIndex boardIndex = i;
-    if (boardIndex != fromIndex && piecePlacement[boardIndex] == fromPiece)
+    if (boardIndex != fromIndex && state.piecePlacement[boardIndex] == fromPiece)
     {
       const auto indexes = getPieceLegalMoves(boardIndex);
       const auto samePieceIt = std::find(indexes.cbegin(), indexes.cend(), toIndex);

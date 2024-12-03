@@ -98,11 +98,11 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
       {
         BoardIndex fromIdx, toIdx;
 
-        if (config.blackIsCpu && game.activeColor == PieceColor::Black)
+        if (config.blackIsCpu && game.state.activeColor == PieceColor::Black)
         {
           std::tie(fromIdx, toIdx) = game.generateCpuMove(PieceColor::Black);
         }
-        else if (config.whiteIsCpu && game.activeColor == PieceColor::White)
+        else if (config.whiteIsCpu && game.state.activeColor == PieceColor::White)
         {
           std::tie(fromIdx, toIdx) = game.generateCpuMove(PieceColor::White);
         }

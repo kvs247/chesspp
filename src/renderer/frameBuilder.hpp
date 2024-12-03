@@ -36,5 +36,5 @@ private:
                                                      const std::vector<std::string> &);
   void addInformationModal(std::vector<std::string> &outputLines, const int boardHeight,
                            const unsigned short windowHeight, const unsigned short windowWidth);
-  std::vector<std::string> makePawnPromotionLines(const size_t, const size_t);
+  std::vector<std::string> makePawnPromotionLines();
 };

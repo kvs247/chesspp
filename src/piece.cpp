@@ -113,7 +113,7 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
 {
   std::vector<BoardIndex> potentialIndexes;
 
-  const auto piece = game.piecePlacement[index];
+  const auto piece = game.state.piecePlacement[index];
   auto targetPiece = ChessPiece::Empty;
   const auto color = getPieceColor(piece);
   const auto [file, rank] = indexToFileRank(index);
@@ -125,7 +125,7 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
 
   // 1 rank
   targetIndex = fileRankToIndex({file, rank + sign});
-  if (game.piecePlacement[targetIndex] == ChessPiece::Empty)
+  if (game.state.piecePlacement[targetIndex] == ChessPiece::Empty)
   {
     potentialIndexes.push_back(targetIndex);
     // 2 ranks
@@ -133,7 +133,7 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
         (color == PieceColor::Black && rank == blackStartRank))
     {
       targetIndex = fileRankToIndex({file, rank + 2 * sign});
-      if (game.piecePlacement[targetIndex] == ChessPiece::Empty)
+      if (game.state.piecePlacement[targetIndex] == ChessPiece::Empty)
         potentialIndexes.push_back(targetIndex);
     }
   }
@@ -148,15 +148,15 @@ std::vector<BoardIndex> Pawn::legalSquareIndexes(const BoardIndex index) const
       continue;
     }
     targetIndex = fileRankToIndex({file + offset, rank + sign});
-    targetPiece = game.piecePlacement[targetIndex];
+    targetPiece = game.state.piecePlacement[targetIndex];
     if (targetPiece != ChessPiece::Empty && getPieceColor(targetPiece) != color)
       potentialIndexes.push_back(targetIndex);
     // en passant
-    if (game.enPassantIndex == targetIndex)
+    if (game.state.enPassantIndex == targetIndex)
       potentialIndexes.push_back(targetIndex);
   }
 
-  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.state.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }
@@ -165,14 +165,14 @@ Knight::Knight(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Knight::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = getPieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.state.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {
       {1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
   };
 
-  const auto potentialIndexes = squareIndexes(index, color, offsets, game.piecePlacement);
+  const auto potentialIndexes = squareIndexes(index, color, offsets, game.state.piecePlacement);
 
-  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.state.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 };
@@ -181,12 +181,12 @@ Bishop::Bishop(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Bishop::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = getPieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.state.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
+  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.state.piecePlacement);
 
-  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.state.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }
@@ -195,12 +195,12 @@ Rook::Rook(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Rook::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = getPieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.state.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
-  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
+  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.state.piecePlacement);
 
-  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.state.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }
@@ -209,13 +209,13 @@ Queen::Queen(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> Queen::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = getPieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.state.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1},  {0, -1},
                                                     {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.piecePlacement);
+  const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.state.piecePlacement);
 
-  const auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  const auto legalIndexes = filterSelfCheckMoves(game.state.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }
@@ -224,42 +224,42 @@ King::King(Game &g) : Piece(g) {}
 
 std::vector<BoardIndex> King::legalSquareIndexes(const BoardIndex index) const
 {
-  const auto color = getPieceColor(game.piecePlacement[index]);
+  const auto color = getPieceColor(game.state.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1},  {0, -1},
                                                     {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-  auto potentialIndexes = squareIndexes(index, color, offsets, game.piecePlacement);
+  auto potentialIndexes = squareIndexes(index, color, offsets, game.state.piecePlacement);
 
-  if (game.castlingAvailability.whiteShort && game.piecePlacement[61] == ChessPiece::Empty &&
-      game.piecePlacement[62] == ChessPiece::Empty &&
-      !Game::isSquareUnderAttack(61, PieceColor::White, game.piecePlacement) &&
-      !Game::isSquareUnderAttack(62, PieceColor::White, game.piecePlacement))
+  if (game.state.castlingAvailability.whiteShort && game.state.piecePlacement[61] == ChessPiece::Empty &&
+      game.state.piecePlacement[62] == ChessPiece::Empty &&
+      !Game::isSquareUnderAttack(61, PieceColor::White, game.state.piecePlacement) &&
+      !Game::isSquareUnderAttack(62, PieceColor::White, game.state.piecePlacement))
   {
     potentialIndexes.push_back(62);
   }
-  if (game.castlingAvailability.whiteLong && game.piecePlacement[59] == ChessPiece::Empty &&
-      game.piecePlacement[58] == ChessPiece::Empty && game.piecePlacement[57] == ChessPiece::Empty &&
-      !Game::isSquareUnderAttack(59, PieceColor::White, game.piecePlacement) &&
-      !Game::isSquareUnderAttack(58, PieceColor::White, game.piecePlacement))
+  if (game.state.castlingAvailability.whiteLong && game.state.piecePlacement[59] == ChessPiece::Empty &&
+      game.state.piecePlacement[58] == ChessPiece::Empty && game.state.piecePlacement[57] == ChessPiece::Empty &&
+      !Game::isSquareUnderAttack(59, PieceColor::White, game.state.piecePlacement) &&
+      !Game::isSquareUnderAttack(58, PieceColor::White, game.state.piecePlacement))
   {
     potentialIndexes.push_back(58);
   }
-  if (game.castlingAvailability.blackShort && game.piecePlacement[5] == ChessPiece::Empty &&
-      game.piecePlacement[6] == ChessPiece::Empty &&
-      !Game::isSquareUnderAttack(5, PieceColor::Black, game.piecePlacement) &&
-      !Game::isSquareUnderAttack(6, PieceColor::Black, game.piecePlacement))
+  if (game.state.castlingAvailability.blackShort && game.state.piecePlacement[5] == ChessPiece::Empty &&
+      game.state.piecePlacement[6] == ChessPiece::Empty &&
+      !Game::isSquareUnderAttack(5, PieceColor::Black, game.state.piecePlacement) &&
+      !Game::isSquareUnderAttack(6, PieceColor::Black, game.state.piecePlacement))
   {
     potentialIndexes.push_back(6);
   }
-  if (game.castlingAvailability.blackLong && game.piecePlacement[3] == ChessPiece::Empty &&
-      game.piecePlacement[2] == ChessPiece::Empty && game.piecePlacement[1] == ChessPiece::Empty &&
-      !Game::isSquareUnderAttack(3, PieceColor::Black, game.piecePlacement) &&
-      !Game::isSquareUnderAttack(2, PieceColor::Black, game.piecePlacement))
+  if (game.state.castlingAvailability.blackLong && game.state.piecePlacement[3] == ChessPiece::Empty &&
+      game.state.piecePlacement[2] == ChessPiece::Empty && game.state.piecePlacement[1] == ChessPiece::Empty &&
+      !Game::isSquareUnderAttack(3, PieceColor::Black, game.state.piecePlacement) &&
+      !Game::isSquareUnderAttack(2, PieceColor::Black, game.state.piecePlacement))
   {
     potentialIndexes.push_back(2);
   }
 
-  auto legalIndexes = filterSelfCheckMoves(game.piecePlacement, index, potentialIndexes);
+  auto legalIndexes = filterSelfCheckMoves(game.state.piecePlacement, index, potentialIndexes);
 
   return legalIndexes;
 }

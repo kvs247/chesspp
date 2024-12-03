@@ -8,12 +8,12 @@
 #include <utility>
 #include <vector>
 
-#include "renderer/renderer.hpp"
 #include "config.hpp"
 #include "constants.hpp"
 #include "moveInput.hpp"
 #include "piece.hpp"
 #include "positionHash.hpp"
+#include "renderer/renderer.hpp"
 #include "timeControl.hpp"
 #include "types.hpp"
 
@@ -56,10 +56,10 @@ public:
   Game(const GameState &state);
 
   std::string getFenStr() const;
-  PiecePlacement getPiecePlacement() const { return piecePlacement; }
-  CastlingAvailability getCastlingAvailability() const { return castlingAvailability; }
-  std::optional<BoardIndex> getEnPassantIndex() const { return enPassantIndex; }
-  int getHalfMoveClock() { return halfmoveClock; }
+  PiecePlacement getPiecePlacement() const { return state.piecePlacement; }
+  CastlingAvailability getCastlingAvailability() const { return state.castlingAvailability; }
+  std::optional<BoardIndex> getEnPassantIndex() const { return state.enPassantIndex; }
+  int getHalfMoveClock() { return state.halfmoveClock; }
 
   bool isWhiteMove() const;
   bool processNextMove();
@@ -83,12 +83,7 @@ public:
   Renderer renderer;
 
 private:
-  PiecePlacement piecePlacement;
-  PieceColor activeColor;
-  CastlingAvailability castlingAvailability;
-  std::optional<BoardIndex> enPassantIndex;
-  int halfmoveClock;
-  int fullmoveClock;
+  GameState state;
 
   Pawn pawn;
   Knight knight;
