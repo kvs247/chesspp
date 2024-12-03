@@ -1,39 +1,19 @@
-# Base style to build upon - LLVM is generally clean and conservative
+---
+# Base style
 BasedOnStyle: LLVM
 
-# Maximum characters per line before considering a break
+# Column and line breaking
 ColumnLimit: 120
 
-# These two control how function parameters are formatted
-BinPackArguments: true      # Allows multiple function arguments per line
-BinPackParameters: true     # Allows multiple function parameters per line
+# Function declaration formatting
+BinPackArguments: false
+BinPackParameters: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AlignAfterOpenBracket: AlwaysBreak
+IndentWidth: 2
 
-# If false, prevents putting all parameters on the next line in a declaration
-# Example with true:
-# void foo(
-#     int a, int b, int c
-# )
-AllowAllParametersOfDeclarationOnNextLine: true
-
-# Controls whether short blocks can be on a single line
-# Example: if (x) { return; }
-AllowShortBlocksOnASingleLine: Always
-
-# Allows short functions to be on one line
-# Example: void f() { return; }
-AllowShortFunctionsOnASingleLine: All
-
-# The following are penalties - higher numbers mean "try harder to avoid this"
-PenaltyBreakAssignment: 100         # Breaking after assignment operators (=)
-PenaltyBreakBeforeFirstCallParameter: 100  # Breaking after opening parenthesis in function call
-PenaltyBreakComment: 100            # Breaking comment lines
-PenaltyBreakFirstLessLess: 100      # Breaking after << operator in streams
-PenaltyBreakString: 100             # Breaking string literals
-PenaltyExcessCharacter: 100         # Having characters beyond ColumnLimit
-PenaltyReturnTypeOnItsOwnLine: 100  # Putting function return type on its own line
-
-# These control brace placement
-BreakBeforeBraces: Allman  # This is the main one you want - puts braces on new lines
+# Brace wrapping configuration
+BreakBeforeBraces: Allman
 BraceWrapping:
   AfterClass: true
   AfterControlStatement: true
@@ -45,3 +25,25 @@ BraceWrapping:
   BeforeCatch: true
   BeforeElse: true
   IndentBraces: false
+  AfterCaseLabel: true
+  SplitEmptyFunction: false  # Added to allow empty functions on one line
+  SplitEmptyRecord: false    # Added to allow empty classes/structs on one line
+
+# Additional formatting options
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: All  # Changed to allow short functions on single line
+AllowShortLambdasOnASingleLine: All
+AlwaysBreakAfterReturnType: None
+BreakBeforeBinaryOperators: None
+BreakConstructorInitializers: BeforeColon
+
+# Penalties
+PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyBreakComment: 100
+PenaltyBreakFirstLessLess: 100
+PenaltyBreakString: 100
+PenaltyExcessCharacter: 100
+PenaltyReturnTypeOnItsOwnLine: 100

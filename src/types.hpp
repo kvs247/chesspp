@@ -46,8 +46,9 @@ struct CastlingAvailability
 
   bool operator==(const CastlingAvailability &other) const
   {
-    return (whiteShort == other.whiteShort && whiteLong == other.whiteLong && blackShort == other.blackShort &&
-            blackLong == other.blackLong);
+    return (
+        whiteShort == other.whiteShort && whiteLong == other.whiteLong && blackShort == other.blackShort &&
+        blackLong == other.blackLong);
   }
 };
 
@@ -62,8 +63,8 @@ private:
   {
     if (v < minVal || v > maxVal)
     {
-      throw std::out_of_range("RangedInt must be in range [" + std::to_string(minVal) + ", " + std::to_string(maxVal) +
-                              "]\n");
+      throw std::out_of_range(
+          "RangedInt must be in range [" + std::to_string(minVal) + ", " + std::to_string(maxVal) + "]\n");
     }
   }
 

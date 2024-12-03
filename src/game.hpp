@@ -45,10 +45,17 @@ public:
 
     bool operator==(const GameState &other) const
     {
-      return (piecePlacement == other.piecePlacement && activeColor == other.activeColor &&
-              castlingAvailability == other.castlingAvailability && enPassantIndex == other.enPassantIndex &&
-              halfmoveClock == other.halfmoveClock && fullmoveClock == other.fullmoveClock);
+      return (
+          piecePlacement == other.piecePlacement && activeColor == other.activeColor &&
+          castlingAvailability == other.castlingAvailability && enPassantIndex == other.enPassantIndex &&
+          halfmoveClock == other.halfmoveClock && fullmoveClock == other.fullmoveClock);
     };
+  };
+
+  enum class ModalState
+  {
+    NONE,
+    PAWN_PROMOTION,
   };
 
   Game();
@@ -84,6 +91,8 @@ public:
 
 private:
   GameState state;
+
+  ModalState modalState;
 
   Pawn pawn;
   Knight knight;
@@ -144,8 +153,8 @@ public:
     return game.getSamePieceIndexes(fromIndex, toIndex);
   }
 
-  bool testIsSquareUnderAttack(const BoardIndex index, const PieceColor defenderColor,
-                               const PiecePlacement &piecePlacement)
+  bool
+  testIsSquareUnderAttack(const BoardIndex index, const PieceColor defenderColor, const PiecePlacement &piecePlacement)
   {
     return game.isSquareUnderAttack(index, defenderColor, piecePlacement);
   }

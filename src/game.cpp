@@ -84,8 +84,13 @@ Game::Game() : Game(GameState::newGameState()) {}
 Game::Game(const std::string &fen) : Game(GameState::fromFEN(fen)) {}
 
 Game::Game(const GameState &gs)
-    : renderer(*this), state({gs.piecePlacement, gs.activeColor, gs.castlingAvailability, gs.enPassantIndex,
-                              gs.halfmoveClock, gs.fullmoveClock}),
+    : renderer(*this), state(
+                           {gs.piecePlacement,
+                            gs.activeColor,
+                            gs.castlingAvailability,
+                            gs.enPassantIndex,
+                            gs.halfmoveClock,
+                            gs.fullmoveClock}),
       pawn(*this), knight(*this), bishop(*this), rook(*this), queen(*this), king(*this)
 {
   incrementPositionCount();
@@ -137,9 +142,16 @@ bool Game::processNextMove()
     }
 
     const auto isOpponentInCheck = isKingInCheck(!fromColor, state.piecePlacement);
-    const MoveListItem moveListItem = {fromIndex,      fromPiece,         toIndex,
-                                       toPiece,        samePieceIndexes,  promotionPiece,
-                                       castlingString, isOpponentInCheck, isEnPassantCapture};
+    const MoveListItem moveListItem = {
+        fromIndex,
+        fromPiece,
+        toIndex,
+        toPiece,
+        samePieceIndexes,
+        promotionPiece,
+        castlingString,
+        isOpponentInCheck,
+        isEnPassantCapture};
     moveList.push_back(moveListItem);
 
     if (isWhiteMove())
@@ -454,14 +466,18 @@ bool Game::handleGameOver()
   // setup for insufficient material
   using PieceVector = std::vector<ChessPiece>;
   PieceVector whitePieces;
-  std::copy_if(state.piecePlacement.cbegin(), state.piecePlacement.cend(), std::back_inserter(whitePieces),
-               [](ChessPiece piece)
-               { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::White; });
+  std::copy_if(
+      state.piecePlacement.cbegin(),
+      state.piecePlacement.cend(),
+      std::back_inserter(whitePieces),
+      [](ChessPiece piece) { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::White; });
 
   PieceVector blackPieces;
-  std::copy_if(state.piecePlacement.cbegin(), state.piecePlacement.cend(), std::back_inserter(blackPieces),
-               [](ChessPiece piece)
-               { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::Black; });
+  std::copy_if(
+      state.piecePlacement.cbegin(),
+      state.piecePlacement.cend(),
+      std::back_inserter(blackPieces),
+      [](ChessPiece piece) { return piece != ChessPiece::Empty && getPieceColor(piece) == PieceColor::Black; });
 
   // timeout
   const auto canCheckmate = [&](PieceVector pieces)
@@ -674,8 +690,10 @@ bool Game::isKingInCheck(const PieceColor color, const PiecePlacement &piecePlac
   return isSquareUnderAttack(kingIndex, color, piecePlacement);
 }
 
-bool Game::isSquareUnderAttack(const BoardIndex index, const PieceColor defenderColor,
-                               const PiecePlacement &piecePlacement)
+bool Game::isSquareUnderAttack(
+    const BoardIndex index,
+    const PieceColor defenderColor,
+    const PiecePlacement &piecePlacement)
 {
   const auto isPieceInIndexesLambda = [&](const ChessPiece searchPiece, const std::vector<BoardIndex> &indexes)
   {
@@ -730,7 +748,14 @@ bool Game::isSquareUnderAttack(const BoardIndex index, const PieceColor defender
   // knight
   const auto knight = isWhite ? ChessPiece::BlackKnight : ChessPiece::WhiteKnight;
   const std::vector<std::pair<int, int>> knightOffsets = {
-      {1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+      {1, 2},
+      {1, -2},
+      {-1, 2},
+      {-1, -2},
+      {2, 1},
+      {2, -1},
+      {-2, 1},
+      {-2, -1},
   };
   const auto knightIndexes = Piece::squareIndexes(index, defenderColor, knightOffsets, piecePlacement);
   if (isPieceInIndexesLambda(knight, knightIndexes))
@@ -759,7 +784,14 @@ bool Game::isSquareUnderAttack(const BoardIndex index, const PieceColor defender
   // king
   const auto king = isWhite ? ChessPiece::BlackKing : ChessPiece::WhiteKing;
   const std::vector<std::pair<int, int>> kingOffsets = {
-      {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1},
+      {1, 0},
+      {-1, 0},
+      {0, 1},
+      {0, -1},
+      {1, 1},
+      {1, -1},
+      {-1, 1},
+      {-1, -1},
   };
   const auto kingIndexes = Piece::squareIndexes(index, defenderColor, kingOffsets, piecePlacement);
   if (isPieceInIndexesLambda(king, kingIndexes))

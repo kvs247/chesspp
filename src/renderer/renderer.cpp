@@ -1,12 +1,12 @@
 #include <algorithm>
 #include <cctype>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <vector>
-#include <memory>
 
 #include "../config.hpp"
 #include "../game.hpp"
@@ -22,10 +22,7 @@ Renderer::Renderer(Game &g) : game(g)
   frameBuilder = std::make_unique<FrameBuilder>(game);
 }
 
-Renderer::~Renderer()
-{
-  cleanupScreen();
-}
+Renderer::~Renderer() { cleanupScreen(); }
 
 void Renderer::initScreen()
 {

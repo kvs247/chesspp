@@ -51,10 +51,18 @@ inline ChessPiece charToChessPiece(const char c)
   }
 
   static const std::unordered_map<char, ChessPiece> pieceMap = {
-      {'p', ChessPiece::BlackPawn}, {'n', ChessPiece::BlackKnight}, {'b', ChessPiece::BlackBishop},
-      {'r', ChessPiece::BlackRook}, {'q', ChessPiece::BlackQueen},  {'k', ChessPiece::BlackKing},
-      {'P', ChessPiece::WhitePawn}, {'N', ChessPiece::WhiteKnight}, {'B', ChessPiece::WhiteBishop},
-      {'R', ChessPiece::WhiteRook}, {'Q', ChessPiece::WhiteQueen},  {'K', ChessPiece::WhiteKing},
+      {'p', ChessPiece::BlackPawn},
+      {'n', ChessPiece::BlackKnight},
+      {'b', ChessPiece::BlackBishop},
+      {'r', ChessPiece::BlackRook},
+      {'q', ChessPiece::BlackQueen},
+      {'k', ChessPiece::BlackKing},
+      {'P', ChessPiece::WhitePawn},
+      {'N', ChessPiece::WhiteKnight},
+      {'B', ChessPiece::WhiteBishop},
+      {'R', ChessPiece::WhiteRook},
+      {'Q', ChessPiece::WhiteQueen},
+      {'K', ChessPiece::WhiteKing},
   };
 
   return pieceMap.at(c);

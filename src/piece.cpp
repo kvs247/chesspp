@@ -13,9 +13,11 @@
 
 Piece::Piece(Game &g) : game(g) {}
 
-std::vector<BoardIndex> Piece::linearSquareIndexes(const BoardIndex index, const PieceColor color,
-                                                   const std::vector<std::pair<int, int>> &offsets,
-                                                   const PiecePlacement &piecePlacement)
+std::vector<BoardIndex> Piece::linearSquareIndexes(
+    const BoardIndex index,
+    const PieceColor color,
+    const std::vector<std::pair<int, int>> &offsets,
+    const PiecePlacement &piecePlacement)
 {
   std::vector<BoardIndex> res = {};
 
@@ -55,9 +57,11 @@ std::vector<BoardIndex> Piece::linearSquareIndexes(const BoardIndex index, const
   return res;
 }
 
-std::vector<BoardIndex> Piece::squareIndexes(const BoardIndex index, const PieceColor color,
-                                             const std::vector<std::pair<int, int>> &offsets,
-                                             const PiecePlacement &piecePlacement)
+std::vector<BoardIndex> Piece::squareIndexes(
+    const BoardIndex index,
+    const PieceColor color,
+    const std::vector<std::pair<int, int>> &offsets,
+    const PiecePlacement &piecePlacement)
 {
   std::vector<BoardIndex> res = {};
 
@@ -89,8 +93,10 @@ std::vector<BoardIndex> Piece::squareIndexes(const BoardIndex index, const Piece
   return res;
 }
 
-std::vector<BoardIndex> Piece::filterSelfCheckMoves(const PiecePlacement &piecePlacement, const BoardIndex index,
-                                                    const std::vector<BoardIndex> &indexes)
+std::vector<BoardIndex> Piece::filterSelfCheckMoves(
+    const PiecePlacement &piecePlacement,
+    const BoardIndex index,
+    const std::vector<BoardIndex> &indexes)
 {
   const auto isKingInCheckLambda = [piecePlacement, index](const BoardIndex toIndex)
   {
@@ -167,7 +173,14 @@ std::vector<BoardIndex> Knight::legalSquareIndexes(const BoardIndex index) const
 {
   const auto color = getPieceColor(game.state.piecePlacement[index]);
   const std::vector<std::pair<int, int>> offsets = {
-      {1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+      {1, 2},
+      {1, -2},
+      {-1, 2},
+      {-1, -2},
+      {2, 1},
+      {2, -1},
+      {-2, 1},
+      {-2, -1},
   };
 
   const auto potentialIndexes = squareIndexes(index, color, offsets, game.state.piecePlacement);
@@ -210,8 +223,8 @@ Queen::Queen(Game &g) : Piece(g) {}
 std::vector<BoardIndex> Queen::legalSquareIndexes(const BoardIndex index) const
 {
   const auto color = getPieceColor(game.state.piecePlacement[index]);
-  const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1},  {0, -1},
-                                                    {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+  const std::vector<std::pair<int, int>> offsets = {
+      {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
   const auto potentialIndexes = linearSquareIndexes(index, color, offsets, game.state.piecePlacement);
 
@@ -225,8 +238,8 @@ King::King(Game &g) : Piece(g) {}
 std::vector<BoardIndex> King::legalSquareIndexes(const BoardIndex index) const
 {
   const auto color = getPieceColor(game.state.piecePlacement[index]);
-  const std::vector<std::pair<int, int>> offsets = {{1, 0}, {-1, 0}, {0, 1},  {0, -1},
-                                                    {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+  const std::vector<std::pair<int, int>> offsets = {
+      {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
   auto potentialIndexes = squareIndexes(index, color, offsets, game.state.piecePlacement);
 

@@ -129,8 +129,8 @@ void ChessTimer::start()
 
           if (DEBUG)
           {
-            logger.log("black: ", game.blackTime.getAbsoluteTimeString(),
-                       " white: ", game.whiteTime.getAbsoluteTimeString());
+            logger.log(
+                "black: ", game.blackTime.getAbsoluteTimeString(), " white: ", game.whiteTime.getAbsoluteTimeString());
           }
 
           {

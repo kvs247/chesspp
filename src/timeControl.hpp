@@ -9,7 +9,8 @@
 
 class Game;
 
-struct TimeData {
+struct TimeData
+{
   int minutes;
   int seconds;
   int milliseconds;

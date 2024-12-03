@@ -44,8 +44,8 @@ TEST(GameStateInitialization, FromMidGameFen)
   const BoardIndex enPassantIndex = 45;
   const int halfmoveClock = 0;
   const int fullmoveClock = 7;
-  const Game::GameState expected{piecePlacement, activeColor,   castlingAvailability,
-                                 enPassantIndex, halfmoveClock, fullmoveClock};
+  const Game::GameState expected{
+      piecePlacement, activeColor, castlingAvailability, enPassantIndex, halfmoveClock, fullmoveClock};
   std::string fen = "r1b1kbr1/ppppqppp/2n2n2/8/4pP2/1PN1P3/PBPPQ1PP/2KR1BNR b q f3 0 7";
   const auto actual = Game::GameState::fromFEN(fen);
 

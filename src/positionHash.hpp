@@ -16,8 +16,9 @@ struct Position
 
   bool operator==(const Position &other) const
   {
-    return (piecePlacement == other.piecePlacement && castlingAvailability == other.castlingAvailability &&
-            enPassantIndex == other.enPassantIndex);
+    return (
+        piecePlacement == other.piecePlacement && castlingAvailability == other.castlingAvailability &&
+        enPassantIndex == other.enPassantIndex);
   }
 };
 

@@ -243,9 +243,11 @@ std::string FrameBuilder::handleAmbiguousMove(BoardIndex fromIndex, std::vector<
   return res;
 }
 
-std::vector<std::string> FrameBuilder::makeMoveListLines(const std::vector<std::string> &moveListEntries,
-                                                         const size_t moveListLength, const int moveListWidth,
-                                                         const int moveListHeight)
+std::vector<std::string> FrameBuilder::makeMoveListLines(
+    const std::vector<std::string> &moveListEntries,
+    const size_t moveListLength,
+    const int moveListWidth,
+    const int moveListHeight)
 {
   const size_t maxNumEntries = (moveListWidth / MOVE_LIST_ITEM_WIDTH) * (moveListHeight - 2);
 
@@ -279,8 +281,7 @@ std::vector<std::string> FrameBuilder::makeMoveListLines(const std::vector<std::
   return lines;
 }
 
-std::string FrameBuilder::makeInfoString(const std::string username, const TimeControl timeControl,
-                                         const int boardWidth)
+std::string FrameBuilder::makeInfoString(const std::string username, const TimeControl timeControl, const int boardWidth)
 {
   std::stringstream ss;
   std::string timeString = timeControl.isEnabled ? timeControl.getFormattedTimeString() : "";
@@ -318,8 +319,8 @@ std::string FrameBuilder::makeMessage(const int windowWidth)
   return res.str();
 }
 
-std::vector<std::string> FrameBuilder::makeInformationModalLines(const int height, const int width,
-                                                                 const std::vector<std::string> &lines)
+std::vector<std::string>
+FrameBuilder::makeInformationModalLines(const int height, const int width, const std::vector<std::string> &lines)
 {
   const int horizPadSize = 4;
   const int vertPad = 2;
@@ -363,8 +364,11 @@ std::vector<std::string> FrameBuilder::makeInformationModalLines(const int heigh
   return res;
 }
 
-void FrameBuilder::addInformationModal(std::vector<std::string> &outputLines, const int boardHeight,
-                                       const unsigned short windowHeight, const unsigned short windowWidth)
+void FrameBuilder::addInformationModal(
+    std::vector<std::string> &outputLines,
+    const int boardHeight,
+    const unsigned short windowHeight,
+    const unsigned short windowWidth)
 {
   const int modalWidth = windowWidth / 2;
   const int modalHeight = windowHeight / 2;

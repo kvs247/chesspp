@@ -67,7 +67,9 @@ std::optional<std::string> MoveInput::collectUserInput(const std::string prompt)
           input.pop_back();
         }
       }
-      else if (c == ' ') {}
+      else if (c == ' ')
+      {
+      }
       else if (c == 'q')
       {
         MoveInput::disableRawMode();
