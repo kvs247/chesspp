@@ -91,7 +91,8 @@ Game::Game(const GameState &gs)
                             gs.enPassantIndex,
                             gs.halfmoveClock,
                             gs.fullmoveClock}),
-      pawn(*this), knight(*this), bishop(*this), rook(*this), queen(*this), king(*this)
+      modalState(ModalState::NONE), pawn(*this), knight(*this), bishop(*this), rook(*this), queen(*this), king(*this),
+      randomGenerator(std::random_device{}())
 {
   incrementPositionCount();
   timer.start();
@@ -253,10 +254,7 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
     }
   }
 
-  std::random_device rd;
-  std::mt19937 g(rd());
-
-  std::shuffle(cpuPiecesIdxs.begin(), cpuPiecesIdxs.end(), g);
+  std::shuffle(cpuPiecesIdxs.begin(), cpuPiecesIdxs.end(), randomGenerator);
 
   BoardIndex resFromIndex, resToIndex;
 
@@ -268,7 +266,7 @@ std::pair<BoardIndex, BoardIndex> Game::generateCpuMove(const PieceColor cpuColo
       continue;
     }
 
-    std::shuffle(indexes.begin(), indexes.end(), g);
+    std::shuffle(indexes.begin(), indexes.end(), randomGenerator);
 
     for (auto toIndex : indexes)
     {
@@ -330,18 +328,48 @@ bool Game::handleEnPassant(const BoardIndex fromIndex, const BoardIndex toIndex)
 
 ChessPiece Game::handlePawnPromotion(const ChessPiece fromPiece, const BoardIndex toIndex)
 {
+  static const std::set<char> validChars{'q', 'r', 'b', 'n'};
+
+  const auto promotionPieceCharToChessPiece = [](char c, PieceColor playerColor)
+  {
+    if (playerColor == PieceColor::White)
+    {
+      c = std::toupper(c);
+    }
+    return charToChessPiece(c);
+  };
+
+  const auto collectPromotionPieceChar = [&]()
+  {
+    char promotionPieceChar;
+    while (validChars.find(promotionPieceChar) == validChars.cend())
+    {
+      const auto input = moveInput.collectUserInput("Enter promotion piece: ", 1);
+      promotionPieceChar = input.value().front();
+    }
+    return promotionPieceChar;
+  };
+
+  const auto getRandomPromotionPieceChar = [&]()
+  {
+    static const auto validCharsVec = std::vector(validChars.cbegin(), validChars.cend());
+    return validCharsVec[std::uniform_int_distribution<size_t>(0, validCharsVec.size() - 1)(randomGenerator)];
+  };
+
   const auto [file, rank] = indexToFileRank(toIndex);
   if (fromPiece == ChessPiece::WhitePawn && rank == 8)
   {
-    const ChessPiece promotedPiece = ChessPiece::WhiteQueen;
-    state.piecePlacement[toIndex] = promotedPiece;
-    return promotedPiece;
+    const auto promotionPieceChar = config.whiteIsCpu ? getRandomPromotionPieceChar() : collectPromotionPieceChar();
+    const auto promotionPiece = promotionPieceCharToChessPiece(promotionPieceChar, PieceColor::White);
+    state.piecePlacement[toIndex] = promotionPiece;
+    return promotionPiece;
   }
   if (fromPiece == ChessPiece::BlackPawn && rank == 1)
   {
-    const ChessPiece promotedPiece = ChessPiece::BlackQueen;
-    state.piecePlacement[toIndex] = promotedPiece;
-    return promotedPiece;
+    const auto promotionPieceChar = config.blackIsCpu ? getRandomPromotionPieceChar() : collectPromotionPieceChar();
+    const auto promotionPiece = promotionPieceCharToChessPiece(promotionPieceChar, PieceColor::Black);
+    state.piecePlacement[toIndex] = promotionPiece;
+    return promotionPiece;
   }
 
   return ChessPiece::Empty;

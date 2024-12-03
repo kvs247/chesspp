@@ -25,10 +25,10 @@
         - [x]  king + two knights vs king
         - [x]  king + minor piece vs king + minor piece
         - [x]  timeout vs insufficient material
-  - [ ] other
+  - [x] other
     - [x] castling
     - [x] pawn promotion
-      - [ ] choose piece
+      - [x] choose piece
     - [x] check
 - [ ] display
   - [x] draw board & pieces
@@ -38,7 +38,7 @@
     - [x] ambiguous piece
     - [x] castle
     - [x] check/checkmate
-  - [ ] menu for help/draw or resign/pawn promotion
+  - [ ] help menu
 - [x] CPU opponent
   - [x] random moves
 - [x] time control

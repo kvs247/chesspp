@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../game.hpp"
+#include "../logger.hpp"
 #include "../pgn.hpp"
 #include "../utils.hpp"
 #include "config.hpp"
@@ -15,6 +16,7 @@ FrameBuilder::FrameBuilder(Game &g) : game(g) {}
 std::vector<std::string> FrameBuilder::buildFrame()
 {
   const auto [windowHeight, windowWidth, windowXPixel, windowYPixel] = getWindowDimensions();
+
   // squareWidth must be divisible by 4 so that squareHeight = (squareWidth / 2) is even
   int squareWidth = ((windowWidth / 2) - BORDER_WIDTH) / 8 & ~3;
   squareWidth = std::max(squareWidth, 4);
@@ -57,7 +59,10 @@ std::vector<std::string> FrameBuilder::buildFrame()
 
   outputLines.push_back(makeMessage(windowWidth));
 
-  addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
+  if (game.modalState != Game::ModalState::NONE)
+  {
+    addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
+  }
 
   return outputLines;
 }

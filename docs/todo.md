@@ -3,6 +3,7 @@
 - create `isPieceWhite` util
 - move all `Game` class members to `State` type
 - captured pieces in player info display
+- move pawn promotion input to modal
 - refactors
   - game over logic
   - isSquareUnderAttack should be able to reuse logic from Piece

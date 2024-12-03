@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <optional>
+#include <random>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -102,6 +103,8 @@ private:
   King king;
 
   MoveInput moveInput = MoveInput{*this};
+
+  std::mt19937 randomGenerator;
 
   std::pair<BoardIndex, BoardIndex> generateCpuMove(const PieceColor);
   void updateHalfMoveClock(const ChessPiece, const ChessPiece);

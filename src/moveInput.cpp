@@ -47,7 +47,7 @@ void MoveInput::disableRawMode()
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios);
 };
 
-std::optional<std::string> MoveInput::collectUserInput(const std::string prompt)
+std::optional<std::string> MoveInput::collectUserInput(const std::string prompt, const size_t inputLength)
 {
   std::string input;
   char c;
@@ -56,7 +56,7 @@ std::optional<std::string> MoveInput::collectUserInput(const std::string prompt)
   {
     if (read(STDIN_FILENO, &c, 1) == 1)
     {
-      if ((c == '\r' || c == '\n') && input.length() == 2)
+      if ((c == '\r' || c == '\n') && input.length() == inputLength)
       {
         return input;
       }
@@ -70,12 +70,12 @@ std::optional<std::string> MoveInput::collectUserInput(const std::string prompt)
       else if (c == ' ')
       {
       }
-      else if (c == 'q')
+      else if (c == 'x')
       {
         MoveInput::disableRawMode();
         std::exit(0);
       }
-      else if (isalnum(c) && input.length() < 2)
+      else if (isalnum(c) && input.length() < inputLength)
       {
         input += c;
       }
@@ -119,7 +119,7 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
           }
           try
           {
-            const auto userFromSquare = collectUserInput("Enter From Square: ");
+            const auto userFromSquare = collectUserInput("Enter From Square: ", 2);
             if (userFromSquare.has_value())
             {
               fromIdx = algebraicToIndex(userFromSquare.value());
@@ -129,7 +129,7 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
               return;
             }
 
-            const auto userToSquare = collectUserInput("Enter To Square: ");
+            const auto userToSquare = collectUserInput("Enter To Square: ", 2);
             if (userToSquare.has_value())
             {
               toIdx = algebraicToIndex(userToSquare.value());

@@ -35,6 +35,6 @@ public:
 
   static void enableRawMode();
   static void disableRawMode();
-  std::optional<std::string> collectUserInput(const std::string);
+  std::optional<std::string> collectUserInput(const std::string prompt, const size_t inputLength);
   std::optional<std::pair<BoardIndex, BoardIndex>> handleGetInput();
 };
