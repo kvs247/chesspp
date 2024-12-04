@@ -26,7 +26,6 @@ Renderer::~Renderer() { cleanupScreen(); }
 
 void Renderer::initScreen()
 {
-  logger.log("initScreen()");
   // enter alternate screen buffer (for full-screen terminal applications)
   std::cout << "\033[?1049h";
   // clear terminal
@@ -37,8 +36,6 @@ void Renderer::initScreen()
 
 void Renderer::cleanupScreen()
 {
-  logger.log("cleanupScreen()");
-
   const auto window = frameBuilder->getWindowDimensions();
 
   // move cursor to bottom of content

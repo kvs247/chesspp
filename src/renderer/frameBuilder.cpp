@@ -440,7 +440,14 @@ std::vector<std::string> FrameBuilder::makePawnPromotionLines()
 
 std::vector<std::string> FrameBuilder::makeHelpScreenLines()
 {
-  std::vector<std::string> lines{"Chesspp by Kyle Schneider", "Press 'x' to exit the menu/program"};
+  const std::string resigningPlayer = game.state.activeColor == PieceColor::White ? "White" : "Black";
+  const std::string resignationSuffix = " (as " + resigningPlayer + ")";
+
+  std::vector<std::string> lines{
+      "Enter moves as a from-square and to-square (example: e4 or a7)",
+      "Press 'x' to exit the menu/program",
+      "Press 'd' to declare a draw",
+      "Press 'r' to resign" + resignationSuffix};
   std::vector<std::string> res;
 
   std::stringstream ss;

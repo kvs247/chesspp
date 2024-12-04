@@ -63,6 +63,23 @@ std::optional<std::string> MoveInput::collectUserInput(const std::string prompt,
         {
           game.modalState = Game::ModalState::NONE;
         }
+        else if (c == 'd')
+        {
+          game.userInput = "";
+          game.message = "draw by agreement";
+          game.modalState = Game::ModalState::NONE;
+          game.isGameOver = true;
+          cancelInput = true;
+        }
+        else if (c == 'r')
+        {
+          game.userInput = "";
+          const std::string winningPlayer = game.state.activeColor == PieceColor::White ? "Black" : "White";
+          game.message = winningPlayer + " won by resignation";
+          game.modalState = Game::ModalState::NONE;
+          game.isGameOver = true;
+          cancelInput = true;
+        }
       }
       else if ((c == '\r' || c == '\n') && input.length() == inputLength)
       {
@@ -92,7 +109,10 @@ std::optional<std::string> MoveInput::collectUserInput(const std::string prompt,
         input += c;
       }
     }
-    game.userInput = prompt + input;
+    if (!game.isGameOver)
+    {
+      game.userInput = prompt + input;
+    }
   }
   // return input;
   return std::nullopt;
@@ -181,8 +201,9 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
         {
           {
             std::lock_guard<std::mutex> lock(mtx);
-            if (shared.inputReceived || shared.outOfTime)
+            if (shared.inputReceived || shared.outOfTime || game.isGameOver)
             {
+              cv.notify_one();
               break;
             }
 
@@ -209,7 +230,7 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
   bool success = false;
   {
     std::unique_lock<std::mutex> lock(mtx);
-    cv.wait(lock, [this]() { return shared.inputReceived || shared.outOfTime; });
+    cv.wait(lock, [this]() { return shared.inputReceived || shared.outOfTime || game.isGameOver; });
 
     if (shared.inputReceived)
     {
