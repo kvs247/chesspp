@@ -37,9 +37,12 @@ private:
   std::vector<std::string>
   makeInformationModalLines(const int height, const int width, const std::vector<std::string> &);
   void addInformationModal(
+      const std::vector<std::string> &content,
       std::vector<std::string> &outputLines,
       const int boardHeight,
       const unsigned short windowHeight,
       const unsigned short windowWidth);
+  std::vector<std::string> makeTitleLines(const size_t windowWidth);
   std::vector<std::string> makePawnPromotionLines();
+  std::vector<std::string> makeHelpScreenLines();
 };

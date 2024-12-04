@@ -56,6 +56,7 @@ public:
   enum class ModalState
   {
     NONE,
+    HELP,
     PAWN_PROMOTION,
   };
 

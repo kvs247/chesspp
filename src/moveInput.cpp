@@ -17,6 +17,7 @@
 
 #include "config.hpp"
 #include "game.hpp"
+#include "logger.hpp"
 #include "moveInput.hpp"
 #include "timeControl.hpp"
 #include "utils.hpp"
@@ -56,7 +57,14 @@ std::optional<std::string> MoveInput::collectUserInput(const std::string prompt,
   {
     if (read(STDIN_FILENO, &c, 1) == 1)
     {
-      if ((c == '\r' || c == '\n') && input.length() == inputLength)
+      if (game.modalState == Game::ModalState::HELP)
+      {
+        if (c == 'x')
+        {
+          game.modalState = Game::ModalState::NONE;
+        }
+      }
+      else if ((c == '\r' || c == '\n') && input.length() == inputLength)
       {
         return input;
       }
@@ -69,6 +77,10 @@ std::optional<std::string> MoveInput::collectUserInput(const std::string prompt,
       }
       else if (c == ' ')
       {
+      }
+      else if (c == 'j')
+      {
+        game.modalState = Game::ModalState::HELP;
       }
       else if (c == 'x')
       {
@@ -117,9 +129,12 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
               return;
             }
           }
+
+          const std::string activePlayer = game.state.activeColor == PieceColor::White ? "White's" : "Black's";
           try
           {
-            const auto userFromSquare = collectUserInput("Enter From Square: ", 2);
+            const std::string fromPrompt = "Enter " + activePlayer + " From Square: ";
+            const auto userFromSquare = collectUserInput(fromPrompt, 2);
             if (userFromSquare.has_value())
             {
               fromIdx = algebraicToIndex(userFromSquare.value());
@@ -129,7 +144,8 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
               return;
             }
 
-            const auto userToSquare = collectUserInput("Enter To Square: ", 2);
+            const std::string toPrompt = "Enter " + activePlayer + " From Square: ";
+            const auto userToSquare = collectUserInput(toPrompt, 2);
             if (userToSquare.has_value())
             {
               toIdx = algebraicToIndex(userToSquare.value());

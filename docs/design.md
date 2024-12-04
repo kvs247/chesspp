@@ -38,7 +38,7 @@
     - [x] ambiguous piece
     - [x] castle
     - [x] check/checkmate
-  - [ ] help menu
+  - [x] help menu
 - [x] CPU opponent
   - [x] random moves
 - [x] time control

@@ -34,6 +34,11 @@ std::vector<std::string> FrameBuilder::buildFrame()
   std::vector<std::string> outputLines;
   outputLines.reserve(windowHeight);
 
+  for (const auto &s : makeTitleLines(windowWidth))
+  {
+    outputLines.push_back(s);
+  }
+
   outputLines.push_back(makeBlackInfoString(boardWidth));
 
   size_t j = 0;
@@ -59,9 +64,10 @@ std::vector<std::string> FrameBuilder::buildFrame()
 
   outputLines.push_back(makeMessage(windowWidth));
 
-  if (game.modalState != Game::ModalState::NONE)
+  if (game.modalState == Game::ModalState::HELP)
   {
-    addInformationModal(outputLines, boardHeight, windowHeight, windowWidth);
+    const auto helpScreenContent = makeHelpScreenLines();
+    addInformationModal(helpScreenContent, outputLines, boardHeight, windowHeight, windowWidth);
   }
 
   return outputLines;
@@ -370,6 +376,7 @@ FrameBuilder::makeInformationModalLines(const int height, const int width, const
 }
 
 void FrameBuilder::addInformationModal(
+    const std::vector<std::string> &content,
     std::vector<std::string> &outputLines,
     const int boardHeight,
     const unsigned short windowHeight,
@@ -382,8 +389,6 @@ void FrameBuilder::addInformationModal(
   const size_t modalHeightEnd = boardHeight / 2 + modalHeight / 2;
   const size_t modalWidthStart = windowWidth / 2 - modalWidth / 2;
   const size_t modalWidthEnd = windowWidth / 2 + modalWidth / 2;
-
-  const auto content = makePawnPromotionLines();
 
   const auto modalLines = makeInformationModalLines(modalHeight, modalWidth, content);
 
@@ -405,9 +410,37 @@ void FrameBuilder::addInformationModal(
   }
 }
 
+std::vector<std::string> FrameBuilder::makeTitleLines(const size_t windowWidth)
+{
+  const std::string title = "~~~Chesspp by Kyle Schneider~~~";
+  const std::string titlePad = std::string((windowWidth / 2) - (title.size() / 2), ' ');
+  const std::string titleString = titlePad + title + titlePad;
+
+  const std::string helpMessage = "press 'j' to open the help menu";
+  const std::string helpPad = std::string((windowWidth / 2) - (helpMessage.size() / 2), ' ');
+  const std::string helpString = helpPad + helpMessage + helpPad;
+
+  return {titleString, helpString};
+}
+
 std::vector<std::string> FrameBuilder::makePawnPromotionLines()
 {
   std::vector<std::string> lines{"Choose promotion piece:", "Queen", "Rook", "Bishop", "Knight"};
+  std::vector<std::string> res;
+
+  std::stringstream ss;
+  for (const auto &s : lines)
+  {
+    res.push_back(s);
+    res.push_back("");
+  }
+
+  return res;
+}
+
+std::vector<std::string> FrameBuilder::makeHelpScreenLines()
+{
+  std::vector<std::string> lines{"Chesspp by Kyle Schneider", "Press 'x' to exit the menu/program"};
   std::vector<std::string> res;
 
   std::stringstream ss;
