@@ -2,7 +2,7 @@
 
 ## Core Features
 
-- [ ] game logic
+- [x] game logic
   - [x] find piece legal moves
     - [x] pawn
     - [x] knight
@@ -12,13 +12,13 @@
     - [x] queen
   - endgame scenarios
     - [x]  checkmate
-    - [ ]  resignation
+    - [x]  resignation
     - [x]  timeout
-    - [ ]  draw
+    - [x]  draw
       - [x]  stalemate
       - [x]  50-move rule
       - [x]  repetition
-      - [ ]  agreement
+      - [x]  agreement
       - [x]  insufficient material
         - [x]  king vs king
         - [x]  king + minor piece vs king
