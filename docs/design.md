@@ -30,7 +30,7 @@
     - [x] pawn promotion
       - [x] choose piece
     - [x] check
-- [ ] display
+- [x] display
   - [x] draw board & pieces
   - [x] moves played list
     - [x] piece + to square
@@ -46,7 +46,7 @@
 
 ## Strech Features
 
-- [ ] GUI
+- [ ] more appealing GUI
 - [ ] Sophisticated CPU opponent (LLM or lichess API)
 - [ ] OS portability
 - [ ] multiplayer over internet
