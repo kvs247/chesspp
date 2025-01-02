@@ -445,6 +445,7 @@ std::vector<std::string> FrameBuilder::makeHelpScreenLines()
 
   std::vector<std::string> lines{
       "Enter moves as a from-square and to-square (example: e4 or a7)",
+      "Press ENTER to submit to/from square",
       "Press 'x' to exit the menu/program",
       "Press 'd' to declare a draw",
       "Press 'r' to resign" + resignationSuffix};

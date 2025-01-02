@@ -164,7 +164,7 @@ std::optional<std::pair<BoardIndex, BoardIndex>> MoveInput::handleGetInput()
               return;
             }
 
-            const std::string toPrompt = "Enter " + activePlayer + " From Square: ";
+            const std::string toPrompt = "Enter " + activePlayer + " To Square: ";
             const auto userToSquare = collectUserInput(toPrompt, 2);
             if (userToSquare.has_value())
             {
