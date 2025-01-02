@@ -10,6 +10,10 @@
 
 #include "constants.hpp"
 
+#ifndef CONFIG_FILE_PATH
+#define CONFIG_FILE_PATH "../config/config.txt"
+#endif
+
 struct Config
 {
   bool whiteIsCpu = false;
@@ -68,7 +72,7 @@ inline Config loadConfig()
 {
   Config config;
 
-  std::ifstream file("config/config.txt");
+  std::ifstream file(CONFIG_FILE_PATH);
   if (!file.is_open())
   {
     throw std::runtime_error("Failed to open config file");

@@ -1,21 +1,41 @@
 # Chesspp - A CLI Chess Application in C++
 
-## Features
+## Overview
 
-- Complete chess rule implementation, including complex mechanics such as en passant, pawn promotion, and draw conditions.
-- CPU opponent with random move generation.
-- Move history tracked in standard algebraic notation.
-- Integrated chess clock with configurable time control settings.
+A command-line chess application showcasing modern C++ practices, multithreading, and clean architecture. Built with C++17, featuring a complete chess engine implementation and CPU opponent.
 
-## User Interface
+## Technical Features
 
-- Dynamic ASCII visualization of chess board and pieces. Includes display of move history, player information, and remaining time.
-- Intuitive coordinate-based move input system.
-- Comprehensive help menu with game commands and app information.
+- Multithreaded architecture for game clock and input handling
+- Smart pointer implementation for memory management
+- Unit testing using Google Test
 
-## Technical Achievments
+## Chess Features
 
-- Object-oriented design with class hierarchy and encapsulation.
-- Singleton pattern implementation for application-wide logging.
-- Terminal-based UI with efficient I/O handling and display updates.
-- Multi-threaded architecture for simultaneous input processing and time tracking.
+- Complete rule implementation including en passant, castling, and draw conditions
+- CPU opponent with random move generation
+- Move history in algebraic notation
+- Configurable time control clock
+- ASCII board visualization and UI
+
+## Build & Run
+
+``` bash
+git clone https://github.com/kvs247/chesspp.git
+cd chesspp
+mkdir build && cd build
+cmake ..
+make
+./chess
+```
+
+## Requirements
+
+- C++17 compatible compiler
+- CMake 3.28+
+
+## Testing
+
+``` bash
+ctest
+```

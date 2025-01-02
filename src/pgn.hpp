@@ -6,9 +6,13 @@
 #include <string>
 #include <vector>
 
+#ifndef OUT_PGN_FILE_PATH
+#define OUT_PGN_FILE_PATH "out/game.pgn"
+#endif
+
 void writePgn(const std::vector<std::string> &moveList)
 {
-  const std::string filePath = "out/game.pgn";
+  const std::string filePath = OUT_PGN_FILE_PATH;
   std::ofstream f(filePath, std::ios::out | std::ios::trunc);
   if (!f.is_open())
   {

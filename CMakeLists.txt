@@ -6,6 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CONFIG_FILE_PATH "${CMAKE_SOURCE_DIR}/config/config.txt")
+add_compile_definitions(CONFIG_FILE_PATH="${CONFIG_FILE_PATH}")
+
+set(OUT_PGN_FILE_PATH "${CMAKE_SOURCE_DIR}/out/game.pgn")
+add_compile_definitions(OUT_PGN_FILE_PATH="${OUT_PGN_FILE_PATH}")
+
 # add compiler warnings
 add_compile_options(-Wall -Wextra)
 
